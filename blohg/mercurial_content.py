@@ -37,9 +37,7 @@ class MercurialContent(object):
     def get(self, filename):
         if filename not in self.filenames:
             return None
-        metadata = self._metadata_from_filenames([filename])[0]
-        content = str(metadata)
-        return content
+        return self._metadata_from_filenames([filename])[0]
     
     def get_all(self, only_posts=False):
         my_filenames = []
@@ -87,23 +85,27 @@ class Metadata(object):
         if len(changesets) > 1:
             last_changeset = self._repo[filelog.linkrev(len(changesets)-1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
-        
-    def __getitem__(self, key):
-        return self.get(key)
-    
-    def __str__(self):
-        return self._filecontent
     
     @property
     def name(self):
         return self._filectx.path()
     
     @property
-    def abstract(self, filecontent):
+    def abstract(self):
         return self._re_read_more.split(self._filecontent)[0]
+    
+    @property
+    def full(self):
+        return self._filecontent
     
     def get(self, key, default=None):
         return self._vars.get(key, default)
+    
+    def __getitem__(self, key):
+        return self.get(key)
+    
+    def __str__(self):
+        return self._filecontent
     
     def __repr__(self):
         return '<Metadata %r>' % self.name
