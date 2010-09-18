@@ -6,51 +6,41 @@ from mercurial import hg, ui
 
 class MercurialContent(object):
     
-    def __init__(self, repo_path, locale, working_dir=False):
-        self.repo_path = repo_path
+    def __init__(self, app):
+        self.repo_path = app.config.get('REPO_PATH', '.')
+        self.working_dir = app.config.get('WORKING_DIR', False)
         self._ui = ui.ui()
-        self._repo = hg.repository(self._ui, repo_path)
-        self.re_rst_files = re.compile(r'txt/%s/(.+)\.rst' % locale)
+        self._repo = hg.repository(self._ui, self.repo_path)
         self.revision_id = None
-        if working_dir != True:
+        if self.working_dir != True:
             self.revision_id = 'tip'
         self.revision = self._repo[self.revision_id]
-        self.filenames = list(self.revision)
-        self.tags = []
-        for file in self.get_all():
-            tags = file['tags']
-            if tags is not None:
-                for tag in tags:
-                    if tag not in self.tags:
-                        self.tags.append(tag)
-        self.tags.sort()
     
-    def _metadata_from_filenames(self, filenames):
+    def _metadata_from_filenames(self, locale, filenames):
         metadata = []
         for filename in filenames:
-            metadata.append(Metadata(self._repo, self.revision[filename]))
+            my_filename = 'txt/%s/%s.rst' % (locale, filename)
+            metadata.append(Metadata(self._repo, self.revision[my_filename]))
         return sorted(metadata, self._compare_by_date)
     
     def _compare_by_date(self, a, b):
         return b['date'] - a['date']
     
-    def get(self, filename):
-        if filename not in self.filenames:
+    def get(self, locale, filename):
+        if filename not in self.get_filenames(locale):
             return None
-        return self._metadata_from_filenames([filename])[0]
+        return self._metadata_from_filenames(locale, [filename])[0]
     
-    def get_all(self, only_posts=False):
+    def get_all(self, locale, only_posts=False):
         my_filenames = []
-        for filename in self.filenames:
-            pieces = self.re_rst_files.match(filename)
-            if pieces is not None:
-                if only_posts and not pieces.group(1).startswith('post/'):
-                    continue
-                my_filenames.append(filename)
-        return self._metadata_from_filenames(my_filenames)
+        for filename in self.get_filenames(locale):
+            if only_posts and not pieces.group(1).startswith('post/'):
+                continue
+            my_filenames.append(filename)
+        return self._metadata_from_filenames(locale, my_filenames)
     
-    def get_by_tag(self, tag):
-        posts = self.get_all(only_posts=True)
+    def get_by_tag(self, locale, tag):
+        posts = self.get_all(locale, only_posts=True)
         my_posts = []
         for post in posts:
             tags = post['tags']
@@ -58,8 +48,27 @@ class MercurialContent(object):
                 my_posts.append(post)
         return my_posts
     
+    def get_tags(self, locale):
+        my_tags = []
+        for file in self.get_all(locale):
+            tags = file['tags']
+            if tags is not None:
+                for tag in tags:
+                    if tag not in my_tags:
+                        my_tags.append(tag)
+        my_tags.sort()
+        return my_tags
+    
+    def get_filenames(self, locale):
+        filenames = []
+        for filename in self.revision:
+            match = re.match(r'txt/%s/(.+)\.rst' % locale, filename)
+            if match is not None:
+                filenames.append(match.group(1))
+        return filenames
+    
     def __repr__(self):
-        return '<Mercurial %r>' % self.repo_path
+        return '<Mercurial %r (%s)>' % (self.repo_path, self.locale)
     
 
 class Metadata(object):
@@ -97,6 +106,13 @@ class Metadata(object):
     @property
     def full(self):
         return self._filecontent
+    
+    @property
+    def locale(self):
+        match = re.match(r'txt/%s/(.+)\.rst' % locale, self._filectx.path())
+        if match is not None:
+            return match.group(1)
+        return None
     
     def get(self, key, default=None):
         return self._vars.get(key, default)
