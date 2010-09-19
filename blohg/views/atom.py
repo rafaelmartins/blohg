@@ -27,7 +27,7 @@ def _feed(locale, posts, feed_url):
     feed = AtomFeed(
         title = current_app.localized_config('TITLE'),
         subtitle = current_app.localized_config('TAGLINE'),
-        url = request.url_root,
+        url = request.url_root + locale,
         feed_url = feed_url,
         author = current_app.config['AUTHOR'],
         generator = ('blohg', None, None)
