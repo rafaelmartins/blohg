@@ -36,5 +36,5 @@ def atom_feed(locale):
             )
         )
     response = make_response(str(feed))
-    response.headers['Content-Type'] = 'text/xml; charset=utf-8'
+    response.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
     return response
