@@ -112,6 +112,10 @@ def create_app(config_file=None):
     def get_locale():
         return app.config['LOCALES'].get(my_locale(), _en_us_locale)['locale']
     
+    @babel.timezoneselector
+    def get_timezone():
+        return localized_config('TIMEZONE')
+    
     def localized_config(key):
         config = app.config.get(key, None)
         if config is None:
