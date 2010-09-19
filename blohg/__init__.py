@@ -3,7 +3,7 @@
 import re
 
 from flask import Flask, request, abort
-from flaskext.babel import Babel, lazy_gettext as _
+from flaskext.babel import Babel
 from flaskext.themes import setup_themes, render_theme_template
 
 # import blohg stuff
