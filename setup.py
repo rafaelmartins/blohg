@@ -1,6 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    setup.py
+    ~~~~~~~~
+    
+    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :license: BSD, see LICENSE for more details.
+"""
+
 from distutils.command.build import build as _build
 from setuptools import setup, find_packages
 from setuptools.command.sdist import sdist as _sdist
