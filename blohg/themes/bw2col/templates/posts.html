@@ -1,0 +1,117 @@
+{% extends theme('base.html') -%}
+{% block body -%}
+{% if tag_title -%}
+<h4>{{ _('Tag:') }} {{ tag_title|tag_name }}</h4>
+{%- endif %}
+{% for post in posts -%}
+<h2>
+    {% if is_post(post.name) -%}
+    <a href="{{ request.url_root }}{{ my_locale }}/{{ post.name }}/">{{ post.title }}</a>
+    {% else -%}
+    {{ post.title }}
+    {% endif -%}
+</h2>
+{%- if full_content %}
+{{ post.full|rst2html|safe }}
+{%- else %}
+{{ post.abstract|rst2html|safe }}
+{%- endif %}
+{%- if post.read_more and not full_content %}
+<p>
+    <a href="{{ request.url_root }}{{ my_locale }}/{{ post.name }}/">{{ _('Read more...') }}</a>
+</p>
+{%- endif %}
+{%- if subpages %}
+<hr />
+<h3>{{ _('Sub pages') }}</h3>
+<ul>
+    {%- for page in subpages %}
+    <li>
+        <a href="{{ request.url_root }}{{ my_locale }}/{{ page.name }}/">
+            {{ page.title }}
+        </a>
+    </li>
+    {%- endfor %}
+</ul>
+{%- endif %}
+<p class="metadata">
+    {{ _('Published:') }} {{ post.datetime|datetimeformat }}
+    {% if post.mdatetime -%}
+    - {{ _('Modified:') }} {{ post.mdatetime|datetimeformat }}
+    {%- endif %}
+    <br />
+    {% if post.tags -%}{% set i = 0 %}
+    {{ _('Tags:') }}
+    {% for slug in post.tags -%}
+    <a href="{{ request.url_root }}{{ my_locale }}/tag/{{ slug }}/">{{ slug|tag_name }}</a>
+    {%- if not loop.last %}, {% endif -%}
+    {%- endfor %} <br />
+    {%- endif %}
+    {%- if is_post(post.name) and localized_config('DISQUS') %}
+    <a href="{{ request.url_root }}{{ my_locale }}/{{ post.name }}/#disqus_thread">
+        {{ _('Comments') }}
+    </a> -
+    {%- endif %}
+    <a href="{{ request.url_root }}{{ my_locale }}/{{ post.name }}/">
+        {{ _('Permalink') }}
+    </a> -
+    <a href="{{ request.url_root }}{{ my_locale }}/source/{{ post.name }}/">
+        {{ _('Source code') }}
+    </a>
+</p>
+{%- if is_post(current_path) and localized_config('DISQUS') %}
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = 'http://{{ localized_config('DISQUS') }}.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>
+    Please enable JavaScript to view the
+    <a href="http://disqus.com/?ref_noscript={{ localized_config('DISQUS') }}">
+        comments powered by Disqus.
+    </a>
+</noscript>
+<a href="http://disqus.com" class="dsq-brlink">
+    blog comments powered by <span class="logo-disqus">Disqus</span>
+</a>
+{%- endif %}
+{%- endfor %}
+{%- if pagination %}
+<div class="pagination">
+    {%- if pagination.current != 1 %}
+    <a href="{{ request.url_root }}{{ my_locale }}/page/1/">&lt;&lt;</a>
+    {%- else %}
+    &lt;&lt;
+    {%- endif %} |
+    {%- if pagination.current > 1 %}
+    <a href="{{ request.url_root }}{{ my_locale }}/page/{{ pagination.current - 1 }}/">&lt;</a>
+    {%- else %}
+    &lt;
+    {%- endif %} |
+    {%- for i in range(1, pagination.num_pages + 1) %}
+    {%- if pagination.current != i %}
+    <a href="{{ request.url_root }}{{ my_locale }}/page/{{ i }}/">
+        {{ i }}
+    </a> |
+    {%- else %}
+    {{ i }} |
+    {%- endif %}
+    {%- endfor %}
+    {%- if pagination.current < pagination.num_pages %}
+    <a href="{{ request.url_root }}{{ my_locale }}/page/{{ pagination.current + 1 }}/">&gt;</a>
+    {%- else %}
+    &gt;
+    {%- endif %} |
+    {%- if pagination.current != pagination.num_pages %}
+    <a href="{{ request.url_root }}{{ my_locale }}/page/{{ pagination.num_pages }}/">&gt;&gt;</a>
+    {%- else %}
+    &gt;&gt;
+    {%- endif %}
+</div>
+{%- endif %}
+{%- endblock %}

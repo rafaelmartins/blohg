@@ -1,0 +1,12 @@
+{% extends theme('base.html') -%}
+{% block body %}
+<h2>{{ _('Posts') }}</h2>
+<ul>
+    {% for post in posts %}
+    <li>
+        <a href="{{ request.url_root }}{{ my_locale }}/{{ post.name }}/">{{ post.title }}</a> -
+        {{ post.datetime|datetimeformat }}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

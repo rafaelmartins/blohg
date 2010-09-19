@@ -1,0 +1,4 @@
+User-agent: *
+{% for locale in config.LOCALES %}
+Disallow: {{ request.script_root }}/{{ locale }}/source/
+{%- endfor %}

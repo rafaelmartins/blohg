@@ -1,0 +1,142 @@
+{% if active_page == 'page' %}{% set active_page = '' %}{% endif -%}
+{% if active_page == 'tag' %}{% set active_page = 'post' %}{% endif -%}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="{{ my_locale }}" lang="{{ my_locale }}">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="generator" content="blohg {{ version }}" />  
+        <link type="text/css" media="screen" rel="stylesheet" href="{{ theme_static('screen.css') }}" />
+        <link rel="alternate" type="application/rss+xml" href="{{ request.url_root }}{{ my_locale }}/rss/" title="{{ title }}" />
+        <title>{{ localized_config('TITLE') }}</title>
+        <script type="text/javascript">
+            <!--
+            window.onload = function(){
+                a = document.getElementsByTagName("a");
+                for(i=0; i<a.length; i++){
+                    mylink = a.item(i).getAttribute("href");
+                    if((mylink.indexOf(document.location.protocol+"//", 0) != -1) &&
+                       (mylink.indexOf("{{ url }}", 0) == -1))
+                    {
+                        a.item(i).onclick = function(){
+                            window.open(this.href);
+                            return false;
+                        }
+                    }
+                }
+            }
+            -->
+        </script>
+        {%- if is_post(current_path) and localized_config('DISQUS') %}
+        <script type="text/javascript">
+            var disqus_url = "{{ request.url_root }}{{ my_locale }}/{{ current_path }}/";
+            {%- if config.DISQUS_DEVELOPER %}
+            var disqus_developer = 1;
+            {%- endif %}
+        </script> 
+        {%- endif %}
+    </head>
+    <body>
+        <div id="header">
+            <h1>{{ localized_config('TITLE_HTML') }}</h1>
+            <h2>{{ localized_config('TAGLINE') }}</h2>
+            <ul>
+            {%- for slug, name in localized_config('MENU') %}
+                <li>
+                    <a href="{{ request.url_root }}{{ my_locale }}/{%if slug %}{{ slug }}/{% endif %}"{% if slug == active_page %} class="active"{% endif %}>
+                        {{ name }}
+                    </a>
+                </li>
+            {%- endfor %}
+            </ul>
+            {%- if config.LOCALES|count > 0 %}
+            <p id="languages">
+                {{ _('Languages') }}:
+                {%- for language in config.LOCALES %}
+                <a {% if language == my_locale %}class="selected_language" {% endif %}href="{{ request.url_root }}{{ language }}/">
+                    {{ config.LOCALES[language].name }}
+                </a> {%- if not loop.last %}|{% endif -%}
+                {%- endfor %}
+            </p>
+            {%- endif %}
+        </div>
+        <div class="colmask rightmenu">
+            <div class="colleft">
+                <div class="col1">
+                    <!-- begin content -->
+{%- block body %}{% endblock %}
+                    <!-- end content -->
+                </div>
+                <div class="col2">
+                    {%- if tags %}
+                    <h2>{{ _('Tags') }}</h2>
+                    <ul>
+                        {%- for slug in tags %}
+                        <li>
+                            <a href="{{ request.url_root }}{{ my_locale }}/tag/{{ slug }}/">
+                                {{ slug|tag_name }}
+                            </a>
+                        </li>
+                        {%- endfor %}
+                    </ul>
+                    {%- endif %}
+                    {%- for side_title, type, content in localized_config('SIDEBAR') %}
+                    <h2>{{ side_title }}</h2>
+                    {%- if type == 'menu' %}
+                    <ul>
+                        {%- for link, name in content %}
+                        <li>
+                            <a href="{{ link }}">
+                                {{ name }}
+                            </a>
+                        </li>
+                        {%- endfor %}
+                    </ul>
+                    {%- else %}
+                    <p>{{ content|safe }}</p>
+                    {%- endif %}
+                    {%- endfor %}
+                </div>
+            </div>
+        </div>
+        <div id="footer">
+            <p>
+                <strong>&copy; {{ config.AUTHOR }}</strong> |
+                Design by:
+                <a href="http://matthewjamestaylor.com/blog/perfect-2-column-right-menu.htm">
+                    Matthew James Taylor
+                </a> |
+                {{ _('Powered by') }}:
+                <a href="http://hg.rafaelmartins.eng.br/blohg/">
+                    blohg {{ version }}
+                </a>
+            </p>  
+        </div>
+        {%- if localized_config('DISQUS') %}
+        <script type="text/javascript">
+            //<![CDATA[
+            (function() {
+                var links = document.getElementsByTagName('a');
+                var query = '?';
+                for(var i = 0; i < links.length; i++) {
+                    if(links[i].href.indexOf('#disqus_thread') >= 0) {
+                        query += 'url' + i + '=' + encodeURIComponent(links[i].href) + '&';
+                    }
+                }
+                document.write('<script charset="utf-8" type="text/javascript" src="http://disqus.com/forums/{{ localized_config('DISQUS') }}/get_num_replies.js' + query + '"></' + 'script>');
+            })();
+            //]]>
+        </script>
+        {%- endif %}
+        {%- if config.GOOGLE_ANALYTICS %}
+        <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <script type="text/javascript">
+            var pageTracker = _gat._getTracker("{{ config.GOOGLE_ANALYTICS }}");
+            pageTracker._initData();
+            pageTracker._trackPageview();
+        </script>
+        {%- endif %}
+    </body>
+</html>

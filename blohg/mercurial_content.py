@@ -2,7 +2,12 @@
 
 import re
 import time
+
+from datetime import datetime
 from mercurial import hg, ui
+
+def setup_mercurial(app):
+    app.hg = MercurialContent(app)
 
 class MercurialContent(object):
     
@@ -27,6 +32,7 @@ class MercurialContent(object):
         return b['date'] - a['date']
     
     def get(self, locale, filename):
+        print filename
         if filename not in self.get_filenames(locale):
             return None
         return self._metadata_from_filenames(locale, [filename])[0]
@@ -34,7 +40,7 @@ class MercurialContent(object):
     def get_all(self, locale, only_posts=False):
         my_filenames = []
         for filename in self.get_filenames(locale):
-            if only_posts and not pieces.group(1).startswith('post/'):
+            if only_posts and not filename.startswith('post/'):
                 continue
             my_filenames.append(filename)
         return self._metadata_from_filenames(locale, my_filenames)
@@ -68,7 +74,7 @@ class MercurialContent(object):
         return filenames
     
     def __repr__(self):
-        return '<Mercurial %r (%s)>' % (self.repo_path, self.locale)
+        return '<Mercurial %r>' % self.repo_path
     
 
 class Metadata(object):
@@ -91,21 +97,29 @@ class Metadata(object):
         self._vars['date'] = int(first_changeset.date()[0])
         if self._vars['date'] == 0:
             self._vars['date'] = int(time.time())
+        self._vars['datetime'] = datetime.utcfromtimestamp(self._vars['date'])
         if len(changesets) > 1:
             last_changeset = self._repo[filelog.linkrev(len(changesets)-1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
+            self._vars['mdatetime'] = datetime.utcfromtimestamp(self._vars['mdate'])
     
     @property
     def name(self):
-        return self._filectx.path()
+        match = re.match(r'txt/[^/]+/(.+)\.rst', self._filectx.path())
+        if match is not None:
+            return match.group(1)
     
     @property
     def abstract(self):
-        return self._re_read_more.split(self._filecontent)[0]
+        return self._re_read_more.split(self._filecontent)[0].decode('utf-8')
     
     @property
     def full(self):
-        return self._filecontent
+        return self._filecontent.decode('utf-8')
+    
+    @property
+    def read_more(self):
+        return len(self._re_read_more.split(self._filecontent)) > 1
     
     @property
     def locale(self):

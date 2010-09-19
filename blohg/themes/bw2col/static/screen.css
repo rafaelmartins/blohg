@@ -1,0 +1,240 @@
+/* General styles */
+body {
+    margin: 0;
+    padding: 0;
+    border: 0; /* This removes the border around the viewport in old versions of IE */
+    width: 100%;
+    background: #fff;
+    min-width: 600px; /* Minimum width of layout - remove line if not required */
+                      /* The min-width property does not work in old versions of Internet Explorer */
+    font-size: 90%;
+    font-family: Verdana, sans-serif;
+}
+
+a {
+    color:#369;
+    text-decoration: none;
+}
+
+a:hover {
+    /*color:#fff;*/
+    /*background:#369;*/
+    /*text-decoration:none;*/
+    text-decoration: underline;
+}
+
+h1, h2, h3 {
+    margin:.8em 0 .2em 0;
+    padding:0;
+}
+
+p {
+    margin:.4em 0 .8em 0;
+    padding:0;
+}
+
+img {
+    margin:10px 0 5px;
+}
+
+/* Header styles */
+#header {
+    clear: both;
+    float: left;
+    width: 100%;
+}
+
+#header {
+    border-bottom: 1px solid #000;
+}
+
+#header p,
+#header h1,
+#header h2 {
+    padding: .4em 15px 0 15px;
+    margin: 0;
+}
+
+#header h1 {
+    font-size: 35px;
+}
+
+#header h2 {
+    font-weight: normal;
+    font-size: 18px;
+}
+
+#header ul {
+    clear: left;
+    float: left;
+    width: 100%;
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+}
+
+#header ul li {
+    display: inline;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#header ul li a {
+    display: block;
+    float: left;
+    margin: 0 0 0 1px;
+    padding: 3px 10px;
+    text-align: center;
+    background: #eee;
+    color: #000;
+    text-decoration: none;
+    position: relative;
+    left: 15px;
+    line-height: 1.3em;
+}
+
+#header ul li a:hover {
+    background: #444;
+    color: #fff;
+}
+
+#header ul li a.active,
+#header ul li a.active:hover {
+    color: #fff;
+    background: #000;
+    font-weight: bold;
+}
+
+#header ul li a span {
+    display: block;
+}
+
+/* 'languages' sub menu */
+#languages {
+    clear: both;
+    background: #eee;
+    border-top: 4px solid #000;
+    margin: 0;
+    padding: 6px 15px !important;
+    text-align: right;
+}
+
+/* column container */
+.colmask {
+    position: relative; /* This fixes the IE7 overflow hidden bug */
+    clear: both;
+    float: left;
+    width: 100%; /* width of whole page */
+    overflow: hidden; /* This chops off any overhanging divs */
+}
+
+/* common column settings */
+.colright,
+.colmid,
+.colleft {
+    float: left;
+    width: 100%;
+    position: relative;
+}
+
+.col1,
+.col2,
+.col3 {
+    float: left;
+    position: relative;
+    padding: 0 0 1em 0;
+    overflow: hidden;
+}
+
+/* 2 Column (right menu) settings */
+.rightmenu {
+    background: #f6f6f6; /* right column background colour */
+}
+
+.rightmenu .colleft {
+    right: 25%; /* right column width */
+    background: #fff; /* left column background colour */
+}
+
+.rightmenu .col1 {
+    width: 71%; /* left column content width (left column width minus left and right padding) */
+    left: 27%; /* (right column width) plus (left column left padding) */
+}
+
+.rightmenu .col2 {
+    width: 21%; /* right column content width (right column width minus left and right padding) */
+    left: 31%; /* (right column width) plus (left column left and right padding) plus (right column left padding) */
+}
+
+/* columns text styles */
+.col1 {
+    font-size: 10pt;
+}
+
+.col1 h2 {
+    font-size: 22px;
+    padding-bottom: 4px;
+}
+
+.col1 h3 {
+    font-size: 18px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.col2 {
+    font-size: 9pt;
+}
+
+.col2 h2 {
+    font-size: 12pt;
+    padding-top: 6px;
+    /*padding-bottom: 10px;*/
+}
+
+.col2 ul, .col2 li {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/*.col2 p {
+    padding-top: 8px;
+}*/
+
+/* Footer styles */
+#footer {
+    clear: both;
+    float: left;
+    width: 100%;
+    border-top: 1px solid #000;
+}
+#footer p {
+    padding: 10px;
+    margin: 0;
+    font-size: 9pt;
+}
+
+.metadata {
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 9pt;
+    text-align: right;
+}
+
+.pagination {
+    margin-top: 35px;
+    font-size: 9pt;
+    text-align: center;
+}
+
+pre {
+    border: 1px solid #ccc;
+    padding: 5px;
+    margin: 10px;
+}
+
+.selected_language{
+    font-weight: bold;
+}
