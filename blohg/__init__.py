@@ -7,8 +7,9 @@ from flaskext.babel import Babel
 from flaskext.themes import setup_themes, render_theme_template
 
 # import blohg stuff
-from blohg.mercurial_content import setup_mercurial
 from blohg.filters import rst2html, tag_name, append_title
+from blohg.mercurial_content import setup_mercurial
+from blohg.version import version as __version__
 
 # import blohg views
 from blohg.views.atom import atom
@@ -17,28 +18,7 @@ from blohg.views.posts import posts
 from blohg.views.robots import robots
 from blohg.views.source import source
 
-__version__ = '0.1pre'
-
-# code snippet from sphinx
-# http://bitbucket.org/birkenfeld/sphinx/src/tip/sphinx/__init__.py
-if '+' in __version__ or 'pre' in __version__:
-    # try to find out the changeset hash if checked out from hg, and append
-    # it to __version__ (since we use this value from setup.py, it gets
-    # automatically propagated to an installed copy as well)
-    try:
-        import subprocess
-        cwd = os.path.dirname(os.path.abspath(__file__))
-        p = subprocess.Popen(
-            ['hg', 'id', '-i', '-R', os.path.join(cwd, '..')],
-            stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE
-        )
-        out, err = p.communicate()
-        if out:
-            __version__ += '/' + out.strip()
-    except Exception:
-        pass
-
+# default locale (en_US)
 _en_us_locale = {
     'locale': 'en_US',
     'name': 'English',
