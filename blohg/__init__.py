@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import re, os
+import re
 
 from flask import Flask, request, abort
 from flaskext.babel import Babel

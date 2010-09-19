@@ -9,7 +9,7 @@ if '+' in version or 'pre' in version:
     # it to version (since we use this value from setup.py, it gets
     # automatically propagated to an installed copy as well)
     try:
-        import subprocess
+        import os, subprocess
         cwd = os.path.dirname(os.path.abspath(__file__))
         p = subprocess.Popen(
             ['hg', 'id', '-i', '-R', os.path.join(cwd, '..')],
