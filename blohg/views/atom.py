@@ -11,12 +11,24 @@ atom = Module(__name__)
 @validate_locale
 def atom_feed(locale):
     posts = current_app.hg.get_all(locale, True)
+    feed_url = request.url_root + locale + '/atom/'
+    return _feed(locale, posts, feed_url)
+
+@atom.route('/<locale>/atom/<tag>/')
+@atom.route('/<locale>/rss/<tag>/') # dumb redirect to keep the compatibility
+@validate_locale
+def atom_feed_by_tag(locale, tag):
+    posts = current_app.hg.get_by_tag(locale, tag)
+    feed_url = request.url_root + locale + '/atom/' + tag + '/'
+    return _feed(locale, posts, feed_url)
+
+def _feed(locale, posts, feed_url):
     posts = posts[:current_app.config['POSTS_PER_PAGE']]
     feed = AtomFeed(
         title = current_app.localized_config('TITLE'),
         subtitle = current_app.localized_config('TAGLINE'),
         url = request.url_root,
-        feed_url = request.url_root + locale + '/atom/',
+        feed_url = feed_url,
         author = current_app.config['AUTHOR'],
         generator = ('blohg', None, None)
     )
