@@ -1,0 +1,4 @@
+include babel.cfg
+recursive-include blohg/translations *
+recursive-include blohg/themes *
+recursive-include blohg/templates *

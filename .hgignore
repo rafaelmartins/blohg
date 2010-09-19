@@ -1,4 +1,4 @@
 \.py[co]$
-env/
-^development
 \.mo$
+^(env|dist|blohg\.egg-info)/
+^development
