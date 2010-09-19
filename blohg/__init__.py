@@ -101,7 +101,6 @@ def create_app(config_file=None):
     def validate_locale(f):
         def new_f(*args, **kwargs):
             match = re.match(r'/([^/]+).*', request.path)
-            print match
             if match is not None:
                 locale = match.group(1)
                 if locale not in current_app.config['LOCALES']:

@@ -32,7 +32,6 @@ class MercurialContent(object):
         return b['date'] - a['date']
     
     def get(self, locale, filename):
-        print filename
         if filename not in self.get_filenames(locale):
             return None
         return self._metadata_from_filenames(locale, [filename])[0]
