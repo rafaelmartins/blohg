@@ -5,6 +5,7 @@ from flask import Module, current_app, abort
 from flaskext.themes import render_theme_template
 
 from blohg.decorators import validate_locale
+from blohg.filters import tag_name
 
 posts = Module(__name__)
 
@@ -40,6 +41,7 @@ def post(locale, slug):
     return render_theme_template(
         current_app.config['THEME'],
         'posts.html',
+        title = u'Post: %s' % post['title'],
         posts = [post],
         full_content = True,
     )
@@ -50,6 +52,7 @@ def post_list(locale):
     return render_theme_template(
         current_app.config['THEME'],
         'list_posts.html',
+        title = u'Posts',
         posts = current_app.hg.get_all(locale, True),
     )
 
@@ -62,6 +65,7 @@ def tag(locale, tag):
     return render_theme_template(
         current_app.config['THEME'],
         'posts.html',
+        title = u'Tag: %s' % tag_name(tag),
         tag_title = tag,
         posts = posts,
         full_content = False,

@@ -11,5 +11,5 @@ def page(locale, slug):
     if source is None:
         abort(404)
     response = make_response(source.full)
-    response.headers['Content-Type'] = 'text/plain'
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response

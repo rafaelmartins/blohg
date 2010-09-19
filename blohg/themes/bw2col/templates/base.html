@@ -7,7 +7,7 @@
         <meta name="generator" content="blohg {{ version }}" />  
         <link type="text/css" media="screen" rel="stylesheet" href="{{ theme_static('screen.css') }}" />
         <link rel="alternate" type="application/rss+xml" href="{{ request.url_root }}{{ my_locale }}/rss/" title="{{ title }}" />
-        <title>{{ localized_config('TITLE') }}</title>
+        <title>{{ title|append_title(localized_config('TITLE')) }}</title>
         <script type="text/javascript">
             <!--
             window.onload = function(){

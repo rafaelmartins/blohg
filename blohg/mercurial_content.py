@@ -13,11 +13,10 @@ class MercurialContent(object):
     
     def __init__(self, app):
         self.repo_path = app.config.get('REPO_PATH', '.')
-        self.working_dir = app.config.get('WORKING_DIR', False)
         self._ui = ui.ui()
         self._repo = hg.repository(self._ui, self.repo_path)
         self.revision_id = None
-        if self.working_dir != True:
+        if not app.debug:
             self.revision_id = 'tip'
         self.revision = self._repo[self.revision_id]
     

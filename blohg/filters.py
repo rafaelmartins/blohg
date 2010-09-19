@@ -3,6 +3,7 @@
 from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
 from flask import current_app
+from jinja2 import Undefined
 
 from blohg import rst_directives
 
@@ -29,3 +30,8 @@ def tag_name(tag):
     if tag in default_tags:
         return default_tags[tag]
     return tag.capitalize().replace('_', ' ')
+
+def append_title(title, default):
+    if type(title) == Undefined:
+        return default
+    return u'%s » %s' % (default, title)

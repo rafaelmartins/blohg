@@ -15,6 +15,7 @@ def page(locale, slug):
     return render_theme_template(
         current_app.config['THEME'],
         'posts.html',
+        title = page['title'],
         posts = [page],
         full_content = True,
     )
