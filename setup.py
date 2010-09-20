@@ -62,6 +62,7 @@ setup(
     author = 'Rafael Goncalves Martins',
     author_email = 'rafael@rafaelmartins.eng.br',
     url = 'http://labs.rafaelmartins.eng.br/projects/blohg',
+    platforms='any',
     packages = find_packages(),
     include_package_data = True,
     zip_safe = False,
@@ -73,5 +74,17 @@ setup(
         'docutils>=0.7',
         'Mercurial>=1.6',
     ],
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'Environment :: Web Environment',
+        'License :: OSI Approved :: BSD License',
+        'Natural Language :: English',
+        'Natural Language :: Portuguese (Brazilian)',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 2',
+        'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: News/Diary',
+        'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
+        'Topic :: Software Development :: Version Control',
+    ]
     cmdclass = cmdclass,
 )
