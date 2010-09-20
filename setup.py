@@ -69,6 +69,7 @@ setup(
     install_requires = [
         'Flask>=0.6',
         'Flask-Babel>=0.6',
+        'Flask-Script>=0.3',
         'Flask-Themes>=0.1.2',
         'Jinja2>=2.5.2',
         'docutils>=0.7',
