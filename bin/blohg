@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os, sys
+
+try:
+    from blohg.script import create_script
+except ImportError:
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(os.path.join(cwd, '..'))
+    from blohg.script import create_script
+
+config_file = os.path.join(os.getcwd(), 'config/development.py')
+script = create_script(config_file)
+script.run()
