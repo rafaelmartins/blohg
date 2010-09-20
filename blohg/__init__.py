@@ -100,7 +100,10 @@ def create_app(config_file=None):
         if locale in config:
             return config[locale]
         if type(config) == dict:
-            return config.values()[0]
+            values = config.values()
+            if len(values) > 0:
+                return config.values()[0]
+            return None
         return config
     app.localized_config = localized_config
     

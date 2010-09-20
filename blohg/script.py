@@ -25,7 +25,9 @@ def create_script(config_file):
     if not os.path.exists('.hg') or not os.path.exists(config_file):
         print >> sys.stderr, 'error: invalid Mercurial repository!'
         sys.exit(1)
-    script = Manager(create_app(config_file), with_default_commands=False)
+    app = create_app(config_file)
+    app.debug = True
+    script = Manager(app, with_default_commands=False)
     server = Server(use_debugger=False, use_reloader=False)
     server.description = 'runs the blohg local server.'
     script.add_command('run', server)

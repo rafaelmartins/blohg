@@ -66,7 +66,7 @@ SIDEBAR = {
         ]),
         (u'Example Sidebar Text Block', 'text', u'''\
 <p>
-    Text paragraph.<br />
+    Text block here.<br />
     Put what you want here.<br />
     HTML allowed.
 </p>
