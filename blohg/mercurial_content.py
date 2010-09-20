@@ -1,17 +1,36 @@
 # -*- coding: utf-8 -*-
 
-import re
-import time
+"""
+    blohg.mercurial_content
+    ~~~~~~~~~~~~~~~~~~~~~~~
+    
+    Module with all the Mercurial-related stuff needed by blohg.
+    
+    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :license: BSD, see LICENSE for more details.
+"""
 
+import re, time
 from datetime import datetime
 from mercurial import hg, ui
 
+
 def setup_mercurial(app):
+    """This function adds a :class:`MercurialContent` instance to an
+    application object, as a ``hg`` attribute.
+    
+    :param app: the application object.
+    """
+    
     app.hg = MercurialContent(app)
 
+
 class MercurialContent(object):
+    """Object that represents a blohg Mercurial repository."""
     
     def __init__(self, app):
+        """Class constructor"""
+        
         self.repo_path = app.config.get('REPO_PATH', '.')
         self._ui = ui.ui()
         self._repo = hg.repository(self._ui, self.repo_path)
@@ -21,6 +40,14 @@ class MercurialContent(object):
         self.revision = self._repo[self.revision_id]
     
     def _metadata_from_filenames(self, locale, filenames):
+        """Method to convert a list of filenames on a list of
+        :class:`Metadata` objects, sorted by creation date.
+        
+        :param locale: the current locale string.
+        :param filenames: the list of filenames.
+        :return: a list of :class:`Metadata` objects.
+        """
+        
         metadata = []
         for filename in filenames:
             my_filename = 'txt/%s/%s.rst' % (locale, filename)
@@ -28,14 +55,37 @@ class MercurialContent(object):
         return sorted(metadata, self._compare_by_date)
     
     def _compare_by_date(self, a, b):
+        """Method that compares 2 :class:`Metadata` objects by creation
+        date.
+        """
+        
         return b.date - a.date
     
     def get(self, locale, filename):
+        """Method that returns a :class:`Metadata` object for a given
+        filename.
+        
+        :param locale: the current locale string.
+        :param filename: the file name string.
+        :return: a :class:`Metadata` object.
+        """
+        
         if filename not in self.get_filenames(locale):
             return None
         return self._metadata_from_filenames(locale, [filename])[0]
     
     def get_all(self, locale, only_posts=False):
+        """Method that returns a list of :class:`Metadata` objects for
+        all the available files for the given locale, ordered by creation
+        date.
+        
+        :param locale: the current locale string.
+        :param only_posts: a boolean that makes the method returns only
+                           the available posts for the given locale, not
+                           the static pages.
+        :return: a list of :class:`Metadata` objects.
+        """
+        
         my_filenames = []
         for filename in self.get_filenames(locale):
             if only_posts and not filename.startswith('post/'):
@@ -44,6 +94,14 @@ class MercurialContent(object):
         return self._metadata_from_filenames(locale, my_filenames)
     
     def get_by_tag(self, locale, tag):
+        """Method that returns a list of :class:`Metadata` objects for a
+        given tag identifier.
+        
+        :param locale: the current locale string.
+        :param tag: the tag identifier string.
+        :return: a list of :class:`Metadata` objects.
+        """
+        
         posts = self.get_all(locale, only_posts=True)
         my_posts = []
         for post in posts:
@@ -53,6 +111,13 @@ class MercurialContent(object):
         return my_posts
     
     def get_tags(self, locale):
+        """Method that returns a list of all the available tag identifiers
+        for a given locale.
+        
+        :param locale: the current locale string.
+        :return: a list of tag identifiers strings.
+        """
+        
         my_tags = []
         for file in self.get_all(locale):
             tags = file.tags
@@ -64,6 +129,13 @@ class MercurialContent(object):
         return my_tags
     
     def get_filenames(self, locale):
+        """Method that returns a list of all the available file names
+        for a given locale.
+        
+        :param locale: the current locale string.
+        :return: a list of file names strings.
+        """
+        
         filenames = []
         for filename in self.revision:
             match = re.match(r'txt/%s/(.+)\.rst' % locale, filename)
@@ -76,11 +148,19 @@ class MercurialContent(object):
     
 
 class Metadata(object):
+    """Static page/Post metadata object."""
     
     _re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
     _re_read_more = re.compile(r'\.\. +read_more')
     
     def __init__(self, repo, filectx):
+        """Class constructor.
+        
+        :param repo: a Mercurial repository object (not
+                     :class:`MercurialContent`)
+        :param filectx: the Mercurial file context of the file.
+        """
+        
         self._repo = repo
         self._filectx = filectx
         self._filecontent = filectx.data()
@@ -97,9 +177,10 @@ class Metadata(object):
             self._vars['date'] = int(time.time())
         self._vars['datetime'] = datetime.utcfromtimestamp(self._vars['date'])
         if len(changesets) > 1:
-            last_changeset = self._repo[filelog.linkrev(len(changesets)-1)]
+            last_changeset = self._repo[filelog.linkrev(len(changesets) - 1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
-            self._vars['mdatetime'] = datetime.utcfromtimestamp(self._vars['mdate'])
+            self._vars['mdatetime'] = \
+                datetime.utcfromtimestamp(self._vars['mdate'])
     
     @property
     def name(self):
@@ -130,4 +211,3 @@ class Metadata(object):
     
     def __repr__(self):
         return '<Metadata %r>' % self.name
-

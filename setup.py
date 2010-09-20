@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """
     setup.py
     ~~~~~~~~
@@ -36,17 +35,20 @@ else:
         update_catalog = babel.update_catalog,
     )
 
+
 class build(_build):
     def run(self):
         if have_babel:
             self.run_command('compile_catalog')
         _build.run(self)
 
+
 class sdist(_sdist):
     def run(self):
         if have_babel:
             self.run_command('compile_catalog')
         _sdist.run(self)
+
 
 cmdclass.update(
     build = build,
@@ -67,12 +69,12 @@ setup(
     include_package_data = True,
     zip_safe = False,
     install_requires = [
+        'docutils>=0.7',
         'Flask>=0.6',
         'Flask-Babel>=0.6',
         'Flask-Script>=0.3',
         'Flask-Themes>=0.1.2',
         'Jinja2>=2.5.2',
-        'docutils>=0.7',
         'Mercurial>=1.6',
     ],
     classifiers=[

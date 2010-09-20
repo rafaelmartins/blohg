@@ -1,5 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+    blohg.version
+    ~~~~~~~~~~~~~
+    
+    Module with the version number related stuff.
+    
+    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :license: BSD, see LICENSE for more details.
+"""
 
+# CHANGE ME BEFORE THE RELEASE!
 version = '0.1pre'
 
 # code snippet from sphinx

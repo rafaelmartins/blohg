@@ -1,4 +1,13 @@
 # -*- coding: utf-8 -*-
+"""
+    blohg
+    ~~~~~
+    
+    Main package.
+    
+    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :license: BSD, see LICENSE for more details.
+"""
 
 import re
 
@@ -18,16 +27,23 @@ from blohg.views.posts import posts
 from blohg.views.robots import robots
 from blohg.views.source import source
 
+
 # default locale (en_US)
 _en_us_locale = {
     'locale': 'en_US',
     'name': 'English',
 }
 
+
 def create_app(config_file=None):
+    """Application factory.
+    
+    :param config_file: the configuration file path.
+    :return: the WSGI application (Flask instance).
+    """
     
     # create the app object
-    app = Flask('blohg')
+    app = Flask(__name__)
     
     # register some sane default config values
     app.config.setdefault('AUTHOR', 'Your Name Here')
@@ -61,18 +77,6 @@ def create_app(config_file=None):
         append_title = append_title,
     )
     
-    @app.context_processor
-    def setup_jinja2():
-        return dict(
-            version = __version__,
-            localized_config = localized_config,
-            is_post = lambda x: x.startswith('post/'),
-            my_locale = my_locale(),
-            current_path = current_path(),
-            active_page = active_page(),
-            tags = app.hg.get_tags(my_locale()),
-        )
-    
     def my_locale():
         match = re.match(r'/([^/]+).*', request.path)
         if match is not None:
@@ -87,14 +91,6 @@ def create_app(config_file=None):
     
     def active_page():
         return current_path().split('/')[0]
-
-    @babel.localeselector
-    def get_locale():
-        return app.config['LOCALES'].get(my_locale(), _en_us_locale)['locale']
-    
-    @babel.timezoneselector
-    def get_timezone():
-        return localized_config('TIMEZONE')
     
     def localized_config(key):
         config = app.config.get(key, None)
@@ -107,6 +103,26 @@ def create_app(config_file=None):
             return config.values()[0]
         return config
     app.localized_config = localized_config
+    
+    @app.context_processor
+    def setup_jinja2():
+        return dict(
+            version = __version__,
+            localized_config = localized_config,
+            is_post = lambda x: x.startswith('post/'),
+            my_locale = my_locale(),
+            current_path = current_path(),
+            active_page = active_page(),
+            tags = app.hg.get_tags(my_locale()),
+        )
+
+    @babel.localeselector
+    def get_locale():
+        return app.config['LOCALES'].get(my_locale(), _en_us_locale)['locale']
+    
+    @babel.timezoneselector
+    def get_timezone():
+        return localized_config('TIMEZONE')
     
     @app.errorhandler(404)
     def page_not_found(error):
