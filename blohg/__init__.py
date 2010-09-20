@@ -25,7 +25,7 @@ from blohg.views.atom import atom
 from blohg.views.pages import pages
 from blohg.views.posts import posts
 from blohg.views.robots import robots
-from blohg.views.source import source
+from blohg.views.sources import sources
 
 
 # default locale (en_US)
@@ -132,7 +132,7 @@ def create_app(config_file=None):
         ), 404
     
     app.register_module(robots)
-    app.register_module(source)
+    app.register_module(sources)
     app.register_module(posts)
     app.register_module(pages)
     app.register_module(atom)

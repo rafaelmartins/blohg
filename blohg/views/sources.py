@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.views.source
-    ~~~~~~~~~~~~~~~~~~
+    blohg.views.sources
+    ~~~~~~~~~~~~~~~~~~~
     
     View module that displays the reStructuredText sources.
     
@@ -13,12 +13,12 @@ from flask import Module, current_app, make_response, abort
 
 from blohg.decorators import validate_locale
 
-source = Module(__name__)
+sources = Module(__name__)
 
 
-@source.route('/<locale>/source/<path:slug>/')
+@sources.route('/<locale>/source/<path:slug>/')
 @validate_locale
-def source(locale, slug):
+def my_sources(locale, slug):
     """View that shows the source code of a given static page/post."""
     
     source = current_app.hg.get(locale, slug)
