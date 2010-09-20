@@ -119,13 +119,6 @@ class Metadata(object):
     def read_more(self):
         return len(self._re_read_more.split(self._filecontent)) > 1
     
-    @property
-    def locale(self):
-        match = re.match(r'txt/%s/(.+)\.rst' % locale, self._filectx.path())
-        if match is not None:
-            return match.group(1)
-        return None
-    
     def get(self, key, default=None):
         return self._vars.get(key, default)
     
