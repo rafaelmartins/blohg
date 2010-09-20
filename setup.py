@@ -85,6 +85,6 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: News/Diary',
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Version Control',
-    ]
+    ],
     cmdclass = cmdclass,
 )
