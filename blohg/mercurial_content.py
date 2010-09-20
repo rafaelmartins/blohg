@@ -28,7 +28,7 @@ class MercurialContent(object):
         return sorted(metadata, self._compare_by_date)
     
     def _compare_by_date(self, a, b):
-        return b['date'] - a['date']
+        return b.date - a.date
     
     def get(self, locale, filename):
         if filename not in self.get_filenames(locale):
@@ -47,7 +47,7 @@ class MercurialContent(object):
         posts = self.get_all(locale, only_posts=True)
         my_posts = []
         for post in posts:
-            tags = post['tags']
+            tags = post.tags
             if tags is not None and tag in tags:
                 my_posts.append(post)
         return my_posts
@@ -55,7 +55,7 @@ class MercurialContent(object):
     def get_tags(self, locale):
         my_tags = []
         for file in self.get_all(locale):
-            tags = file['tags']
+            tags = file.tags
             if tags is not None:
                 for tag in tags:
                     if tag not in my_tags:
@@ -122,8 +122,8 @@ class Metadata(object):
     def get(self, key, default=None):
         return self._vars.get(key, default)
     
-    def __getitem__(self, key):
-        return self.get(key)
+    def __getattr__(self, attr):
+        return self.get(attr)
     
     def __str__(self):
         return self._filecontent

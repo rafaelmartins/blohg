@@ -41,7 +41,7 @@ def post(locale, slug):
     return render_theme_template(
         current_app.config['THEME'],
         'posts.html',
-        title = u'Post: %s' % post['title'],
+        title = u'Post: %s' % post.title,
         posts = [post],
         full_content = True,
     )

@@ -33,17 +33,17 @@ def _feed(locale, posts, feed_url):
         generator = ('blohg', None, None)
     )
     for post in posts:
-        mdatetime = post['mdatetime']
+        mdatetime = post.mdatetime
         if mdatetime is None:
-            mdatetime = post['datetime']
+            mdatetime = post.datetime
         feed.add(
             FeedEntry(
-                title = post['title'],
+                title = post.title,
                 content = rst2html(post.full),
                 summary = rst2html(post.abstract),
                 url = request.url_root + locale + '/'+ post.name +'/',
                 author = current_app.config['AUTHOR'],
-                published = post['datetime'],
+                published = post.datetime,
                 updated = mdatetime,
             )
         )
