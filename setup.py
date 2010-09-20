@@ -89,5 +89,11 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Version Control',
     ],
+    data_files = [
+        ('share/blohg/config', [
+            'share/config/local.py',
+            'share/config/remote.py',
+        ]),
+    ],
     cmdclass = cmdclass,
 )

@@ -20,6 +20,6 @@ except ImportError:
     sys.path.append(os.path.join(cwd, '..'))
     from blohg.script import create_script
 
-config_file = os.path.join(os.getcwd(), 'config/development.py')
+config_file = os.path.join(os.getcwd(), 'config/local.py')
 script = create_script(config_file)
 script.run()
