@@ -60,7 +60,7 @@ setup(
     version = __version__,
     license = 'BSD',
     description = 'A Mercurial-based blog engine',
-    long_description = __doc__,
+    long_description = open('README.rst').read(),
     author = 'Rafael Goncalves Martins',
     author_email = 'rafael@rafaelmartins.eng.br',
     url = 'http://labs.rafaelmartins.eng.br/projects/blohg',
@@ -94,6 +94,8 @@ setup(
             'share/config/local.py',
             'share/config/remote.py',
         ]),
+        ('share/blohg', ['share/blohg.wsgi']),
     ],
+    scripts = ['bin/blohg'],
     cmdclass = cmdclass,
 )

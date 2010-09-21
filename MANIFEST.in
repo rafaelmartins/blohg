@@ -1,4 +1,6 @@
 include babel.cfg
+include README.rst
 recursive-include blohg/translations *
 recursive-include blohg/themes *
 recursive-include blohg/templates *
+recursive-include share *

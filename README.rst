@@ -39,8 +39,8 @@ obvious and the sample file comes with some useful examples. ::
     EOF
     $ blohg run
 
-If you're lucky, you should get your blog at http://localhost:5000/
-    
+If you're lucky, you should get your blog at http://localhost:5000/ ::
+
     $ hg commit -A
 
 .. warning::
