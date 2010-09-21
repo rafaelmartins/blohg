@@ -39,6 +39,9 @@ obvious and the sample file comes with some useful examples. ::
     EOF
     $ blohg run
 
+Make sure that you run the ``blohg`` script from the root of your local
+repository.
+
 If you're lucky, you should get your blog at http://localhost:5000/ ::
 
     $ hg commit -A
