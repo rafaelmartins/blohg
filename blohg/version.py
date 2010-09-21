@@ -6,7 +6,7 @@
     Module with the version number related stuff.
     
     :copyright: (c) 2010 by Rafael Goncalves Martins
-    :license: BSD, see LICENSE for more details.
+    :license: GPL-2, see LICENSE for more details.
 """
 
 # CHANGE ME BEFORE THE RELEASE!

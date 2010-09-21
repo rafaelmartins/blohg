@@ -5,7 +5,7 @@
     ~~~~~~~~
     
     :copyright: (c) 2010 by Rafael Goncalves Martins
-    :license: BSD, see LICENSE for more details.
+    :license: GPL-2, see LICENSE for more details.
 """
 
 from distutils.command.build import build as _build
@@ -58,7 +58,7 @@ cmdclass.update(
 setup(
     name = 'blohg',
     version = __version__,
-    license = 'BSD',
+    license = 'GPL-2',
     description = 'A Mercurial-based blog engine',
     long_description = open('README.rst').read(),
     author = 'Rafael Goncalves Martins',
@@ -80,7 +80,7 @@ setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: GNU General Public License (GPL)',
         'Natural Language :: English',
         'Natural Language :: Portuguese (Brazilian)',
         'Operating System :: OS Independent',

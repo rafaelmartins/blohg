@@ -6,7 +6,7 @@
     Module with some filters for the Jinja2 templates.
     
     :copyright: (c) 2010 by Rafael Goncalves Martins
-    :license: BSD, see LICENSE for more details.
+    :license: GPL-2, see LICENSE for more details.
 """
 
 from docutils.core import publish_parts

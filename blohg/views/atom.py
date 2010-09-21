@@ -6,7 +6,7 @@
     View module that deals with the atom feed generation.
     
     :copyright: (c) 2010 by Rafael Goncalves Martins
-    :license: BSD, see LICENSE for more details.
+    :license: GPL-2, see LICENSE for more details.
 """
 
 from flask import Module, make_response, current_app, request

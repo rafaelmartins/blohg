@@ -6,7 +6,7 @@
     Module with the custom blohg reStructuredText directives.
     
     :copyright: (c) 2010 by Rafael Goncalves Martins
-    :license: BSD, see LICENSE for more details.
+    :license: GPL-2, see LICENSE for more details.
 """
 
 from docutils import nodes
