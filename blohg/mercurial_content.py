@@ -171,14 +171,26 @@ class Metadata(object):
             self._vars['tags'] = self._vars['tags'].strip().split(',')
         filelog = self._filectx.filelog()
         changesets = list(filelog)
-        first_changeset = self._repo[filelog.linkrev(0)]
-        self._vars['date'] = int(first_changeset.date()[0])
-        if self._vars['date'] == 0:
-            self._vars['date'] = int(time.time())
+        if 'date' in self._vars:
+            try:
+                self._vars['date'] = int(self._vars['date'])
+            except ValueError:
+                del self._vars['date']
+        if 'date' not in self._vars:
+            first_changeset = self._repo[filelog.linkrev(0)]
+            self._vars['date'] = int(first_changeset.date()[0])
+            if self._vars['date'] == 0:
+                self._vars['date'] = int(time.time())
         self._vars['datetime'] = datetime.utcfromtimestamp(self._vars['date'])
-        if len(changesets) > 1:
+        if 'mdate' in self._vars:
+            try:
+                self._vars['mdate'] = int(self._vars['mdate'])
+            except ValueError:
+                del self._vars['mdate']
+        if 'mdate' not in self._vars and len(changesets) > 1:
             last_changeset = self._repo[filelog.linkrev(len(changesets) - 1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
+        if 'mdate' in self._vars:
             self._vars['mdatetime'] = \
                 datetime.utcfromtimestamp(self._vars['mdate'])
     
