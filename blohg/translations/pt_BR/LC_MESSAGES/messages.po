@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  0.1\n"
 "Report-Msgid-Bugs-To: rafael@rafaelmartins.eng.br\n"
 "POT-Creation-Date: 2010-09-19 00:44+0300\n"
-"PO-Revision-Date: 2010-09-19 00:56-0300\n"
+"PO-Revision-Date: 2010-09-25 02:22-0300\n"
 "Last-Translator: Rafael Goncalves Martins <rafael@rafaelmartins.eng.br>\n"
 "Language-Team: pt_BR <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -36,6 +36,10 @@ msgstr "Idiomas"
 #: blohg/themes/bw2col/templates/base.html:71
 msgid "Tags"
 msgstr "Tags"
+
+#: blohg/themes/bw2col/templates/base.html:104
+msgid "Design by"
+msgstr "Design por"
 
 #: blohg/themes/bw2col/templates/base.html:108
 msgid "Powered by"

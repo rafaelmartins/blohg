@@ -1,13 +1,14 @@
 # Translations template for blohg.
-# Copyright (C) 2010 Rafael Goncalves Martins
+# Copyright (C) 2010 ORGANIZATION
 # This file is distributed under the same license as the blohg project.
-# Rafael Goncalves Martins <rafael@rafaelmartins.eng.br>, 2010.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: 0.1\n"
-"Report-Msgid-Bugs-To: rafael@rafaelmartins.eng.br\n"
-"POT-Creation-Date: 2010-09-19 00:44-0300\n"
+"Project-Id-Version: blohg 0.1\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2010-09-25 02:21-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,6 +35,10 @@ msgstr ""
 
 #: blohg/themes/bw2col/templates/base.html:71
 msgid "Tags"
+msgstr ""
+
+#: blohg/themes/bw2col/templates/base.html:104
+msgid "Design by"
 msgstr ""
 
 #: blohg/themes/bw2col/templates/base.html:108
