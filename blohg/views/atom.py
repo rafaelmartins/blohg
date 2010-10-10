@@ -55,9 +55,6 @@ def _feed(locale, posts, feed_url):
         generator = ('blohg', None, None)
     )
     for post in posts:
-        mdatetime = post.mdatetime
-        if mdatetime is None:
-            mdatetime = post.datetime
         feed.add(
             FeedEntry(
                 title = post.title,
@@ -66,7 +63,7 @@ def _feed(locale, posts, feed_url):
                 url = request.url_root + locale + '/' + post.name + '/',
                 author = current_app.config['AUTHOR'],
                 published = post.datetime,
-                updated = mdatetime,
+                updated = post.datetime,
             )
         )
     response = make_response(str(feed))
