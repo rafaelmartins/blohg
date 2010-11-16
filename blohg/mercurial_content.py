@@ -138,7 +138,7 @@ class MercurialContent(object):
         
         filenames = []
         for filename in self.revision:
-            match = re.match(r'txt/%s/(.+)\.rst' % locale, filename)
+            match = re.match(r'^txt/%s/(.+)\.rst$' % locale, filename)
             if match is not None:
                 filenames.append(match.group(1))
         return filenames
