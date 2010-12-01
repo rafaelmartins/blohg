@@ -39,7 +39,9 @@ def home():
     """Fake home page. Redirects to the preferred language of the browser
     or to the first language on the ``app.config['LOCALES']`` variable.
     """
-    
+    default_locale = current_app.config.get('DEFAULT_LOCALE', None)
+    if default_locale is not None:
+        return redirect(request.script_root + '/' + default_locale + '/') 
     accept_locales = \
         parse_accept_header(request.environ['HTTP_ACCEPT_LANGUAGE'])
     for locale, q in accept_locales:
