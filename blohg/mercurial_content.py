@@ -13,31 +13,58 @@
 import re, time
 from datetime import datetime
 from mercurial import hg, ui
+from werkzeug import cached_property
+
+re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
+re_read_more = re.compile(r'\.\. +read_more')
 
 
 def setup_mercurial(app):
     """This function adds a :class:`MercurialContent` instance to an
-    application object, as a ``hg`` attribute.
+    application object, as a ``hg`` attribute, and reloads it as needed.
     
     :param app: the application object.
     """
     
-    app.hg = MercurialContent(app)
+    @app.before_request
+    def before_request():
+        
+        # always init the repository
+        repo_path = app.config.get('REPO_PATH', '.')
+        repo = hg.repository(ui.ui(), repo_path)
+        
+        refresh = False
+        
+        if app.debug:
+            refresh = True
+        
+        if not hasattr(app, 'hg'):
+            refresh = True
+        
+        # If we still don't want a refresh, it seems that we have an app.hg
+        # object, then we need to check if it's new enough
+        if not refresh:
+            # using the 'tip' revision, as we're not debugging, and just
+            # want the committed stuff.
+            if repo['tip'].rev() != app.hg.repo['tip'].rev():
+                refresh = True
+        
+        # refreshing :)
+        if refresh:
+            revision_id = None
+            if not app.debug:
+                revision_id = 'tip'
+            app.hg = MercurialContent(repo, repo[revision_id])
 
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
-    def __init__(self, app):
+    def __init__(self, repo, revision):
         """Class constructor"""
         
-        self.repo_path = app.config.get('REPO_PATH', '.')
-        self._ui = ui.ui()
-        self._repo = hg.repository(self._ui, self.repo_path)
-        self.revision_id = None
-        if not app.debug:
-            self.revision_id = 'tip'
-        self.revision = self._repo[self.revision_id]
+        self.repo = repo
+        self.revision = revision
     
     def _metadata_from_filenames(self, locale, filenames):
         """Method to convert a list of filenames on a list of
@@ -51,7 +78,7 @@ class MercurialContent(object):
         metadata = []
         for filename in filenames:
             my_filename = 'txt/%s/%s.rst' % (locale, filename)
-            metadata.append(Metadata(self._repo, self.revision[my_filename]))
+            metadata.append(Metadata(self.repo, self.revision[my_filename]))
         return sorted(metadata, self._compare_by_date)
     
     def _compare_by_date(self, a, b):
@@ -144,14 +171,11 @@ class MercurialContent(object):
         return filenames
     
     def __repr__(self):
-        return '<Mercurial %r>' % self.repo_path
+        return '<Mercurial %r>' % self.repo.root
     
 
 class Metadata(object):
     """Static page/Post metadata object."""
-    
-    _re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
-    _re_read_more = re.compile(r'\.\. +read_more')
     
     def __init__(self, repo, filectx):
         """Class constructor.
@@ -165,7 +189,7 @@ class Metadata(object):
         self._filectx = filectx
         self._filecontent = filectx.data()
         self._vars = {}
-        for i in self._re_metadata.finditer(self._filecontent):
+        for i in re_metadata.finditer(self._filecontent):
             self._vars[i.group(1)] = i.group(2).decode('utf-8')
         if 'tags' in self._vars:
             self._vars['tags'] = self._vars['tags'].strip().split(',')
@@ -194,23 +218,23 @@ class Metadata(object):
             self._vars['mdatetime'] = \
                 datetime.utcfromtimestamp(self._vars['mdate'])
     
-    @property
+    @cached_property
     def name(self):
         match = re.match(r'txt/[^/]+/(.+)\.rst', self._filectx.path())
         if match is not None:
             return match.group(1)
     
-    @property
+    @cached_property
     def abstract(self):
-        return self._re_read_more.split(self._filecontent)[0].decode('utf-8')
+        return re_read_more.split(self._filecontent)[0].decode('utf-8')
     
-    @property
+    @cached_property
     def full(self):
         return self._filecontent.decode('utf-8')
     
-    @property
+    @cached_property
     def read_more(self):
-        return len(self._re_read_more.split(self._filecontent)) > 1
+        return len(re_read_more.split(self._filecontent)) > 1
     
     def get(self, key, default=None):
         return self._vars.get(key, default)
