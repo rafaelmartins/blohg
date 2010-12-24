@@ -59,17 +59,17 @@ def setup_mercurial(app):
             revision_id = None
             if not app.debug:
                 revision_id = 'tip'
-            app.hg = MercurialContent(repo, repo[revision_id])
+            app.hg = MercurialContent(repo, revision_id)
 
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
-    def __init__(self, repo, revision):
+    def __init__(self, repo, revision_id):
         """Class constructor"""
         
         self.repo = repo
-        self.revision = revision
+        self.revision = repo[revision_id]
     
     def _metadata_from_filenames(self, locale, filenames):
         """Method to convert a list of filenames on a list of
@@ -176,7 +176,7 @@ class MercurialContent(object):
         return filenames
     
     def __repr__(self):
-        return '<Mercurial %r>' % self.repo.root
+        return '<MercurialContent %r>' % self.repo.root
     
 
 class Metadata(object):
