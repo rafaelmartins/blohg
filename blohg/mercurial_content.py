@@ -51,6 +51,11 @@ def setup_mercurial(app):
         
         # refreshing :)
         if refresh:
+            
+            # Deleting the app.hg element. Not sure if it's worth :)
+            if hasattr(app, 'hg'):
+                del app.hg
+            
             revision_id = None
             if not app.debug:
                 revision_id = 'tip'
