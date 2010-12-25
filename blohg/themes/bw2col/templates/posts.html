@@ -12,9 +12,9 @@
     {% endif -%}
 </h2>
 {%- if full_content %}
-{{ post.full|rst2html|safe }}
+{{ post.full_html|safe }}
 {%- else %}
-{{ post.abstract|rst2html|safe }}
+{{ post.abstract_html|safe }}
 {%- endif %}
 {%- if post.read_more and not full_content %}
 <p>

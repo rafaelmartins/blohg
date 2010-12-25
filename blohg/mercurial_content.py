@@ -10,10 +10,12 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import re, time
+import re, os, time
 from datetime import datetime
 from mercurial import hg, ui
 from werkzeug import cached_property
+
+from blohg.filters import rst2html
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
@@ -65,25 +67,28 @@ def setup_mercurial(app):
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
+    content_dir = 'txt'
+    file_extension = '.rst'
+    
     def __init__(self, repo, revision_id):
         """Class constructor"""
         
         self.repo = repo
         self.revision = repo[revision_id]
     
-    def _metadata_from_filenames(self, locale, filenames):
-        """Method to convert a list of filenames on a list of
-        :class:`Metadata` objects, sorted by creation date.
+    @cached_property
+    def _pages(self):
+        """Method that returns an ordered list with all the pages/posts
+        available, for all available locales
         
-        :param locale: the current locale string.
-        :param filenames: the list of filenames.
         :return: a list of :class:`Metadata` objects.
         """
         
         metadata = []
-        for filename in filenames:
-            my_filename = 'txt/%s/%s.rst' % (locale, filename)
-            metadata.append(Metadata(self.repo, self.revision[my_filename]))
+        for filename in self.revision:
+            if filename.startswith(self.content_dir + os.sep) and \
+               filename.endswith(self.file_extension):
+                metadata.append(Metadata(self.repo, self.revision[filename]))
         return sorted(metadata, self._compare_by_date)
     
     def _compare_by_date(self, a, b):
@@ -102,9 +107,12 @@ class MercurialContent(object):
         :return: a :class:`Metadata` object.
         """
         
-        if filename not in self.get_filenames(locale):
-            return None
-        return self._metadata_from_filenames(locale, [filename])[0]
+        full_path = os.path.join(self.content_dir, locale, \
+                                 filename + self.file_extension)
+        for page in self._pages:
+            if page.path == full_path:
+                return page
+        return None
     
     def get_all(self, locale, only_posts=False):
         """Method that returns a list of :class:`Metadata` objects for
@@ -118,12 +126,15 @@ class MercurialContent(object):
         :return: a list of :class:`Metadata` objects.
         """
         
-        my_filenames = []
-        for filename in self.get_filenames(locale):
-            if only_posts and not filename.startswith('post/'):
-                continue
-            my_filenames.append(filename)
-        return self._metadata_from_filenames(locale, my_filenames)
+        my_dir = os.path.join(self.content_dir, locale)
+        my_posts_dir = os.path.join(my_dir, 'post')
+        metadata = []
+        for page in self._pages:
+            if page.path.startswith(my_dir) and not only_posts:
+                metadata.append(page)
+            if page.path.startswith(my_posts_dir):
+                metadata.append(page)
+        return metadata
     
     def get_by_tag(self, locale, tag):
         """Method that returns a list of :class:`Metadata` objects for a
@@ -134,13 +145,11 @@ class MercurialContent(object):
         :return: a list of :class:`Metadata` objects.
         """
         
-        posts = self.get_all(locale, only_posts=True)
-        my_posts = []
-        for post in posts:
-            tags = post.tags
-            if tags is not None and tag in tags:
-                my_posts.append(post)
-        return my_posts
+        posts = []
+        for post in self.get_all(locale, only_posts=True):
+            if tag in post.tags:
+                posts.append(post)
+        return posts
     
     def get_tags(self, locale):
         """Method that returns a list of all the available tag identifiers
@@ -150,30 +159,13 @@ class MercurialContent(object):
         :return: a list of tag identifiers strings.
         """
         
-        my_tags = []
-        for file in self.get_all(locale):
-            tags = file.tags
-            if tags is not None:
-                for tag in tags:
-                    if tag not in my_tags:
-                        my_tags.append(tag)
-        my_tags.sort()
-        return my_tags
-    
-    def get_filenames(self, locale):
-        """Method that returns a list of all the available file names
-        for a given locale.
-        
-        :param locale: the current locale string.
-        :return: a list of file names strings.
-        """
-        
-        filenames = []
-        for filename in self.revision:
-            match = re.match(r'^txt/%s/(.+)\.rst$' % locale, filename)
-            if match is not None:
-                filenames.append(match.group(1))
-        return filenames
+        tags = []
+        for post in self.get_all(locale, only_posts=True):
+            for tag in post.tags:
+                if tag not in tags:
+                    tags.append(tag)
+        tags.sort()
+        return tags
     
     def __repr__(self):
         return '<MercurialContent %r>' % self.repo.root
@@ -224,18 +216,38 @@ class Metadata(object):
                 datetime.utcfromtimestamp(self._vars['mdate'])
     
     @cached_property
+    def path(self):
+        return self._filectx.path()
+    
+    @cached_property
     def name(self):
         match = re.match(r'txt/[^/]+/(.+)\.rst', self._filectx.path())
         if match is not None:
             return match.group(1)
     
     @cached_property
+    def title(self):
+        return self._vars.get('title', u'')
+    
+    @cached_property
+    def tags(self):
+        return self._vars.get('tags', [])
+    
+    @cached_property
     def abstract(self):
         return re_read_more.split(self._filecontent)[0].decode('utf-8')
+
+    @cached_property
+    def abstract_html(self):
+        return rst2html(self.abstract)
     
     @cached_property
     def full(self):
         return self._filecontent.decode('utf-8')
+    
+    @cached_property
+    def full_html(self):
+        return rst2html(self.full)
     
     @cached_property
     def read_more(self):
