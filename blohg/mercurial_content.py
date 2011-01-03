@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
-
 """
     blohg.mercurial_content
     ~~~~~~~~~~~~~~~~~~~~~~~
     
     Module with all the Mercurial-related stuff needed by blohg.
     
-    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
-import re, os, time
+import os
+import re
+import time
+import yaml
+
 from datetime import datetime
 from mercurial import hg, ui
 from werkzeug import cached_property
@@ -19,6 +22,22 @@ from blohg.filters import rst2html
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
+
+
+def load_config(app):
+    """This function merges the configuration parameters from the YAML
+    file with the ``app.config`` object.
+    
+    :param app: the application object.
+    """
+    
+    app.config.update(yaml.load(app.hg.config))
+    
+    # debug parameters
+    if app.debug:
+        if 'GOOGLE_ANALYTICS' in app.config:
+            del app.config['GOOGLE_ANALYTICS']
+        app.config['DISQUS_DEVELOPER'] = True
 
 
 def setup_mercurial(app):
@@ -62,6 +81,9 @@ def setup_mercurial(app):
             if not app.debug:
                 revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
+            load_config(app)
+    
+    before_request()
 
 
 class MercurialContent(object):
@@ -69,6 +91,7 @@ class MercurialContent(object):
     
     content_dir = 'txt'
     file_extension = '.rst'
+    config_file = 'config/config.yaml'
     
     def __init__(self, repo, revision_id):
         """Class constructor"""
@@ -166,6 +189,19 @@ class MercurialContent(object):
                     tags.append(tag)
         tags.sort()
         return tags
+    
+    @cached_property
+    def config(self):
+        """Method that returns a string with the content of the config.yaml
+        file.
+        
+        :return: a string with the content of the configuration file.
+        """
+        
+        if self.config_file not in list(self.revision):
+            raise RuntimeError('Configuration file not found: %r' % \
+                self.config_file)
+        return self.revision[self.config_file].data()
     
     def __repr__(self):
         return '<MercurialContent %r>' % self.repo.root

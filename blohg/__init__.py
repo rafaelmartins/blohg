@@ -5,7 +5,7 @@
     
     Main package.
     
-    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
@@ -35,10 +35,10 @@ _en_us_locale = {
 }
 
 
-def create_app(config_file=None):
+def create_app(repo_path=None):
     """Application factory.
     
-    :param config_file: the configuration file path.
+    :param repo_path: the path to the mercurial repository.
     :return: the WSGI application (Flask instance).
     """
     
@@ -47,11 +47,10 @@ def create_app(config_file=None):
     
     # register some sane default config values
     app.config.setdefault('AUTHOR', 'Your Name Here')
-    app.config.setdefault('DEBUG', False)
     app.config.setdefault('LOCALES', {'en-us': _en_us_locale})
     app.config.setdefault('MENU', {'en_US': []})
     app.config.setdefault('POSTS_PER_PAGE', 10)
-    app.config.setdefault('REPO_PATH', '.')
+    app.config.setdefault('REPO_PATH', repo_path)
     app.config.setdefault('SIDEBAR', {'en_US': []})
     app.config.setdefault('TAGLINE', {'en_US': u'Your cool tagline'})
     app.config.setdefault('TAGS', {})
@@ -59,16 +58,12 @@ def create_app(config_file=None):
     app.config.setdefault('TITLE', {'en_US': u'Your title'})
     app.config.setdefault('TITLE_HTML', {'en_US': u'Your HTML title'})
     
-    # load configs
-    if config_file is not None:
-        app.config.from_pyfile(config_file)
-    else:
-        app.config.from_envvar('BLOHG_SETTINGS')
+    # init mercurial stuff
+    setup_mercurial(app)
     
     # setup extensions
     babel = Babel(app)
     setup_themes(app)
-    setup_mercurial(app)
     
     # setup jinja2 filters
     app.jinja_env.filters.update(

@@ -28,6 +28,7 @@
         </script>
         {%- if is_post(current_path) and localized_config('DISQUS') %}
         <script type="text/javascript">
+            var disqus_shortname = "{{ localized_config('DISQUS') }}";
             var disqus_url = "{{ request.url_root }}{{ my_locale }}/{{ current_path }}/";
             {%- if config.DISQUS_DEVELOPER %}
             var disqus_developer = 1;
@@ -79,11 +80,11 @@
                         {%- endfor %}
                     </ul>
                     {%- endif %}
-                    {%- for side_title, type, content in localized_config('SIDEBAR') %}
-                    <h2>{{ side_title }}</h2>
-                    {%- if type == 'menu' %}
+                    {%- for sidebar in localized_config('SIDEBAR') %}
+                    <h2>{{ sidebar.title }}</h2>
+                    {%- if sidebar.type == 'menu' %}
                     <ul>
-                        {%- for link, name in content %}
+                        {%- for link, name in sidebar.content %}
                         <li>
                             <a href="{{ link }}">
                                 {{ name }}
@@ -92,7 +93,7 @@
                         {%- endfor %}
                     </ul>
                     {%- else %}
-                    <p>{{ content|safe }}</p>
+                    <p>{{ sidebar.content|safe }}</p>
                     {%- endif %}
                     {%- endfor %}
                 </div>
