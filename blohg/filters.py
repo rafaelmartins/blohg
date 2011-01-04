@@ -32,15 +32,14 @@ def rst2html(rst):
     
     parts = publish_parts(
         source = rst,
-        writer_name = 'html',
+        writer_name = 'html4css1',
         settings_overrides = {
             'input_encoding': 'utf-8',
             'output_encoding': 'utf-8',
-            'doctitle_xform': 0,
             'initial_header_level': 3,
         }
     )
-    return parts['body']
+    return parts['fragment']
 
 
 def tag_name(tag):
