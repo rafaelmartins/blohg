@@ -208,7 +208,7 @@ class MercurialContent(object):
     
 
 class Metadata(object):
-    """Static page/Post metadata object."""
+    """Static page/blog post metadata object."""
     
     def __init__(self, repo, filectx):
         """Class constructor.
@@ -233,7 +233,7 @@ class Metadata(object):
                 self._vars['date'] = int(self._vars['date'])
             except ValueError:
                 del self._vars['date']
-        if 'date' not in self._vars:
+        else:
             first_changeset = self._repo[filelog.linkrev(0)]
             self._vars['date'] = int(first_changeset.date()[0])
             if self._vars['date'] == 0:
