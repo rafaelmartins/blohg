@@ -11,7 +11,7 @@
 
 from flask import Module, current_app, request, abort, redirect
 from flaskext.themes import render_theme_template
-from werkzeug import parse_accept_header
+from werkzeug.http import parse_accept_header
 
 from blohg.decorators import validate_locale
 

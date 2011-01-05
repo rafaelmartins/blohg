@@ -16,7 +16,7 @@ import yaml
 
 from datetime import datetime
 from mercurial import hg, ui
-from werkzeug import cached_property
+from werkzeug.utils import cached_property
 
 from blohg.filters import rst2html
 
