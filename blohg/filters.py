@@ -39,7 +39,10 @@ def rst2html(rst):
             'initial_header_level': 3,
         }
     )
-    return parts['fragment']
+    return {
+        'title': parts['title'],
+        'fragment': parts['fragment'],
+    }
 
 
 def tag_name(tag):

@@ -15,6 +15,7 @@ import time
 import yaml
 
 from datetime import datetime
+from jinja2 import BaseLoader
 from mercurial import hg, ui
 from werkzeug.utils import cached_property
 
@@ -90,6 +91,8 @@ class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
     content_dir = 'txt'
+    template_dir = 'template'
+    static_dir = 'static'
     file_extension = '.rst'
     config_file = 'config/config.yaml'
     
@@ -210,6 +213,8 @@ class MercurialContent(object):
 class Metadata(object):
     """Static page/blog post metadata object."""
     
+    _title = None
+    
     def __init__(self, repo, filectx):
         """Class constructor.
         
@@ -251,6 +256,12 @@ class Metadata(object):
             self._vars['mdatetime'] = \
                 datetime.utcfromtimestamp(self._vars['mdate'])
     
+    def _set_title(self, title):
+        if self._title is None:
+            title = title.strip()
+            if title != '':
+                self._title = title
+    
     @cached_property
     def path(self):
         return self._filectx.path()
@@ -263,6 +274,10 @@ class Metadata(object):
     
     @cached_property
     def title(self):
+        # workaround to load the title from rst
+        self.abstract_html
+        if self._title is not None:
+            return self._title
         return self._vars.get('title', u'')
     
     @cached_property
@@ -275,7 +290,9 @@ class Metadata(object):
 
     @cached_property
     def abstract_html(self):
-        return rst2html(self.abstract)
+        parts = rst2html(self.abstract)
+        self._set_title(parts['title'])
+        return parts['fragment']
     
     @cached_property
     def full(self):
@@ -283,7 +300,9 @@ class Metadata(object):
     
     @cached_property
     def full_html(self):
-        return rst2html(self.full)
+        parts = rst2html(self.full)
+        self._set_title(parts['title'])
+        return parts['fragment']
     
     @cached_property
     def read_more(self):
