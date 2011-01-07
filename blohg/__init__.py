@@ -11,13 +11,13 @@
 
 import re
 
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from flaskext.babel import Babel
-from flaskext.themes import setup_themes, render_theme_template
 
 # import blohg stuff
 from blohg.filters import rst2html, tag_name, append_title
 from blohg.mercurial_content import setup_mercurial
+from blohg.mercurial_theme import setup_theme
 from blohg.version import version as __version__
 
 # import blohg views
@@ -54,16 +54,17 @@ def create_app(repo_path=None):
     app.config.setdefault('SIDEBAR', {'en_US': []})
     app.config.setdefault('TAGLINE', {'en_US': u'Your cool tagline'})
     app.config.setdefault('TAGS', {})
-    app.config.setdefault('THEME', 'basic')
     app.config.setdefault('TITLE', {'en_US': u'Your title'})
     app.config.setdefault('TITLE_HTML', {'en_US': u'Your HTML title'})
+    app.config.setdefault('TEMPLATES_DIR', 'templates')
+    app.config.setdefault('STATIC_DIR', 'static')
     
     # init mercurial stuff
     setup_mercurial(app)
     
     # setup extensions
     babel = Babel(app)
-    setup_themes(app)
+    setup_theme(app)
     
     # setup jinja2 filters
     app.jinja_env.filters.update(
@@ -124,10 +125,7 @@ def create_app(repo_path=None):
     
     @app.errorhandler(404)
     def page_not_found(error):
-        return render_theme_template(
-            app.config['THEME'],
-            '404.html'
-        ), 404
+        return render_template('404.html'), 404
     
     app.register_module(robots)
     app.register_module(sources)

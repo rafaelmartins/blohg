@@ -15,7 +15,6 @@ import time
 import yaml
 
 from datetime import datetime
-from jinja2 import BaseLoader
 from mercurial import hg, ui
 from werkzeug.utils import cached_property
 
@@ -100,6 +99,7 @@ class MercurialContent(object):
         """Class constructor"""
         
         self.repo = repo
+        self.revision_id = revision_id
         self.revision = repo[revision_id]
     
     @cached_property

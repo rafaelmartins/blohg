@@ -9,8 +9,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from flask import Module, current_app, request, abort, redirect
-from flaskext.themes import render_theme_template
+from flask import Module, current_app, request, abort, redirect, \
+    render_template
 from werkzeug.http import parse_accept_header
 
 from blohg.decorators import validate_locale
@@ -25,8 +25,7 @@ def page(locale, slug):
     page = current_app.hg.get(locale, slug)
     if page is None:
         abort(404)
-    return render_theme_template(
-        current_app.config['THEME'],
+    return render_template(
         'posts.html',
         title = page.title,
         posts = [page],

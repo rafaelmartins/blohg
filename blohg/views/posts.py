@@ -11,8 +11,7 @@
 
 import math
 
-from flask import Module, current_app, abort
-from flaskext.themes import render_theme_template
+from flask import Module, current_app, abort, render_template
 
 from blohg.decorators import validate_locale
 from blohg.filters import tag_name
@@ -38,8 +37,7 @@ def page(locale, page):
     posts, num_pages = _pagination(
         current_app.hg.get_all(locale, True), page
     )
-    return render_theme_template(
-        current_app.config['THEME'],
+    return render_template(
         'posts.html',
         posts = posts,
         full_content = False,
@@ -61,8 +59,7 @@ def post(locale, slug):
     post = current_app.hg.get(locale, slug)
     if post is None:
         abort(404)
-    return render_theme_template(
-        current_app.config['THEME'],
+    return render_template(
         'posts.html',
         title = u'Post: %s' % post.title,
         posts = [post],
@@ -75,8 +72,7 @@ def post(locale, slug):
 def post_list(locale):
     """Page with a simple list of posts (link + creation date)."""
      
-    return render_theme_template(
-        current_app.config['THEME'],
+    return render_template(
         'list_posts.html',
         title = u'Posts',
         posts = current_app.hg.get_all(locale, True),
@@ -93,8 +89,7 @@ def tag(locale, tag):
     if tag not in current_app.hg.get_tags(locale):
         abort(404)
     posts = current_app.hg.get_by_tag(locale, tag)
-    return render_theme_template(
-        current_app.config['THEME'],
+    return render_template(
         'posts.html',
         title = u'Tag: %s' % tag_name(tag),
         tag_title = tag,
