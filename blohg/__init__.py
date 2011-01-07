@@ -9,24 +9,17 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import re
-
-from flask import Flask, request, abort, render_template
+from flask import Flask, render_template
 from flaskext.babel import Babel
 
 # import blohg stuff
 from blohg.filters import rst2html, tag_name, append_title
+from blohg.functions import my_locale, current_path, active_page, \
+    i18n_config, i18n_url_for
 from blohg.mercurial_content import setup_mercurial
 from blohg.mercurial_theme import setup_theme
 from blohg.version import version as __version__
-
-# import blohg views
-from blohg.views.atom import atom
-from blohg.views.pages import pages
-from blohg.views.posts import posts
-from blohg.views.robots import robots
-from blohg.views.sources import sources
-
+from blohg.views import views
 
 # default locale (en_US)
 _en_us_locale = {
@@ -63,8 +56,8 @@ def create_app(repo_path=None):
     setup_mercurial(app)
     
     # setup extensions
-    babel = Babel(app)
     setup_theme(app)
+    babel = Babel(app)
     
     # setup jinja2 filters
     app.jinja_env.filters.update(
@@ -73,41 +66,12 @@ def create_app(repo_path=None):
         append_title = append_title,
     )
     
-    def my_locale():
-        match = re.match(r'/([^/]+).*', request.path)
-        if match is not None:
-            return match.group(1)
-        return 'en-us'
-    
-    def current_path():
-        match = re.match(r'/[^/]+/(.+)/', request.path)
-        if match is not None:
-            return match.group(1)
-        return ''
-    
-    def active_page():
-        return current_path().split('/')[0]
-    
-    def localized_config(key):
-        config = app.config.get(key, None)
-        if config is None:
-            return None
-        locale = get_locale()
-        if locale in config:
-            return config[locale]
-        if type(config) == dict:
-            values = config.values()
-            if len(values) > 0:
-                return config.values()[0]
-            return None
-        return config
-    app.localized_config = localized_config
-    
     @app.context_processor
     def setup_jinja2():
         return dict(
             version = __version__,
-            localized_config = localized_config,
+            i18n_config = i18n_config,
+            i18n_url_for = i18n_url_for,
             is_post = lambda x: x.startswith('post/'),
             my_locale = my_locale(),
             current_path = current_path(),
@@ -121,16 +85,12 @@ def create_app(repo_path=None):
     
     @babel.timezoneselector
     def get_timezone():
-        return localized_config('TIMEZONE')
+        return i18n_config('TIMEZONE')
     
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template('404.html'), 404
     
-    app.register_module(robots)
-    app.register_module(sources)
-    app.register_module(posts)
-    app.register_module(pages)
-    app.register_module(atom)
+    app.register_module(views)
     
     return app

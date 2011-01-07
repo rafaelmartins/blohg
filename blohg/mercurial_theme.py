@@ -53,6 +53,8 @@ class MercurialLoader(BaseLoader):
             contents = current_app.hg.revision[filename].data().decode('utf-8')
             revision_id = current_app.hg.revision_id
             def up2date():
+                if revision_id is None:
+                    return False
                 return current_app.hg.revision_id == revision_id
             return contents, filename, up2date
         raise TemplateNotFound(template)

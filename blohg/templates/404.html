@@ -1,0 +1,13 @@
+{% extends 'base.html' -%}
+{% block body %}
+<h2>{{ _('404 - Page not found') }}</h2>
+<p>
+    {{ _('The page that you\'ve requested doesn\'t exists or wasn\'t found.') }}<br />
+    {{ _('Check the typed URL or go to our home page:') }}
+</p>
+<p>
+    <a href="{{ i18n_url_for('views.pagination') }}">
+        {{ i18n_url_for('views.pagination') }}
+    </a>
+</p>
+{% endblock %}
