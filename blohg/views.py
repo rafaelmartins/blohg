@@ -14,7 +14,6 @@ import math
 from flask import Module, abort, current_app, make_response, redirect, \
     render_template, request, url_for
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
-from blohg.mercurial_content import rst2html
 
 views = Module(__name__)
 
