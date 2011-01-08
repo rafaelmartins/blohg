@@ -8,9 +8,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from distutils.command.build import build as _build
 from setuptools import setup, find_packages
-from setuptools.command.sdist import sdist as _sdist
 
 # doing things the wrong way...
 # we need the module blohg.version but we can't import the full package
@@ -19,41 +17,6 @@ import os, sys
 cwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cwd, 'blohg'))
 from version import version as __version__
-
-cmdclass = dict()
-have_babel = True
-
-try:
-    from babel.messages import frontend as babel
-except ImportError:
-    have_babel = False
-else:
-    cmdclass.update(
-        compile_catalog = babel.compile_catalog,
-        extract_messages = babel.extract_messages,
-        init_catalog = babel.init_catalog,
-        update_catalog = babel.update_catalog,
-    )
-
-
-class build(_build):
-    def run(self):
-        if have_babel:
-            self.run_command('compile_catalog')
-        _build.run(self)
-
-
-class sdist(_sdist):
-    def run(self):
-        if have_babel:
-            self.run_command('compile_catalog')
-        _sdist.run(self)
-
-
-cmdclass.update(
-    build = build,
-    sdist = sdist,
-)
 
 setup(
     name = 'blohg',
@@ -80,8 +43,6 @@ setup(
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
         'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Natural Language :: English',
-        'Natural Language :: Portuguese (Brazilian)',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',
         'Topic :: Internet :: WWW/HTTP :: Dynamic Content :: News/Diary',
@@ -96,5 +57,4 @@ setup(
         ('share/blohg', ['share/blohg.wsgi']),
     ],
     scripts = ['bin/blohg'],
-    cmdclass = cmdclass,
 )

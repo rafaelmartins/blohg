@@ -81,21 +81,20 @@ def setup_mercurial(app):
             if not app.debug:
                 revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
+            print 'antes', app.debug, app.hg.revision_id
             load_config(app)
+            print 'depois', app.debug, app.hg.revision_id
     
-    before_request()
+    #before_request()
 
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
-    content_dir = 'txt'
-    template_dir = 'template'
-    static_dir = 'static'
-    file_extension = '.rst'
     config_file = 'config/config.yaml'
+    content_dir = 'txt'
     
-    def __init__(self, repo, revision_id):
+    def __init__(self, repo, revision_id, content_dir='txt'):
         """Class constructor"""
         
         self.repo = repo
@@ -112,8 +111,8 @@ class MercurialContent(object):
         
         metadata = []
         for filename in self.revision:
-            if filename.startswith(self.content_dir + os.sep) and \
-               filename.endswith(self.file_extension):
+            if filename.startswith(self.content_dir + '/') and \
+               filename.endswith('.rst'):
                 metadata.append(Metadata(self.repo, self.revision[filename]))
         return sorted(metadata, self._compare_by_date)
     
@@ -124,69 +123,65 @@ class MercurialContent(object):
         
         return b.date - a.date
     
-    def get(self, locale, filename):
+    def get(self, filename):
         """Method that returns a :class:`Metadata` object for a given
         filename.
         
-        :param locale: the current locale string.
         :param filename: the file name string.
         :return: a :class:`Metadata` object.
         """
         
-        full_path = os.path.join(self.content_dir, locale, \
-                                 filename + self.file_extension)
+        full_path = os.path.join(self.content_dir, filename + '.rst')
         for page in self._pages:
             if page.path == full_path:
                 return page
         return None
     
-    def get_all(self, locale, only_posts=False):
+    def get_all(self, only_posts=False):
         """Method that returns a list of :class:`Metadata` objects for
         all the available files for the given locale, ordered by creation
         date.
         
-        :param locale: the current locale string.
         :param only_posts: a boolean that makes the method returns only
                            the available posts for the given locale, not
                            the static pages.
         :return: a list of :class:`Metadata` objects.
         """
         
-        my_dir = os.path.join(self.content_dir, locale)
-        my_posts_dir = os.path.join(my_dir, 'post')
+        my_posts_dir = os.path.join(self.content_dir, 'post')
         metadata = []
         for page in self._pages:
-            if page.path.startswith(my_dir) and not only_posts:
+            if page.path.startswith(self.content_dir) and not only_posts:
                 metadata.append(page)
+                continue
             if page.path.startswith(my_posts_dir):
                 metadata.append(page)
         return metadata
     
-    def get_by_tag(self, locale, tag):
+    def get_by_tag(self, tag):
         """Method that returns a list of :class:`Metadata` objects for a
         given tag identifier.
         
-        :param locale: the current locale string.
         :param tag: the tag identifier string.
         :return: a list of :class:`Metadata` objects.
         """
         
         posts = []
-        for post in self.get_all(locale, only_posts=True):
+        for post in self.get_all(only_posts=True):
             if tag in post.tags:
                 posts.append(post)
         return posts
     
-    def get_tags(self, locale):
+    @cached_property
+    def tags(self):
         """Method that returns a list of all the available tag identifiers
         for a given locale.
         
-        :param locale: the current locale string.
         :return: a list of tag identifiers strings.
         """
         
         tags = []
-        for post in self.get_all(locale, only_posts=True):
+        for post in self.get_all(only_posts=True):
             for tag in post.tags:
                 if tag not in tags:
                     tags.append(tag)
@@ -214,6 +209,7 @@ class Metadata(object):
     """Static page/blog post metadata object."""
     
     _title = None
+    _content_dir = 'txt'
     
     def __init__(self, repo, filectx):
         """Class constructor.
@@ -267,8 +263,9 @@ class Metadata(object):
         return self._filectx.path()
     
     @cached_property
-    def name(self):
-        match = re.match(r'txt/[^/]+/(.+)\.rst', self._filectx.path())
+    def slug(self):
+        match = re.match(r'%s/(.+)\.rst' % self._content_dir,
+            self._filectx.path())
         if match is not None:
             return match.group(1)
     
@@ -318,4 +315,4 @@ class Metadata(object):
         return self._filecontent
     
     def __repr__(self):
-        return '<Metadata %r>' % self.name
+        return '<Metadata %r>' % self.slug

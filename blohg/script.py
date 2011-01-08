@@ -27,7 +27,7 @@ def create_script(repo_path):
         sys.exit(1)
     app = create_app(repo_path)
     script = Manager(app, with_default_commands=False)
-    server = Server(use_debugger=True, use_reloader=False)
+    server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
-    script.add_command('run', server)
+    script.add_command('runserver', server)
     return script
