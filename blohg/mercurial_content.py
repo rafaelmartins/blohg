@@ -3,7 +3,8 @@
     blohg.mercurial_content
     ~~~~~~~~~~~~~~~~~~~~~~~
     
-    Module with all the Mercurial-related stuff needed by blohg.
+    Module with Mercurial-related stuff needed by blohg to load posts
+    and static pages.
     
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
@@ -84,8 +85,6 @@ def setup_mercurial(app):
             print 'antes', app.debug, app.hg.revision_id
             load_config(app)
             print 'depois', app.debug, app.hg.revision_id
-    
-    #before_request()
 
 
 class MercurialContent(object):
@@ -104,7 +103,7 @@ class MercurialContent(object):
     @cached_property
     def _pages(self):
         """Method that returns an ordered list with all the pages/posts
-        available, for all available locales
+        available.
         
         :return: a list of :class:`Metadata` objects.
         """
@@ -139,8 +138,7 @@ class MercurialContent(object):
     
     def get_all(self, only_posts=False):
         """Method that returns a list of :class:`Metadata` objects for
-        all the available files for the given locale, ordered by creation
-        date.
+        all the available files, ordered by creation date.
         
         :param only_posts: a boolean that makes the method returns only
                            the available posts for the given locale, not
@@ -174,8 +172,7 @@ class MercurialContent(object):
     
     @cached_property
     def tags(self):
-        """Method that returns a list of all the available tag identifiers
-        for a given locale.
+        """Method that returns a list of all the available tag identifiers.
         
         :return: a list of tag identifiers strings.
         """
