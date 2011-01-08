@@ -38,6 +38,7 @@ setup(
         'Flask-Script>=0.3',
         'Jinja2>=2.5.2',
         'Mercurial>=1.6',
+        'PyYAML',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
