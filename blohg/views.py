@@ -26,6 +26,8 @@ def feed(tag=None):
     """General purpose atom feed."""
     
     if tag is not None:
+        if tag not in current_app.hg.tags:
+            abort(404)
         posts = current_app.hg.get_by_tag(tag)
     else:
         posts = current_app.hg.get_all(True)
