@@ -1,9 +1,4 @@
-include babel.cfg
 include CHANGES.rst
 include README.rst
 include LICENSE
-include messages.pot
-recursive-include blohg/translations *
-recursive-include blohg/themes *
-recursive-include blohg/templates *
 recursive-include share *
