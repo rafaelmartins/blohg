@@ -16,13 +16,43 @@ import time
 import yaml
 
 from datetime import datetime
+from docutils.core import publish_parts
+from docutils.parsers.rst.directives import register_directive
 from mercurial import hg, ui
 from werkzeug.utils import cached_property
 
-from blohg.filters import rst2html
+from blohg import rst_directives
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
+
+
+# registering docutils' directives
+for directive in rst_directives.__directives__:
+    register_directive(directive, rst_directives.__directives__[directive])
+
+
+def rst2html(rst):
+    """Function that converts reStructuredText to HTML, returning the body
+    of the HTML file.
+    
+    :param rst: the reStructuredText string.
+    :return: a dict with the title and the fragment of the generated HTML.
+    """
+    
+    parts = publish_parts(
+        source = rst,
+        writer_name = 'html4css1',
+        settings_overrides = {
+            'input_encoding': 'utf-8',
+            'output_encoding': 'utf-8',
+            'initial_header_level': 3,
+        }
+    )
+    return {
+        'title': parts['title'],
+        'fragment': parts['fragment'],
+    }
 
 
 def load_config(app):
@@ -82,9 +112,7 @@ def setup_mercurial(app):
             if not app.debug:
                 revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
-            print 'antes', app.debug, app.hg.revision_id
             load_config(app)
-            print 'depois', app.debug, app.hg.revision_id
 
 
 class MercurialContent(object):

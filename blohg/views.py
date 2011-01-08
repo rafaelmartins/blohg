@@ -14,7 +14,7 @@ import math
 from flask import Module, abort, current_app, make_response, redirect, \
     render_template, request, url_for
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
-from blohg.filters import rst2html, tag_name
+from blohg.mercurial_content import rst2html
 
 views = Module(__name__)
 
@@ -76,7 +76,6 @@ def content(slug):
 @views.route('/page/<int:page>/')
 def home(page):
     """Page with the abstract of the posts. Part of the pagination."""
-    print current_app.hg.revision_id
     current = int(page)
     pages = current_app.hg.get_all(True)
     ppp = int(current_app.config['POSTS_PER_PAGE'])
@@ -116,7 +115,7 @@ def tag(tag):
     posts = current_app.hg.get_by_tag(tag)
     return render_template(
         '_posts.html',
-        title = u'Tag: %s' % tag_name(tag),
+        title = u'Tag: %s' % tag,
         tag_title = tag,
         posts = posts,
         full_content = False,

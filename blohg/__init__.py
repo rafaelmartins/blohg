@@ -13,7 +13,6 @@ from flask import Flask, render_template, request
 from flaskext.babel import Babel
 
 # import blohg stuff
-from blohg.filters import rst2html, tag_name, append_title
 from blohg.mercurial_content import setup_mercurial
 from blohg.mercurial_theme import setup_theme
 from blohg.version import version as __version__
@@ -47,13 +46,6 @@ def create_app(repo_path=None):
     # setup extensions
     setup_theme(app)
     babel = Babel(app)
-    
-    # setup jinja2 filters
-    app.jinja_env.filters.update(
-        rst2html = rst2html,
-        tag_name = tag_name,
-        append_title = append_title,
-    )
     
     @app.context_processor
     def setup_jinja2():
