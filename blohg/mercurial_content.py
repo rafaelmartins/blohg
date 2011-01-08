@@ -23,6 +23,11 @@ from werkzeug.utils import cached_property
 
 from blohg import rst_directives
 
+try:
+    from flask import current_app
+except ImportError:
+    current_app = None
+
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
 
@@ -119,7 +124,7 @@ class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
     config_file = 'config/config.yaml'
-    content_dir = 'txt'
+    content_dir = 'content'
     
     def __init__(self, repo, revision_id, content_dir='txt'):
         """Class constructor"""
@@ -127,6 +132,9 @@ class MercurialContent(object):
         self.repo = repo
         self.revision_id = revision_id
         self.revision = repo[revision_id]
+        
+        if current_app is not None:
+            self.content_dir = current_app.config['CONTENT_DIR']
     
     @cached_property
     def _pages(self):
@@ -234,7 +242,7 @@ class Metadata(object):
     """Static page/blog post metadata object."""
     
     _title = None
-    _content_dir = 'txt'
+    _content_dir = 'content'
     
     def __init__(self, repo, filectx):
         """Class constructor.
@@ -243,6 +251,9 @@ class Metadata(object):
                      :class:`MercurialContent`)
         :param filectx: the Mercurial file context of the file.
         """
+        
+        if current_app is not None:
+            self._content_dir = current_app.config['CONTENT_DIR']
         
         self._repo = repo
         self._filectx = filectx

@@ -32,13 +32,14 @@ def create_app(repo_path=None):
     # register some sane default config values
     app.config.setdefault('AUTHOR', 'Your Name Here')
     app.config.setdefault('POSTS_PER_PAGE', 10)
-    app.config.setdefault('REPO_PATH', repo_path)
     app.config.setdefault('TAGLINE', u'Your cool tagline')
-    app.config.setdefault('TAGS', {})
     app.config.setdefault('TITLE', u'Your title')
     app.config.setdefault('TITLE_HTML', u'Your HTML title')
+    app.config.setdefault('CONTENT_DIR', 'content')
     app.config.setdefault('TEMPLATES_DIR', 'templates')
     app.config.setdefault('STATIC_DIR', 'static')
+    
+    app.config['REPO_PATH'] = repo_path
     
     # init mercurial stuff
     setup_mercurial(app)
