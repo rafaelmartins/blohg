@@ -9,25 +9,22 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import os, sys
+import os
 from flaskext.script import Server, Manager
 
 from blohg import create_app
 
 
-def create_script(repo_path):
+def create_script():
     """Script object factory
     
     :param repo_path: the path to the mercurial repository.
     :return: the script object (Flask-Script' Manager instance).
     """
     
-    if not os.path.exists(os.path.join(repo_path, '.hg')):
-        print >> sys.stderr, 'error: invalid Mercurial repository!'
-        sys.exit(1)
-    app = create_app(repo_path)
-    script = Manager(app, with_default_commands=False)
-    server = Server(use_debugger=True, use_reloader=True)
-    server.description = 'runs the blohg local server.'
-    script.add_command('runserver', server)
+    script = Manager(create_app, with_default_commands=True)
+    script.add_option('--repo-path', dest='repo_path', default=os.getcwd(),
+        required=False)
+    #server = Server(use_debugger=True, use_reloader=True)
+    #script.add_command('runserver', server)
     return script

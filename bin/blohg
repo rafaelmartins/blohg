@@ -22,4 +22,4 @@ except ImportError:
 
 
 if __name__ == '__main__':
-    create_script(os.getcwd()).run()
+    create_script().run()

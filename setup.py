@@ -51,10 +51,7 @@ setup(
         'Topic :: Software Development :: Version Control',
     ],
     data_files = [
-        ('share/blohg/config', [
-            'share/config/local.py',
-            'share/config/remote.py',
-        ]),
+        ('share/blohg/config', ['share/config/config.yaml']),
         ('share/blohg', ['share/blohg.wsgi']),
     ],
     scripts = ['bin/blohg'],
