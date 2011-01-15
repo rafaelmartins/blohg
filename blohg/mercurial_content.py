@@ -123,7 +123,7 @@ def setup_mercurial(app):
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
     
-    config_file = 'config/config.yaml'
+    config_file = 'config.yaml'
     content_dir = 'content'
     
     def __init__(self, repo, revision_id, content_dir='txt'):

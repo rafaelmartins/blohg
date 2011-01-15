@@ -25,6 +25,4 @@ def create_script():
     script = Manager(create_app, with_default_commands=True)
     script.add_option('--repo-path', dest='repo_path', default=os.getcwd(),
         required=False)
-    #server = Server(use_debugger=True, use_reloader=True)
-    #script.add_command('runserver', server)
     return script

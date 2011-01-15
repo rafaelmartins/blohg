@@ -3,7 +3,7 @@
 {%- if is_post(current_path) and config.DISQUS %}
 <script type="text/javascript">
     var disqus_shortname = "{{ config.DISQUS }}";
-    var disqus_url = "{{ request.url }}/";
+    var disqus_url = "{{ request.url }}";
     {%- if config.DISQUS_DEVELOPER %}
     var disqus_developer = 1;
     {%- endif %}
