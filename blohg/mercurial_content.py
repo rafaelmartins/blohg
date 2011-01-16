@@ -24,9 +24,10 @@ from werkzeug.utils import cached_property
 from blohg import rst_directives
 
 try:
-    from flask import current_app
+    from flask import current_app, g
 except ImportError:
     current_app = None
+    g = None
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
@@ -106,6 +107,9 @@ def setup_mercurial(app):
             if repo['tip'].rev() != app.hg.repo['tip'].rev():
                 refresh = True
         
+        if g is not None:
+            g.refresh = refresh
+        
         # refreshing :)
         if refresh:
             
@@ -118,6 +122,12 @@ def setup_mercurial(app):
                 revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
             load_config(app)
+    
+    @app.after_request
+    def after_request(response):
+        if g is not None:
+            g.refresh = False
+        return response
 
 
 class MercurialContent(object):

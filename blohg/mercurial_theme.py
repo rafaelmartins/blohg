@@ -10,7 +10,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from flask import current_app, request
+from flask import current_app, g, request
 from jinja2.loaders import BaseLoader, ChoiceLoader, TemplateNotFound, \
     split_template_path
 from time import time
@@ -51,12 +51,7 @@ class MercurialLoader(BaseLoader):
         filename = posixpath.join(templates_dir, *pieces)
         if filename in list(current_app.hg.revision):
             contents = current_app.hg.revision[filename].data().decode('utf-8')
-            revision_id = current_app.hg.revision_id
-            def up2date():
-                if revision_id is None:
-                    return False
-                return current_app.hg.revision_id == revision_id
-            return contents, filename, up2date
+            return contents, filename, lambda: g.refresh
         raise TemplateNotFound(template)
 
     def list_templates(self):
