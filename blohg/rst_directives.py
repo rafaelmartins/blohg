@@ -14,7 +14,7 @@ from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image
 from urllib import pathname2url
 
-__all__ = ['Youtube', 'Math']
+__all__ = ['Youtube', 'Math', 'Code']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
@@ -74,6 +74,43 @@ class Youtube(Directive):
         return [nodes.raw('', html % self.options, format='html')]
 
 
+class Code(Directive):
+    """reStructuredText directive that creates a pre tag suitable for
+    decoration with http://alexgorbatchev.com/SyntaxHighlighter/
+    
+    Usage example::
+    
+        .. source:: python
+        
+           print "Hello, World!"
+
+        .. raw:: html
+
+            <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
+            <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js"></script>
+            <link type="text/css" rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCoreDefault.css"/>
+            <script type="text/javascript">SyntaxHighlighter.defaults.toolbar=false; SyntaxHighlighter.all();</script>
+
+    """
+    
+    required_arguments = 1
+    optional_arguments = 0
+    has_content = True
+
+    def run(self):
+        self.options['brush'] = self.arguments[0]
+        html = '''\
+
+<pre class="brush: %s">
+%s
+</pre>
+
+'''
+        return [nodes.raw('', html % (self.options['brush'],
+            "\n".join(self.content).replace('<', '&lt;')),
+            format='html')]
+
+
 class Math(Image):
     """reStructuredText directive that creates an image HTML object to
     display a LaTeX equation, using Mimetex.
@@ -100,4 +137,5 @@ class Math(Image):
 __directives__ = {
     'youtube': Youtube,
     'math': Math,
+    'code': Code,
 }
