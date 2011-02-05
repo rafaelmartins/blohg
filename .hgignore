@@ -2,3 +2,4 @@
 \.mo$
 ^(env|dist|blohg\.egg-info)/
 ^development
+^build/
