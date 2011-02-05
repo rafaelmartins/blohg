@@ -16,8 +16,7 @@ from urllib import pathname2url
 
 __all__ = ['Youtube', 'Math']
 
-# temporary mimetex url
-MIMETEX_URL = 'http://pidsim.rafaelmartins.eng.br/cgi-bin/mimetex.cgi'
+GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
 
 def align(argument):
@@ -94,7 +93,7 @@ class Math(Image):
             self.options['align'] = 'center'
         tmp = pathname2url(' '.join([(i == '' and '\\\\' or i.strip()) \
             for i in self.content]))
-        self.arguments.append('%s?%s' % (MIMETEX_URL, tmp))
+        self.arguments.append('%s%s' % (GOOGLETEX_URL, tmp))
         return Image.run(self)
 
 
