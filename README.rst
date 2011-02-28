@@ -23,32 +23,47 @@ Starting your blog
 
     $ hg init my_blohg
     $ cd my_blohg
-    $ cp -r ``sys.prefix``/share/blohg/config .
-    $ $EDITOR config/remote.py
+    $ cp -r ``sys.prefix``/share/blohg/config.yaml .
+    $ mkdir {content,static,templates}
+    $ $EDITOR config.yaml
 
 Change the configuration values as you want. The variables are pretty
-obvious and the sample file comes with some useful examples. ::
+obvious and the sample file comes with some useful examples.
 
-    $ mkdir -p txt/en-us/post
-    $ cat << EOF > txt/en-us/post/hello_world.rst
-    .. title: Hello World!
+The templates (``templates/`` directory) are handled using Jinja2_. Please
+take a look at my blog repository for an example of how templates are
+handled. (TODO: expand this)
+
+.. _Jinja2: http://jinja.pocoo.org/
+
+http://hg.rafaelmartins.eng.br/rafaelmartins.eng.br/
+
+blohg uses a custom Jinja2_ template loader, that's able to load templates
+directly from the Mercurial repository.
+
+The ``static/`` directory should be used for static files. You should
+avoid store big files inside the repository.
+
+::
+
+    $ mkdir content/post
+    $ cat << EOF > content/post/hello_world.rst
+    Hello World!
+    ============
+
     .. tags: hello_world,my_cool_tag
     
     Hello, blohg!
     
     EOF
-    $ blohg run
+    $ blohg runserver
 
 Make sure that you run the ``blohg`` script from the root of your local
 repository.
 
 If you're lucky, you should get your blog at http://localhost:5000/ ::
 
-    $ hg commit -A
-
-.. warning::
-    
-    Make sure you add the ``config/*.pyc`` files to your ``.hgignore`` file
+    $ hg commit -Am 'initial commit'
 
 Now copy your repository for the remote server as you want.
 
@@ -57,7 +72,7 @@ path::
     
     $ cat << EOF > .hg/hgrc
     [paths]
-    default = http://your_user@example.com/my_blohg/
+    default = https://your_user@example.com/my_blohg/
     EOF
     $ hg push
 
@@ -83,27 +98,17 @@ Edit your apache configuration and add something like this::
         WSGIScriptAlias / /some/place/blohg.wsgi
     </VirtualHost>
 
-You'll need to add 2 hooks to your remote repository, to update your
-working directory and reload your Apache processes every time you commit
-some new page/post::
-
-    [hooks]
-    changegroup = hg update >&2
-    changegroup.apache = touch /some/place/blohg.wsgi
-
-Add this to the ``.hg/hgrc`` file from your remote repository.
-
 Have fun! :)
 
 
 Important notes about writing posts/pages
 -----------------------------------------
 
-Make sure that you always have a ``.. title:`` comment at the begin of
-your ``.rst`` file, this is your title!
+Tags are handled from a reSTructuredText comment: ``.. tags:``. Tags are
+comma-separated.
 
 Static pages will not handle tags, then you don't need the ``.. tags:``
-comment. Tags are comma-separated.
+comment.
 
 
 Enjoy!
