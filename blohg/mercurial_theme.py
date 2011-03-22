@@ -55,6 +55,7 @@ class MercurialLoader(BaseLoader):
         raise TemplateNotFound(template)
 
     def list_templates(self):
+        templates_dir = current_app.config['TEMPLATES_DIR']
         return sorted([i for i in current_app.hg.revision \
             if i.startswith(templates_dir + '/')])
 
@@ -65,7 +66,7 @@ def send_static_file_from_mercurial(filename):
     """
     
     filename = posixpath.join(current_app.config['STATIC_DIR'], filename)
-    mimetype = mimetypes.guess_type(filename or attachment_filename)[0]
+    mimetype = mimetypes.guess_type(filename)[0]
     if mimetype is None:
         mimetype = 'application/octet-stream'
     data = current_app.hg.revision[filename].data()

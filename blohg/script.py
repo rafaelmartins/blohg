@@ -10,7 +10,7 @@
 """
 
 import os
-from flaskext.script import Server, Manager
+from flaskext.script import Manager
 
 from blohg import create_app
 

@@ -11,8 +11,8 @@
 
 import math
 
-from flask import Module, abort, current_app, make_response, redirect, \
-    render_template, request, url_for
+from flask import Module, abort, current_app, make_response, render_template, \
+     url_for
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 
 views = Module(__name__)
