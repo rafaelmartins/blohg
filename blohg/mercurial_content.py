@@ -204,15 +204,19 @@ class MercurialContent(object):
     
     def get_by_tag(self, tag):
         """Method that returns a list of :class:`Metadata` objects for a
-        given tag identifier.
+        given list of tag identifier strings.
         
-        :param tag: the tag identifier string.
+        :param tag: a list of tag identifier strings.
         :return: a list of :class:`Metadata` objects.
         """
         
         posts = []
         for post in self.get_all(only_posts=True):
-            if tag in post.tags:
+            valid = True
+            for _tag in tag:
+                if _tag not in post.tags:
+                    valid = False
+            if valid:
                 posts.append(post)
         return posts
     

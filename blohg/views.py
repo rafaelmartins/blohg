@@ -19,18 +19,20 @@ views = Module(__name__)
 
 
 @views.route('/atom/')
-@views.route('/atom/<tag>/')
+@views.route('/atom/<path:tag>/')
 @views.route('/rss/')  # dumb redirect to keep the compatibility
-@views.route('/rss/<tag>/')  # dumb redirect to keep the compatibility
+@views.route('/rss/<path:tag>/')  # dumb redirect to keep the compatibility
 def atom(tag=None):
     """General purpose atom feed."""
     
     title = current_app.config['TITLE']
     if tag is not None:
-        if tag not in current_app.hg.tags:
-            abort(404)
-        title += u' » %s' % tag
-        posts = current_app.hg.get_by_tag(tag)
+        tags = tag.split('/')
+        for _tag in tags:    
+            if _tag not in current_app.hg.tags:
+                abort(404)
+        title += u' » %s' % ' + '.join(tags)
+        posts = current_app.hg.get_by_tag(tags)
     else:
         posts = current_app.hg.get_all(True)
     feed = AtomFeed(
@@ -108,19 +110,21 @@ def post_list():
     )
 
 
-@views.route('/tag/<tag>/')
+@views.route('/tag/<path:tag>/')
 def tag(tag):
     """Page that lists the abstract of all available posts for the given
     tag.
     """
     
-    if tag not in current_app.hg.tags:
-        abort(404)
-    posts = current_app.hg.get_by_tag(tag)
+    tags = tag.split('/')
+    for _tag in tags:
+        if _tag not in current_app.hg.tags:
+            abort(404)
+    posts = current_app.hg.get_by_tag(tags)
     return render_template(
         '_posts.html',
-        title = u'Tag: %s' % tag,
-        tag = tag,
+        title = u'Tag: %s' % ' + '.join(tags),
+        tag = tags,
         posts = posts,
         full_content = False,
     )
