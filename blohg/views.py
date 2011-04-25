@@ -43,7 +43,7 @@ def atom(tag=None):
         author = current_app.config['AUTHOR'],
         generator = ('blohg', None, None)
     )
-    for post in posts[:current_app.config['POSTS_PER_PAGE']]:
+    for post in posts[:int(current_app.config['POSTS_PER_PAGE'])]:
         feed.add(
             FeedEntry(
                 title = post.title,
@@ -56,9 +56,7 @@ def atom(tag=None):
                 updated = post.datetime,
             )
         )
-    response = make_response(str(feed))
-    response.headers['Content-Type'] = 'application/atom+xml; charset=utf-8'
-    return response
+    return feed
 
 
 @views.route('/<path:slug>/')
