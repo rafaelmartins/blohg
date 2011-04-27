@@ -3,3 +3,4 @@
 ^(env|dist|blohg\.egg-info)/
 ^development
 ^build/
+^docs/_build/[^(.keep)]
