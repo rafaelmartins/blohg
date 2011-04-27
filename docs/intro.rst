@@ -30,7 +30,7 @@ Pages
 
 Pages are composed by "static" content, like an "about me" page. They aren't
 listed on atom feeds or the home. Pages can be stored in any directory inside the
-repository and you need to create the menu manually, inside the template.
+repository and you need to create the menu entry manually, inside the template.
 
 Posts
 ~~~~~
@@ -43,4 +43,4 @@ Tags
 ~~~~
 
 Tags are identifiers that are used to classify posts by subject. Each tag generates
-a page and an atom feed with related posts. Tags aren't applicable by pages.
+a page and an atom feed with related posts. Tags aren't applicable to pages.
