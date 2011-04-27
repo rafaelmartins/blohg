@@ -1,6 +1,4 @@
 \.py[co]$
-\.mo$
 ^(env|dist|blohg\.egg-info)/
-^development
 ^build/
 ^docs/_build/[^(.keep)]
