@@ -29,15 +29,16 @@ Pages
 ~~~~~
 
 Pages are composed by "static" content, like an "about me" page. They aren't
-listed on atom feeds or the home. Pages can be stored in any directory inside the
-repository and you need to create the menu entry manually, inside the template.
+listed on atom feeds or the home. Pages can be stored in any directory inside
+``content/`` in the repository and you need to create the menu entry manually,
+inside the template.
 
 Posts
 ~~~~~
 
 Posts are the dynamic content of a blog. They are shown on the home page and atom
 feeds, ordered by publication date descendant. Posts should be stored inside the
-directory ``post/``. Sub-directories are allowed.
+directory ``content/post/``. Sub-directories are allowed.
 
 Tags
 ~~~~
