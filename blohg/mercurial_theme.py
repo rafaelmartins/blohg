@@ -51,7 +51,7 @@ class MercurialLoader(BaseLoader):
         filename = posixpath.join(templates_dir, *pieces)
         if filename in list(current_app.hg.revision):
             contents = current_app.hg.revision[filename].data().decode('utf-8')
-            return contents, filename, lambda: g.refresh
+            return contents, filename, lambda: not g.refresh
         raise TemplateNotFound(template)
 
     def list_templates(self):
