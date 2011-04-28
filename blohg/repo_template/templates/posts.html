@@ -1,0 +1,65 @@
+{%- extends 'base.html' %}
+
+{%- block title %}{% if title %} » {{ title }}{% endif %}{% endblock %}
+
+{%- block body %}
+
+{%- if tag -%}
+<h4>Tag: {{ ' + '.join(tag) }}
+    (<small><a href="{{ url_for('views.atom', tag='/'.join(tag)) }}">Atom feed</a></small>)
+</h4>
+{%- endif %}
+
+{%- for post in posts %}
+<h2>
+    {%- if is_post(post.slug) -%}
+    <a href="{{ url_for('views.content', slug=post.slug) }}">{{ post.title }}</a>
+    {%- else -%}
+    {{ post.title }}
+    {%- endif -%}
+</h2>
+
+<!-- begin html parsed by docutils -->
+{% if full_content -%}
+    {{ post.full_html|safe }}
+{% else -%}
+    {{ post.abstract_html|safe }}
+{%- endif %}
+<!-- end html parsed by docutils -->
+
+{% if post.read_more and not full_content -%}
+<p>
+    <a href="{{ url_for('views.content', slug=post.slug) }}">Read more...</a>
+</p>
+{% endif -%}
+
+<div class="metadata">
+    Published: {{ post.datetime|datetimeformat }}
+    {%- if post.mdatetime %} - Modified: {{ post.mdatetime|datetimeformat }}{% endif %}
+    <br />
+    {% if post.tags -%}
+    Tags:
+    {% for tag in post.tags -%}
+    <a href="{{ url_for('views.tag', tag=tag) }}">{{ tag }}</a>
+    {%- if not loop.last %}, {% endif %}
+    {%- endfor %}
+    <br />
+    {%- endif %}
+    {% if is_post(post.slug) and config.DISQUS -%}
+    <a href="{{ url_for('views.content', slug=post.slug) }}#disqus_thread">Comments</a> -
+    {%- endif %}
+    <a href="{{ url_for('views.content', slug=post.slug) }}">Permalink</a> -
+    <a href="{{ url_for('views.source', slug=post.slug) }}">Source code</a>
+</div>
+
+<!-- start disqus post -->
+{% block disqus_post %}{% endblock %}
+<!-- end disqus post -->
+
+{% endfor %}
+
+<!-- start pagination -->
+{% block pagination %}{% endblock %}
+<!-- end pagination -->
+
+{%- endblock %}

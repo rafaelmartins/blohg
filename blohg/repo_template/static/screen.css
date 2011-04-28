@@ -1,0 +1,95 @@
+/**
+ *  screen.css
+ *  ~~~~~~~~~~
+ * 
+ *  :copyright: (c) 2010-2011 by Rafael Goncalves Martins
+ *  :license: GPL-2
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Georgia", verdana, sans-serif;
+    background-color: #FFF;
+}
+
+a {
+    color: #036;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul, li {
+    list-style: none;
+}
+
+#header {
+    text-align: center;
+}
+
+#header h1 {
+    font-size: 50px;
+    margin-top: 25px;
+}
+
+#header h2 {
+    font-size: 15px;
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+
+#header ul, #header li {
+    display: inline;
+}
+
+#header li {
+    font-size: 20px;
+    margin: 0 15px;
+    padding: 0;
+}
+
+#body {
+    width: 70%;
+    margin: 25px auto;
+}
+
+#body h2 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+#body h2 a {
+    color: #024;
+}
+
+#body h4 {
+    margin-top: 15px;
+    margin-bottom: 12px;
+}
+
+#body p {
+    margin: 16px auto;
+}
+
+.pagination {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.metadata {
+    border: 1px solid #CCC;
+    margin: 15px auto;
+    padding: 6px;
+    font-size: 11px;
+}
+
+#footer {
+    text-align: center;
+    margin: 15px auto;
+}

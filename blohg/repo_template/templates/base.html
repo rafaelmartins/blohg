@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+    :copyright: (c) 2010-2011 by Rafael Goncalves Martins
+    :license: GPL-2
+-->
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="generator" content="blohg {{ version }}" />  
+        <link type="text/css" media="screen" rel="stylesheet" href="{{
+            url_for('.static', filename='screen.css') }}" />
+        <link rel="alternate" type="application/atom+xml" href="{{
+            url_for('views.atom') }}" title="{{ config.TITLE }}" />
+        <title>{{ config.TITLE }}{% block title %}{% endblock %}</title>
+
+<!-- begin disqus header -->
+{% block disqus_header %}{% endblock %}
+<!-- end disqus header -->
+
+    </head>
+    <body>
+        <div id="header">
+            <h1>{{ config.TITLE_HTML }}</h1>
+            <h2>{{ config.TAGLINE }}</h2>
+            <ul>
+                <li><a href="{{ url_for('views.home') }}">Home</a></li>
+                <li><a href="{{ url_for('views.post_list') }}">Posts</a></li>
+                <li><a href="{{ url_for('views.content', slug='about') }}">About</a></li>
+            </ul>
+        </div>
+        <div id="body">
+
+<!-- begin content -->
+{% block body %}{% endblock %}
+<!-- end content -->
+
+        </div>
+        <div id="footer">
+            <p>
+                Powered by: <a href="http://hg.rafaelmartins.eng.br/blohg/">blohg {{ version }}</a>
+            </p>  
+        </div>
+
+<!-- begin disqus footer -->
+{% block disqus_footer %}{% endblock %}
+<!-- end disqus footer -->
+
+    </body>
+</html>
