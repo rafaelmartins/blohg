@@ -276,7 +276,7 @@ class Metadata(object):
         for i in re_metadata.finditer(self._filecontent):
             self._vars[i.group(1)] = i.group(2).decode('utf-8')
         if 'tags' in self._vars:
-            self._vars['tags'] = self._vars['tags'].strip().split(',')
+            self._vars['tags'] = [i.strip() for i in self._vars['tags'].split(',')]
         filelog = self._filectx.filelog()
         changesets = list(filelog)
         if 'date' in self._vars:
