@@ -6,19 +6,16 @@
 Welcome to blohg's documentation!
 =================================
 
+:Author: Rafael Goncalves Martins
+:Website: http://blohg.org/
+:Source code: http://hg.rafaelmartins.eng.br/blohg/
+:Bugs to: blohg@librelist.com
+:Version: |release|
+
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    
-   intro
-
-
-Indices and tables
-==================
-
-.. * :ref:`genindex`
-.. * :ref:`modindex`
-
-* :ref:`search`
+   about
 
