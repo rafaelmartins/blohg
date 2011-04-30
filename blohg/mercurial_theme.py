@@ -10,7 +10,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from flask import current_app, g, request
+from flask import current_app, g, request, abort
 from jinja2.loaders import BaseLoader, ChoiceLoader, TemplateNotFound, \
     split_template_path
 from time import time
@@ -69,7 +69,10 @@ def send_static_file_from_mercurial(filename):
     mimetype = mimetypes.guess_type(filename)[0]
     if mimetype is None:
         mimetype = 'application/octet-stream'
-    data = current_app.hg.revision[filename].data()
+    try:
+        data = current_app.hg.revision[filename].data()
+    except:
+        abort(404)
     rv = current_app.response_class(data, mimetype=mimetype,
         direct_passthrough=True)
     rv.cache_control.public = True
