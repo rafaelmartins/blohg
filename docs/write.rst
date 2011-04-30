@@ -113,7 +113,7 @@ If you disable the debug mode (``--no-debug`` option), it will just load the
 stuff that was already commited. This is the default behavior of the application
 when running on the production server.
 
-For help with the script option, type::
+For help with the script options, type::
     
     $ blohg runserver -h
 
