@@ -107,8 +107,8 @@ http://yourdomain/atom/
 
 For tags, use the following URLs:
 
-- http://yourdomain/atom/foo/
-- http://yourdomain/atom/foo/bar
+- http://yourdomain.com/atom/foo/
+- http://yourdomain.com/atom/foo/bar
 
 The second example will generate an Atom feed for the posts with both tags.
 You can use how many tags you want.
