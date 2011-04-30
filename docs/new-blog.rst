@@ -106,7 +106,7 @@ Local variables available for this tempalte:
   not just the abstracts.
 - ``pagination``: dictionary with 2 items (``num_pages``: number of pages, and
   ``current``: current page), used by the pagination block.
-- ``tags``: list of strings with tag identifiers, used by the view that list
+- ``tag``: list of strings with tag identifiers, used by the view that list
   posts by tags.
 
 
