@@ -26,7 +26,7 @@ setup(
     long_description = open('README.rst').read(),
     author = 'Rafael Goncalves Martins',
     author_email = 'rafael@rafaelmartins.eng.br',
-    url = 'http://labs.rafaelmartins.org/wiki/blohg',
+    url = 'http://blohg.org/',
     platforms='any',
     packages = find_packages(),
     include_package_data = True,
@@ -51,7 +51,7 @@ setup(
         'Topic :: Software Development :: Version Control',
     ],
     data_files = [
-        ('share/blohg', ['share/config.yaml', 'share/blohg.wsgi']),
+        ('share/blohg', ['share/blohg.wsgi']),
     ],
     scripts = ['bin/blohg'],
 )
