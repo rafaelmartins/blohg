@@ -113,7 +113,7 @@ class Code(Directive):
 
 class Math(Image):
     """reStructuredText directive that creates an image HTML object to
-    display a LaTeX equation, using Mimetex.
+    display a LaTeX equation, using Google Chart API.
     
     Usage example::
     

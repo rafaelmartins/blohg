@@ -122,7 +122,8 @@ def tag(tag):
     return render_template(
         '_posts.html',
         title = u'Tag: %s' % ' + '.join(tags),
-        tag = tags,
+        tag = tags, # keep for compatibility
+        tags = tags,
         posts = posts,
         full_content = False,
     )

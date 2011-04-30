@@ -91,3 +91,30 @@ The repository structure is pretty easy to understand::
 - ``static/`` is the directory with static files used by your blog, like css files
   or images.
 - ``templates/`` is the directory with your Jinja2 templates.
+
+
+Additional features
+-------------------
+
+blohg generates an Atom_ feed for all the posts and/or tags.
+
+.. _Atom: http://en.wikipedia.org/wiki/Atom_%28standard%29
+
+For all the posts (actually just the ``POSTS_PER_PAGE`` last posts), use the
+following URL:
+
+http://yourdomain/atom/
+
+For tags, use the following URLs:
+
+- http://yourdomain/atom/foo/
+- http://yourdomain/atom/foo/bar
+
+The second example will generate an Atom feed for the posts with both tags.
+You can use how many tags you want.
+
+There's also a HTML file with the same behavior:
+
+- http://yourdomain.com/tag/foo/
+- http://yourdomain.com/tag/foo/bar/
+

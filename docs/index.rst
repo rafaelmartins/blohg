@@ -20,4 +20,6 @@ Contents:
    about
    install
    new-blog
+   write
+   deploy
 

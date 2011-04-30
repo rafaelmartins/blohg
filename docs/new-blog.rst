@@ -54,12 +54,36 @@ Here is a list of templates needed by blohg and what each one does.
 404.html
 ~~~~~~~~
 
-TODO
+Template for the 404 error page. There's an useful default file provided by
+blohg. You don't need to put it on your Mercurial repository if you don't want
+to customize something.
 
 _posts.html
 ~~~~~~~~~~~
 
-TODO
+Template with some Jinja2_ blocks that can be used by ``base.html`` and
+``posts.html``. You SHOULDN'T provide this file in your repository, if you want
+to use these blocks. If you don't want to use them, just rename your
+``posts.html`` file to ``_posts.html`` and they will be ignored.
+
+.. _Disqus: http://disqus.com/
+
+- Jinja2_ blocks for Disqus_ comments:
+
+  - ``disqus_header``: place it inside the html header in ``base.html``.
+  - ``disqus_post``: place it after the post contents in ``posts.html``.
+  - ``disqus_footer``: place it at the end of your html, but before the
+    ``</body>`` tag, in ``base.html``.
+
+- Jinja2_ blocks for pagination:
+
+  - ``pagination``: place it at the end of the ``posts.html`` file, but inside
+    your main ``div``. There's a CSS class ``pagination`` to help you changing
+    the style.
+
+Disqus_ support depends on the ``DISQUS`` configuration variable, that should
+contain the value of the Disqus_ identifier of your blog. To get it, create an
+account at http://disqus.com/.
 
 base.html
 ~~~~~~~~~
@@ -70,15 +94,32 @@ repository. This template is inherited by all the other ones.
 posts.html
 ~~~~~~~~~~
 
-Template called by the views that show partial/full content of pages and posts.
-Gets a list of posts (``posts``) and should handle them properly.i
+Template used by the views that show partial/full content of pages and posts.
 
-TODO
+It's inherited by ``_posts.html`` and can make use of his Jinja2_ blocks.
+
+Local variables available for this tempalte:
+
+- ``title``: string with the page/post title.
+- ``posts``: list with all the posts (Metadata objects).
+- ``full_content``: boolean that enable display full content of ``posts`` and
+  not just the abstracts.
+- ``pagination``: dictionary with 2 items (``num_pages``: number of pages, and
+  ``current``: current page), used by the pagination block.
+- ``tags``: list of strings with tag identifiers, used by the view that list
+  posts by tags.
+
 
 post_list.html
 ~~~~~~~~~~~~~~
 
-TODO
+Template for the page with the listing of blog posts, without content, just the
+name, the date and the link.
+
+Local variables available for this template:
+
+- ``title``: string with the page title (usually "Posts").
+- ``posts``: list with all the posts (Metadata objects).
 
 
 Static files

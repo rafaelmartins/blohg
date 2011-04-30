@@ -1,6 +1,7 @@
 TITLE: Your title
 TITLE_HTML: Your HTML title
 TAGLINE: Your cool tagline
+#POSTS_PER_PAGE: 10
 AUTHOR: Your name
 #DISQUS: your-disqus-id
 TIMEZONE: UTC
