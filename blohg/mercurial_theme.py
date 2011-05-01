@@ -38,7 +38,12 @@ def setup_theme(app):
     app.add_url_rule(
         app.static_path + '/<path:filename>',
         endpoint='static',
-        view_func=send_static_file_from_mercurial
+        view_func=MercurialStaticFile(app.config['STATIC_DIR'])
+    )
+    app.add_url_rule(
+        '/attachments/<path:filename>',
+        endpoint='attachments',
+        view_func=MercurialStaticFile(app.config['ATTACHMENT_DIR'])
     )
 
 
@@ -60,30 +65,34 @@ class MercurialLoader(BaseLoader):
             if i.startswith(templates_dir + '/')])
 
 
-def send_static_file_from_mercurial(filename):
-    """Function to create a Response object for static files loaded from
-    a Mercurial repository.
+class MercurialStaticFile(object):
+    """Callable to create a Response object for static files loaded from
+    the current Mercurial repository.
     """
     
-    filename = posixpath.join(current_app.config['STATIC_DIR'], filename)
-    mimetype = mimetypes.guess_type(filename)[0]
-    if mimetype is None:
-        mimetype = 'application/octet-stream'
-    try:
-        data = current_app.hg.revision[filename].data()
-    except:
-        abort(404)
-    rv = current_app.response_class(data, mimetype=mimetype,
-        direct_passthrough=True)
-    rv.cache_control.public = True
-    cache_timeout = 60 * 60 * 12
-    rv.cache_control.max_age = cache_timeout
-    rv.expires = int(time() + cache_timeout)
-    try:
-        date = int(current_app.hg.revision[filename].date()[0])
-    except:
-        date = time()
-    rv.set_etag('blohg-%s-%s-%s' % (date, len(data), adler32(filename) \
-        & 0xffffffff))
-    rv = rv.make_conditional(request)
-    return rv
+    def __init__(self, directory):
+        self._directory = directory
+    
+    def __call__(self, filename):
+        filename = posixpath.join(self._directory, filename)
+        mimetype = mimetypes.guess_type(filename)[0]
+        if mimetype is None:
+            mimetype = 'application/octet-stream'
+        try:
+            data = current_app.hg.revision[filename].data()
+        except:
+            abort(404)
+        rv = current_app.response_class(data, mimetype=mimetype,
+            direct_passthrough=True)
+        rv.cache_control.public = True
+        cache_timeout = 60 * 60 * 12
+        rv.cache_control.max_age = cache_timeout
+        rv.expires = int(time() + cache_timeout)
+        try:
+            date = int(current_app.hg.revision[filename].date()[0])
+        except:
+            date = time()
+        rv.set_etag('blohg-%s-%s-%s' % (date, len(data), adler32(filename) \
+            & 0xffffffff))
+        rv = rv.make_conditional(request)
+        return rv

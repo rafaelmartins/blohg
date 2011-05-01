@@ -38,6 +38,7 @@ def create_app(repo_path=None):
     app.config.setdefault('CONTENT_DIR', 'content')
     app.config.setdefault('TEMPLATES_DIR', 'templates')
     app.config.setdefault('STATIC_DIR', 'static')
+    app.config.setdefault('ATTACHMENT_DIR', 'content/attachments')
     
     app.config['REPO_PATH'] = repo_path
     

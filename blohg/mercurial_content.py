@@ -18,10 +18,11 @@ import yaml
 from datetime import datetime
 from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
+from docutils.parsers.rst.roles import register_local_role
 from mercurial import hg, ui
 from werkzeug.utils import cached_property
 
-from blohg import rst_directives
+from blohg import rst_directives, rst_roles
 
 try:
     from flask import current_app, g
@@ -36,6 +37,10 @@ re_read_more = re.compile(r'\.\. +read_more')
 # registering docutils' directives
 for directive in rst_directives.__directives__:
     register_directive(directive, rst_directives.__directives__[directive])
+
+# registering docutils' roles
+for role in rst_roles.__roles__:
+    register_local_role(role, rst_roles.__roles__[role])
 
 
 def rst2html(rst):

@@ -11,10 +11,11 @@
 
 from docutils import nodes
 from docutils.parsers.rst import directives, Directive
-from docutils.parsers.rst.directives.images import Image
+from docutils.parsers.rst.directives.images import Image, Figure
+from flask import url_for
 from urllib import pathname2url
 
-__all__ = ['Youtube', 'Math', 'Code']
+__all__ = ['Youtube', 'Math', 'Code', 'AttachmentImage', 'AttachmentFigure']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
@@ -134,8 +135,26 @@ class Math(Image):
         return Image.run(self)
 
 
+class AttachmentImage(Image):
+    
+    def run(self):
+        my_file = directives.uri(self.arguments[0])
+        self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
+        return Image.run(self)
+
+    
+class AttachmentFigure(Figure):
+    
+    def run(self):
+        my_file = directives.uri(self.arguments[0])
+        self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
+        return Figure.run(self)
+
+
 __directives__ = {
     'youtube': Youtube,
     'math': Math,
     'code': Code,
+    'attachment-image': AttachmentImage,
+    'attachment-figure': AttachmentFigure,
 }
