@@ -104,8 +104,8 @@ Usage example:
        :height: 344
        :width: 425
 
-Directive ``code``
-~~~~~~~~~~~~~~~~~~
+Directive ``source``
+~~~~~~~~~~~~~~~~~~~~
 
 reStructuredText_ directive that creates a pre tag suitable for decoration with
 http://alexgorbatchev.com/SyntaxHighlighter/
