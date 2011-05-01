@@ -38,10 +38,10 @@ This is useful if you want to migrate content from another blog.
 Adding attachments
 ------------------
 
-You may want to add some images or attach some files to your post/page. To atach
-a file, just put it in the directory ``content/attachments`` of your Mercurial
-repository and use one of the custom reStructuredText_ directives or roles to
-use it in your post/page.
+You may want to add some images and attach some files to your posts/pages. To
+atach a file, just put it in the directory ``content/attachments`` of your
+Mercurial repository and use one of the custom reStructuredText_ directives and
+roles below in your post/page.
 
 Directive ``attachment-image``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,7 +78,7 @@ Usage example:
 
 .. code-block:: rest
     
-    This is the attachment link :attachment:`mercurial.png`
+    This is the attachment link: :attachment:`mercurial.png`
 
 
 Additional reStructuredText directives
@@ -87,8 +87,8 @@ Additional reStructuredText directives
 These are some additional custom directives, that adds some interesting
 functionality to the standard reStructuredText_ syntax.
 
-Youtube
-~~~~~~~
+Directive ``youtube``
+~~~~~~~~~~~~~~~~~~~~~
 
 reStructuredText_ directive that creates an embed object to display a video
 from YouTube_.
@@ -104,8 +104,8 @@ Usage example:
        :height: 344
        :width: 425
 
-Code
-~~~~
+Directive ``code``
+~~~~~~~~~~~~~~~~~~
 
 reStructuredText_ directive that creates a pre tag suitable for decoration with
 http://alexgorbatchev.com/SyntaxHighlighter/
@@ -130,8 +130,8 @@ Usage example:
         <script type="text/javascript">SyntaxHighlighter.defaults.toolbar=false; SyntaxHighlighter.all();</script>
 
 
-Math
-~~~~
+Directive ``math``
+~~~~~~~~~~~~~~~~~~
 
 reStructuredText_ directive that creates an image HTML object to display a
 LaTeX equation, using Google Chart API.
