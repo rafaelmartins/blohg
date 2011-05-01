@@ -35,8 +35,57 @@ inside a reStructuredText comment:
 This is useful if you want to migrate content from another blog.
 
 
-reStructuredText directives
----------------------------
+Adding attachments
+------------------
+
+You may want to add some images or attach some files to your post/page. To atach
+a file, just put it in the directory ``content/attachments`` of your Mercurial
+repository and use one of the custom reStructuredText_ directives or roles to
+use it in your post/page.
+
+Directive ``attachment-image``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Identical to the ``image`` directive, but loads the image directly from your
+``content/attachments`` directory.
+
+Usage example:
+
+.. code-block:: rest
+    
+    .. attachment-image:: mercurial.png
+
+Directive ``attachment-figure``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Identical to the ``figure`` directive, but loads the image directly from your
+``content/attachments`` directory.
+
+Usage example:
+
+.. code-block:: rest
+    
+    .. attachment-figure:: mercurial.png
+       
+
+Interpreted Text Role ``attachment``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+Interpreted Text Role that generates a link to the attachment (``reference``
+node).
+
+Usage example:
+
+.. code-block:: rest
+    
+    This is the attachment link :attachment:`mercurial.png`
+
+
+Additional reStructuredText directives
+--------------------------------------
+
+These are some additional custom directives, that adds some interesting
+functionality to the standard reStructuredText_ syntax.
 
 Youtube
 ~~~~~~~

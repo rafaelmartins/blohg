@@ -70,11 +70,13 @@ Repository structure
 --------------------
 
 The repository structure is pretty easy to understand::
-
+    
     blohg/repo_template/
     |-- config.yaml
     |-- content
     |   |-- about.rst
+    |   |-- attachments
+    |   |   `-- mercurial.png
     |   `-- post
     |       |-- example-post.rst
     |       `-- lorem-ipsum.rst
@@ -85,11 +87,13 @@ The repository structure is pretty easy to understand::
         |-- post_list.html
         `-- posts.html
 
+
 - ``config.yaml`` is the main configuration file.
-- ``content/`` is the main directory for content (pages and posts). Posts are stored
-  at ``content/post/``. Pages are stored anywhere inside ``content/``.
-- ``static/`` is the directory with static files used by your blog, like css files
-  or images.
+- ``content/`` is the main directory for content (pages, posts and attachments).
+  Posts are stored at ``content/post/``, pages are stored anywhere inside
+  ``content/`` and attachments are stored at ``content/attachments/``
+- ``static/`` is the directory with static files used by your blog, like css
+  files or images.
 - ``templates/`` is the directory with your Jinja2 templates.
 
 
