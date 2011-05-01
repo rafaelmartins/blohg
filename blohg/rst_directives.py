@@ -12,8 +12,11 @@
 from docutils import nodes
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
-from flask import url_for
+from flask import current_app, url_for
 from urllib import pathname2url
+
+import posixpath
+
 
 __all__ = ['Youtube', 'Math', 'Code', 'AttachmentImage', 'AttachmentFigure']
 
@@ -139,6 +142,13 @@ class AttachmentImage(Image):
     
     def run(self):
         my_file = directives.uri(self.arguments[0])
+        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], my_file)
+        if full_path not in list(current_app.hg.revision):
+            raise self.error(
+                'Error in "%s" directive: File not found: %s.' % (
+                    self.name, full_path
+                )
+            )
         self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
         return Image.run(self)
 
@@ -147,6 +157,13 @@ class AttachmentFigure(Figure):
     
     def run(self):
         my_file = directives.uri(self.arguments[0])
+        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], my_file)
+        if full_path not in list(current_app.hg.revision):
+            raise self.error(
+                'Error in "%s" directive: File not found: %s.' % (
+                    self.name, full_path
+                )
+            )
         self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
         return Figure.run(self)
 
