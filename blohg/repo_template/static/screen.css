@@ -77,6 +77,14 @@ ul, li {
     margin: 16px auto;
 }
 
+#body ul, #body li{
+    list-style: disc;
+}
+
+#body ul {
+    padding-left: 20px;
+}
+
 .pagination {
     margin-top: 15px;
     text-align: center;
