@@ -12,7 +12,7 @@
 from docutils import nodes
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
-from flask import current_app, url_for
+from flask import current_app, request, url_for
 from urllib import pathname2url
 
 import posixpath
@@ -168,10 +168,61 @@ class AttachmentFigure(Figure):
         return Figure.run(self)
 
 
+class SubPages(Directive):
+    """reStructuredText directive that creates a bullet-list with the subpages of
+    the current page, or of a given page.
+    
+    Usage example::
+
+        .. subpages::
+    
+    Or::
+    
+        .. subpages:: projects
+    
+    Supposing that you have a directory called ``content/projects`` and some
+    reStructuredText files on it. Subdirectories are also allowed.
+    
+    This directive will just show the files from the root of the directory. It's
+    not recursive.
+    """
+    
+    required_arguments = 0
+    optional_arguments = 1
+    has_content = False
+    
+    def _compare_by_slug(self, x, y):
+        if x.slug > y.slug:
+            return 1
+        if x.slug < y.slug:
+            return -1
+        return 0
+    
+    def run(self):
+        if len(self.arguments) == 0:
+            self.arguments.append(request.path.strip('/'))
+        tmp_metadata = []
+        final_metadata = []
+        # not sure if this works on windows
+        splited_dir = self.arguments[0].split('/')
+        for metadata in current_app.hg.get_all():
+            # not sure if this works on windows
+            splited_slug = metadata.slug.split('/')
+            if metadata.slug.startswith(self.arguments[0]) and \
+               (len(splited_dir) + 1 == len(splited_slug)):
+                tmp_metadata.append(metadata)
+        for metadata in sorted(tmp_metadata, self._compare_by_slug):
+            link = url_for('views.content', slug=metadata.slug)
+            reference = nodes.reference(link, metadata.title, refuri=link)
+            final_metadata.append(nodes.list_item('', nodes.paragraph('', '', reference)))
+        return [nodes.bullet_list('', *final_metadata)]
+    
+
 __directives__ = {
     'youtube': Youtube,
     'math': Math,
     'code': Code,
     'attachment-image': AttachmentImage,
     'attachment-figure': AttachmentFigure,
+    'subpages': SubPages,
 }

@@ -136,13 +136,37 @@ Directive ``math``
 reStructuredText_ directive that creates an image HTML object to display a
 LaTeX equation, using Google Chart API.
 
-Usage example:i
+Usage example:
 
 .. code-block:: rest
     
     .. math::
     
         \frac{x^2}{1+x}
+
+
+Directive ``subpages``
+~~~~~~~~~~~~~~~~~~~~~~
+
+reStructuredText_ directive that creates a bullet-list with the subpages of
+the current page, or of a given page.
+
+Usage example:
+
+.. code-block:: rest
+
+    .. subpages::
+
+Or:
+
+.. code-block:: rest
+
+    .. subpages:: projects
+
+Supposing that you have a directory called ``content/projects`` and some reStructuredText_
+files on it. Subdirectories are also allowed.
+
+This directive will just show the files from the root of the directory. It's not recursive.
 
 
 Previewing your post/page
