@@ -141,7 +141,7 @@ class MercurialContent(object):
     config_file = 'config.yaml'
     content_dir = 'content'
     
-    def __init__(self, repo, revision_id, content_dir='txt'):
+    def __init__(self, repo, revision_id):
         """Class constructor"""
         
         self.repo = repo
