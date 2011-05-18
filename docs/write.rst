@@ -104,21 +104,18 @@ Usage example:
        :height: 344
        :width: 425
 
-Directive ``source``
-~~~~~~~~~~~~~~~~~~~~
+
+Directive ``code``
+~~~~~~~~~~~~~~~~~~
 
 reStructuredText_ directive that creates a pre tag suitable for decoration with
 http://alexgorbatchev.com/SyntaxHighlighter/
-
-.. warning::
-
-   this directive will be changed to use Pygments in the future versions.
 
 Usage example:
 
 .. code-block:: rest
    
-    .. source:: python
+    .. code:: python
       
         print "Hello, World!"
     
@@ -128,6 +125,41 @@ Usage example:
         <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js"></script>
         <link type="text/css" rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCoreDefault.css"/>
         <script type="text/javascript">SyntaxHighlighter.defaults.toolbar=false; SyntaxHighlighter.all();</script>
+
+
+Directive ``sourcecode``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+reStructuredText directive that does syntax highlight using Pygments.
+    
+Usage example:
+
+.. code-block:: rest
+
+    .. sourcecode:: python
+       :linenos:
+       
+        print "Hello, World!"
+
+The ``linenos`` option enables the line numbering.
+
+To be able to use this directive you should generate a CSS file with the style
+definitions, using the ``pygmentize`` script, shipped with Pygments.
+
+::
+
+    $ pygmentyze -S friendly -f html > static/pygments.css
+    
+Where ``friendly`` will be your Pygments style of choice.
+
+This file should be included in the main template, usually ``base.html``:
+
+.. code-block:: html+jinja
+
+    <link type="text/css" media="screen" rel="stylesheet" href="{{
+        url_for('.static', filename='pygments.css') }}" />
+
+This directive is based on ``rst-directive.py``, created by Pygments authors.
 
 
 Directive ``math``

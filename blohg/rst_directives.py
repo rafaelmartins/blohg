@@ -13,6 +13,9 @@ from docutils import nodes
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
 from flask import current_app, request, url_for
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
 import posixpath
@@ -42,7 +45,6 @@ class Youtube(Directive):
     
     required_arguments = 1
     optional_arguments = 0
-    final_argument_whitespace = True
     option_spec = {
         'height': directives.nonnegative_int,
         'width': directives.nonnegative_int,
@@ -90,6 +92,7 @@ class Code(Directive):
     has_content = True
 
     def run(self):
+        self.assert_has_content()
         self.options['brush'] = self.arguments[0]
         html = '''\
 
@@ -101,6 +104,57 @@ class Code(Directive):
         return [nodes.raw('', html % (self.options['brush'],
             "\n".join(self.content).replace('<', '&lt;')),
             format='html')]
+
+
+class SourceCode(Directive):
+    """reStructuredText directive that does syntax highlight using Pygments.
+    
+    Usage example::
+    
+        .. sourcecode:: python
+           :linenos:
+           
+            print "Hello, World!"
+    
+    The ``linenos`` option enables the line numbering.
+    
+    To be able to use this directive you should generate a CSS file with the style
+    definitions, using the ``pygmentize`` script, shipped with Pygments.
+    
+    ::
+    
+        $ pygmentyze -S friendly -f html > static/pygments.css
+        
+    Where ``friendly`` will be your Pygments style of choice.
+    
+    This file should be included in the main template, usually ``base.html``::
+    
+        <link type="text/css" media="screen" rel="stylesheet" href="{{
+            url_for('.static', filename='pygments.css') }}" />
+
+    This directive is based on ``rst-directive.py``, created by Pygments authors.
+    """
+    
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+    option_spec = {
+        'linenos': directives.flag,
+    }
+    has_content = True
+
+    def run(self):
+        self.assert_has_content()
+        try:
+            lexer = get_lexer_by_name(self.arguments[0])
+        except ValueError:
+            # no lexer found - use the text one instead of an exception
+            lexer = TextLexer()
+        formatter = HtmlFormatter(noclasses=False)
+        if 'linenos' in self.options:
+            formatter.linenos = 2 # inline
+        parsed = highlight(u'\n'.join(self.content), lexer, formatter)
+        return [nodes.raw('', parsed, format='html')]
 
 
 class Math(Image):
@@ -118,6 +172,7 @@ class Math(Image):
     has_content = True
 
     def run(self):
+        self.assert_has_content()
         if not 'align' in self.options:
             self.options['align'] = 'center'
         tmp = pathname2url(' '.join([(i == '' and '\\\\' or i.strip()) \
@@ -210,6 +265,7 @@ __directives__ = {
     'youtube': Youtube,
     'math': Math,
     'code': Code,
+    'sourcecode': SourceCode,
     'attachment-image': AttachmentImage,
     'attachment-figure': AttachmentFigure,
     'subpages': SubPages,

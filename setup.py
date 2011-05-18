@@ -39,6 +39,7 @@ setup(
         'Jinja2>=2.5.2',
         'Mercurial>=1.6',
         'PyYAML',
+        'Pygments', # TODO: make this dependency optional
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
