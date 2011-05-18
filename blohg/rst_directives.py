@@ -59,22 +59,9 @@ class Youtube(Directive):
         if not 'align' in self.options:
             self.options['align'] = 'center'
         html = '''\
-
 <div align="%(align)s">
-<object width="%(width)i" height="%(height)i">
-    <param name="movie" value="http://www.youtube.com/v/%(vid)s?fs=1&color1=0x3a3a3a&color2=0x999999"></param>
-    <param name="allowFullScreen" value="true"></param>
-    <param name="allowscriptaccess" value="always"></param>
-    <embed src="http://www.youtube.com/v/%(vid)s?fs=1&color1=0x3a3a3a&color2=0x999999"
-           type="application/x-shockwave-flash"
-           allowscriptaccess="always"
-           allowfullscreen="true"
-           width="%(width)i"
-           height="%(height)i">
-    </embed>
-</object>
+    <iframe width="%(width)i" height="%(height)i" src="http://www.youtube.com/embed/%(vid)s" frameborder="0" allowfullscreen></iframe>
 </div>
-
 '''
         return [nodes.raw('', html % self.options, format='html')]
 
