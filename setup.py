@@ -13,25 +13,26 @@ from setuptools import setup, find_packages
 # doing things the wrong way...
 # we need the module blohg.version but we can't import the full package
 # first time because the dependencies probably aren't solved yet.
-import os, sys
+import os
+import sys
 cwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cwd, 'blohg'))
 from version import version as __version__
 
 setup(
-    name = 'blohg',
-    version = __version__,
-    license = 'GPL-2',
-    description = 'A Mercurial-based blog engine',
-    long_description = open('README.rst').read(),
-    author = 'Rafael Goncalves Martins',
-    author_email = 'rafael@rafaelmartins.eng.br',
-    url = 'http://blohg.org/',
+    name='blohg',
+    version=__version__,
+    license='GPL-2',
+    description='A Mercurial-based blog engine',
+    long_description=open(os.path.join(cwd, 'README.rst')).read(),
+    author='Rafael Goncalves Martins',
+    author_email='rafael@rafaelmartins.eng.br',
+    url='http://blohg.org/',
     platforms='any',
-    packages = find_packages(),
-    include_package_data = True,
-    zip_safe = False,
-    install_requires = [
+    packages=find_packages(),
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=[
         'docutils>=0.7',
         'Flask>=0.6',
         'Flask-Babel>=0.6',
@@ -39,7 +40,7 @@ setup(
         'Jinja2>=2.5.2',
         'Mercurial>=1.6',
         'PyYAML',
-        'Pygments', # TODO: make this dependency optional
+        'Pygments',  # TODO: make this dependency optional
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -51,8 +52,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP :: WSGI :: Application',
         'Topic :: Software Development :: Version Control',
     ],
-    data_files = [
+    data_files=[
         ('share/blohg', ['share/blohg.wsgi']),
     ],
-    scripts = ['bin/blohg'],
+    scripts=['bin/blohg'],
 )

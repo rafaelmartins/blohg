@@ -52,9 +52,9 @@ def rst2html(rst):
     """
 
     parts = publish_parts(
-        source = rst,
-        writer_name = 'html4css1',
-        settings_overrides = {
+        source=rst,
+        writer_name='html4css1',
+        settings_overrides={
             'input_encoding': 'utf-8',
             'output_encoding': 'utf-8',
             'initial_header_level': 3,
@@ -281,7 +281,8 @@ class Metadata(object):
         for i in re_metadata.finditer(self._filecontent):
             self._vars[i.group(1)] = i.group(2).decode('utf-8')
         if 'tags' in self._vars:
-            self._vars['tags'] = [i.strip() for i in self._vars['tags'].split(',')]
+            self._vars['tags'] = [i.strip() for i in \
+                                  self._vars['tags'].split(',')]
         filelog = self._filectx.filelog()
         changesets = list(filelog)
         if 'date' in self._vars:

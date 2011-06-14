@@ -53,12 +53,12 @@ def create_app(repo_path=None):
     @app.context_processor
     def setup_jinja2():
         return dict(
-            version = __version__,
-            is_post = lambda x: x.startswith('post/'),
-            current_path = request.path.strip('/'),
-            active_page = request.path.strip('/').split('/')[0],
-            tags = app.hg.tags,
-            config = app.config,
+            version=__version__,
+            is_post=lambda x: x.startswith('post/'),
+            current_path=request.path.strip('/'),
+            active_page=request.path.strip('/').split('/')[0],
+            tags=app.hg.tags,
+            config=app.config,
         )
 
     @babel.timezoneselector

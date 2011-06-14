@@ -36,24 +36,24 @@ def atom(tag=None):
     else:
         posts = current_app.hg.get_all(True)
     feed = AtomFeed(
-        title = title,
-        subtitle = current_app.config['TAGLINE'],
-        url = url_for('views.home'),
-        feed_url = url_for('views.atom', tag=tag),
-        author = current_app.config['AUTHOR'],
-        generator = ('blohg', None, None)
+        title=title,
+        subtitle=current_app.config['TAGLINE'],
+        url=url_for('views.home'),
+        feed_url=url_for('views.atom', tag=tag),
+        author=current_app.config['AUTHOR'],
+        generator=('blohg', None, None)
     )
     for post in posts[:int(current_app.config['POSTS_PER_PAGE'])]:
         feed.add(
             FeedEntry(
-                title = post.title,
-                content = post.full_html,
-                summary = post.abstract_html,
-                id = url_for('views.content', slug=post.slug),
-                url = url_for('views.content', slug=post.slug, _external=True),
-                author = current_app.config['AUTHOR'],
-                published = post.datetime,
-                updated = post.datetime,
+                title=post.title,
+                content=post.full_html,
+                summary=post.abstract_html,
+                id=url_for('views.content', slug=post.slug),
+                url=url_for('views.content', slug=post.slug, _external=True),
+                author=current_app.config['AUTHOR'],
+                published=post.datetime,
+                updated=post.datetime,
             )
         )
     return feed
@@ -70,9 +70,9 @@ def content(slug):
         title = u'Post: %s' % page.title
     return render_template(
         '_posts.html',
-        title = title,
-        posts = [page],
-        full_content = True,
+        title=title,
+        posts=[page],
+        full_content=True,
     )
 
 
@@ -88,9 +88,9 @@ def home(page):
     end = int(current * ppp)
     return render_template(
         '_posts.html',
-        posts = pages[init:end],
-        full_content = False,
-        pagination = {
+        posts=pages[init:end],
+        full_content=False,
+        pagination={
             'num_pages': num_pages,
             'current': page,
         }
@@ -103,8 +103,8 @@ def post_list():
 
     return render_template(
         'post_list.html',
-        title = u'Posts',
-        posts = current_app.hg.get_all(True),
+        title=u'Posts',
+        posts=current_app.hg.get_all(True),
     )
 
 
@@ -121,14 +121,14 @@ def tag(tag):
     posts = current_app.hg.get_by_tag(tags)
     return render_template(
         '_posts.html',
-        title = u'Tag: %s' % ' + '.join(tags),
-        tag = tags,
-        posts = posts,
-        full_content = False,
+        title=u'Tag: %s' % ' + '.join(tags),
+        tag=tags,
+        posts=posts,
+        full_content=False,
     )
 
 
-@views.route('/source/') # just to make robots.txt's url_for happy :)
+@views.route('/source/')  # just to make robots.txt's url_for happy :)
 @views.route('/source/<path:slug>/')
 def source(slug=None):
     """View that shows the source code of a given static page/post."""
@@ -155,4 +155,3 @@ def robots():
     response = make_response(render_template('robots.txt'))
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
-

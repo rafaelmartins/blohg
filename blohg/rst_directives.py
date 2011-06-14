@@ -152,7 +152,7 @@ class SourceCode(Directive):
             lexer = TextLexer()
         formatter = HtmlFormatter(noclasses=False)
         if 'linenos' in self.options:
-            formatter.linenos = 2 # inline
+            formatter.linenos = 2  # inline
         parsed = highlight(u'\n'.join(self.content), lexer, formatter)
         return [nodes.raw('', parsed, format='html')]
 

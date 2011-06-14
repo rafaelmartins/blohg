@@ -15,7 +15,7 @@ import sys
 
 from flaskext.script import Command, Manager, Server
 from mercurial import commands, ui, error
-from pkg_resources import resource_filename, resource_listdir 
+from pkg_resources import resource_filename, resource_listdir
 
 from blohg import create_app
 
@@ -62,13 +62,12 @@ def create_script():
     :return: the script object (Flask-Script' Manager instance).
     """
 
-    script = Manager(create_app, with_default_commands=False)    
+    script = Manager(create_app, with_default_commands=False)
     script.add_option('-r', '--repo-path', dest='repo_path', default=os.getcwd(),
         required=False)
     server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
     script.add_command('runserver', server)
     script.add_command('initrepo', InitRepo())
-
 
     return script
