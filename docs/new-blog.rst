@@ -130,3 +130,20 @@ You should avoid store big files inside the Mercurial repository.
 
 .. _CSS: http://www.w3.org/Style/CSS/
 
+
+``robots.txt``
+--------------
+
+blohg will disallow search engines from index your source files (``/source/``
+path), creating a ``robots.txt`` file at the root of your blohg instance. If you
+isn't running blohg from the root of your domain, you should make the requests
+pointing to ``/robots.txt`` redirect to ``/path-to-your-blohg/robots.txt`` in
+your webserver configuration.
+
+If you don't want this ``robots.txt`` file, you can just add the following
+content to your ``config.yaml`` file:
+
+.. code-block:: yaml
+
+   ROBOTS_TXT: False
+

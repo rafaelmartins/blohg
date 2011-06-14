@@ -1,0 +1,2 @@
+User-agent: *
+Disallow: {{ url_for('views.source', _external=False) }}

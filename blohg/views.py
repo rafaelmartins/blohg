@@ -28,7 +28,7 @@ def atom(tag=None):
     title = current_app.config['TITLE']
     if tag is not None:
         tags = tag.split('/')
-        for _tag in tags:    
+        for _tag in tags:
             if _tag not in current_app.hg.tags:
                 abort(404)
         title += u' » %s' % ' + '.join(tags)
@@ -128,14 +128,31 @@ def tag(tag):
     )
 
 
+@views.route('/source/') # just to make robots.txt's url_for happy :)
 @views.route('/source/<path:slug>/')
-def source(slug):
+def source(slug=None):
     """View that shows the source code of a given static page/post."""
 
+    if slug is None:
+        abort(404)
     source = current_app.hg.get(slug)
     if source is None:
         abort(404)
     response = make_response(source.full)
+    response.headers['Content-Type'] = 'text/plain; charset=utf-8'
+    return response
+
+
+@views.route('/robots.txt')
+def robots():
+    """Viev that generates a robots.txt file for ``/source/``  path, to avoid
+    source files to be indexed by search engines. Can be disabled setting
+    ROBOTS_TXT configuration parameter to ``False``
+    """
+
+    if not current_app.config['ROBOTS_TXT']:
+        abort(404)
+    response = make_response(render_template('robots.txt'))
     response.headers['Content-Type'] = 'text/plain; charset=utf-8'
     return response
 
