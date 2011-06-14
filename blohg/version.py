@@ -2,15 +2,15 @@
 """
     blohg.version
     ~~~~~~~~~~~~~
-    
+
     Module with the version number related stuff.
-    
+
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
 # CHANGE ME BEFORE THE RELEASE!
-version = '0.5'
+version = '0.5+'
 
 # code snippet from sphinx
 # http://bitbucket.org/birkenfeld/sphinx/src/tip/sphinx/__init__.py
