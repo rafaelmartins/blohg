@@ -21,8 +21,8 @@ from urllib import pathname2url
 import posixpath
 
 
-__all__ = ['Youtube', 'Math', 'Code', 'AttachmentImage', 'AttachmentFigure',
-           'SubPages']
+__all__ = ['Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
+           'AttachmentFigure', 'SubPages']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
