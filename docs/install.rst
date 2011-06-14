@@ -18,7 +18,7 @@ Manually
 --------
 
 Download the latest tarball from PyPI_, extract it and run::
-   
+
    # python setup.py install
 
 
@@ -26,11 +26,11 @@ Using ``pip``/``easy_install``
 ------------------------------
 
 To install blohg using ``pip``, type::
-    
+
     # pip install blohg
 
 Or using ``easy_install``, type::
-    
+
     # easy_install blohg
 
 Gentoo Linux
@@ -38,7 +38,7 @@ Gentoo Linux
 
 There's a Gentoo_ ebuild available at the ``gentoo-x86`` tree. Install it
 using::
-    
+
     # emerge -av www-apps/blohg
 
 .. _Gentoo: http://www.gentoo.org/

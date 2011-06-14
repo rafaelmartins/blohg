@@ -5,7 +5,7 @@ At this point you should have a Mercurial repositor with your blog ready to be
 deployed.
 
 Copy it to your remote server as usual. e.g. using ``ssh``::
-    
+
     $ hg clone my_blohg ssh://user@yourdomain.tld/path/to/my_blohg/
 
 Supposing that your Mercurial repository is ``my_blohg``.
@@ -23,7 +23,7 @@ http://flask.pocoo.org/docs/deploying/
 To create your Flask_ ``app`` object, use the following code:
 
 .. code-block:: python
-   
+
    from blohg import create_app
    application = create_app('/path/to/my_blohg')
 

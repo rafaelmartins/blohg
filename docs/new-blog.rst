@@ -10,7 +10,7 @@ Initializing the repository
 ---------------------------
 
 To create a new repository, type::
-    
+
     $ blohg initrepo --repo-path my_blohg
 
 Where ``my_blohg`` is the directory where the template will be installed.

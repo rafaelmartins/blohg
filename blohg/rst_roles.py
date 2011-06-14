@@ -2,9 +2,9 @@
 """
     blohg.rst_roles
     ~~~~~~~~~~~~~~~
-    
+
     Module with the custom blohg reStructuredText roles.
-    
+
     :copyright: (c) 2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -22,7 +22,7 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
     """reStructuredText role that creates a Text node with the full url for an
     attachment.
     """
-    
+
     full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], text)
     if full_path not in list(current_app.hg.revision):
         msg = inliner.reporter.error(

@@ -2,10 +2,10 @@
 """
     blohg.mercurial_theme
     ~~~~~~~~~~~~~~~~~~~~~
-    
+
     Module with the stuff needed by blohg to use Jinja2 templates and
     static files from the Mercurial repository.
-    
+
     :copyright: (c) 2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -26,10 +26,10 @@ def setup_theme(app):
     repository and fallback to the default jinja loader. This function
     also replace the static url endpoint by another, that load files
     from the mercurial repository as well.
-    
+
     :param app: the application object.
     """
-    
+
     old_loader = app.jinja_loader
     app.jinja_loader = ChoiceLoader([
         MercurialLoader(),
@@ -49,7 +49,7 @@ def setup_theme(app):
 
 class MercurialLoader(BaseLoader):
     """A Jinja2 loader that loads templates from a Mercurial repository"""
-    
+
     def get_source(self, environment, template):
         pieces = split_template_path(template)
         templates_dir = current_app.config['TEMPLATES_DIR']
@@ -69,10 +69,10 @@ class MercurialStaticFile(object):
     """Callable to create a Response object for static files loaded from
     the current Mercurial repository.
     """
-    
+
     def __init__(self, directory):
         self._directory = directory
-    
+
     def __call__(self, filename):
         filename = posixpath.join(self._directory, filename)
         mimetype = mimetypes.guess_type(filename)[0]

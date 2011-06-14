@@ -2,9 +2,9 @@
 """
     blohg.wsgi
     ~~~~~~~~~~
-    
+
     Example WSGI script for Apache/mod_wsgi.
-    
+
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """

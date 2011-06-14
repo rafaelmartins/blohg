@@ -2,9 +2,9 @@
 """
     blohg
     ~~~~~
-    
+
     Main package.
-    
+
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -21,14 +21,14 @@ from blohg.views import views
 
 def create_app(repo_path=None):
     """Application factory.
-    
+
     :param repo_path: the path to the mercurial repository.
     :return: the WSGI application (Flask instance).
     """
-    
+
     # create the app object
     app = Flask(__name__)
-    
+
     # register some sane default config values
     app.config.setdefault('AUTHOR', 'Your Name Here')
     app.config.setdefault('POSTS_PER_PAGE', 10)
@@ -39,16 +39,16 @@ def create_app(repo_path=None):
     app.config.setdefault('TEMPLATES_DIR', 'templates')
     app.config.setdefault('STATIC_DIR', 'static')
     app.config.setdefault('ATTACHMENT_DIR', 'content/attachments')
-    
+
     app.config['REPO_PATH'] = repo_path
-    
+
     # init mercurial stuff
     setup_mercurial(app)
-    
+
     # setup extensions
     setup_theme(app)
     babel = Babel(app)
-    
+
     @app.context_processor
     def setup_jinja2():
         return dict(
@@ -59,15 +59,15 @@ def create_app(repo_path=None):
             tags = app.hg.tags,
             config = app.config,
         )
-    
+
     @babel.timezoneselector
     def get_timezone():
         return app.config['TIMEZONE']
-    
+
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template('404.html'), 404
-    
+
     app.register_module(views)
-    
+
     return app

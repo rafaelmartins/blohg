@@ -2,9 +2,9 @@
 """
     blohg.views
     ~~~~~~~~~~~
-    
+
     A generic Flask Module with all the views.
-    
+
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -24,7 +24,7 @@ views = Module(__name__)
 @views.route('/rss/<path:tag>/')  # dumb redirect to keep the compatibility
 def atom(tag=None):
     """General purpose atom feed."""
-    
+
     title = current_app.config['TITLE']
     if tag is not None:
         tags = tag.split('/')
@@ -100,7 +100,7 @@ def home(page):
 @views.route('/post/')
 def post_list():
     """Page with a simple list of posts (link + creation date)."""
-     
+
     return render_template(
         'post_list.html',
         title = u'Posts',
@@ -113,7 +113,7 @@ def tag(tag):
     """Page that lists the abstract of all available posts for the given
     tag.
     """
-    
+
     tags = tag.split('/')
     for _tag in tags:
         if _tag not in current_app.hg.tags:
@@ -131,7 +131,7 @@ def tag(tag):
 @views.route('/source/<path:slug>/')
 def source(slug):
     """View that shows the source code of a given static page/post."""
-    
+
     source = current_app.hg.get(slug)
     if source is None:
         abort(404)

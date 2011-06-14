@@ -70,7 +70,7 @@ Repository structure
 --------------------
 
 The repository structure is pretty easy to understand::
-    
+
     blohg/repo_template/
     |-- config.yaml
     |-- content

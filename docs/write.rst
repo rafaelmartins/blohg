@@ -14,7 +14,7 @@ blohg implements the concept of tags for posts. Tags are defined as a
 comma-separated list inside a reStructuredText comment:
 
 .. code-block:: rest
-   
+
    .. tags: my,cool,tags
 
 Put this comment wherever you want inside the post.
@@ -29,7 +29,7 @@ want to override this date, just insire the UNIX timestamp of the desired date
 inside a reStructuredText comment:
 
 .. code-block:: rest
-   
+
    .. date: 1304124215
 
 This is useful if you want to migrate content from another blog.
@@ -52,7 +52,7 @@ Identical to the ``image`` directive, but loads the image directly from your
 Usage example:
 
 .. code-block:: rest
-    
+
     .. attachment-image:: mercurial.png
 
 Directive ``attachment-figure``
@@ -64,9 +64,9 @@ Identical to the ``figure`` directive, but loads the image directly from your
 Usage example:
 
 .. code-block:: rest
-    
+
     .. attachment-figure:: mercurial.png
-       
+
 
 Interpreted Text Role ``attachment``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
@@ -77,7 +77,7 @@ node).
 Usage example:
 
 .. code-block:: rest
-    
+
     This is the attachment link: :attachment:`mercurial.png`
 
 
@@ -98,7 +98,7 @@ from YouTube_.
 Usage example:
 
 .. code-block:: rest
-    
+
     .. youtube:: erPnyi90cIc
        :align: center
        :height: 344
@@ -114,13 +114,13 @@ http://alexgorbatchev.com/SyntaxHighlighter/
 Usage example:
 
 .. code-block:: rest
-   
+
     .. code:: python
-      
+
         print "Hello, World!"
-    
+
     .. raw:: html
-        
+
         <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
         <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushPython.js"></script>
         <link type="text/css" rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCoreDefault.css"/>
@@ -131,14 +131,14 @@ Directive ``sourcecode``
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 reStructuredText directive that does syntax highlight using Pygments.
-    
+
 Usage example:
 
 .. code-block:: rest
 
     .. sourcecode:: python
        :linenos:
-       
+
         print "Hello, World!"
 
 The ``linenos`` option enables the line numbering.
@@ -149,7 +149,7 @@ definitions, using the ``pygmentize`` script, shipped with Pygments.
 ::
 
     $ pygmentyze -S friendly -f html > static/pygments.css
-    
+
 Where ``friendly`` will be your Pygments style of choice.
 
 This file should be included in the main template, usually ``base.html``:
@@ -171,9 +171,9 @@ LaTeX equation, using Google Chart API.
 Usage example:
 
 .. code-block:: rest
-    
+
     .. math::
-    
+
         \frac{x^2}{1+x}
 
 
@@ -206,7 +206,7 @@ Previewing your post/page
 
 After write your post/page you will want to preview it in your browser. You
 should use the ``blohg`` script to run the development server::
-    
+
     $ blohg runserver --repo-path my_blohg
 
 Supposing that your Mercurial repository is the ``my_blohg`` directory.
@@ -219,7 +219,7 @@ stuff that was already commited. This is the default behavior of the application
 when running on the production server.
 
 For help with the script options, type::
-    
+
     $ blohg runserver -h
 
 Commiting your post/page

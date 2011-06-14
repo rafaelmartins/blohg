@@ -2,10 +2,10 @@
 """
     blohg.mercurial_content
     ~~~~~~~~~~~~~~~~~~~~~~~
-    
+
     Module with Mercurial-related stuff needed by blohg to load posts
     and static pages.
-    
+
     :copyright: (c) 2010-2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
@@ -46,11 +46,11 @@ for role in rst_roles.__roles__:
 def rst2html(rst):
     """Function that converts reStructuredText to HTML, returning the body
     of the HTML file.
-    
+
     :param rst: the reStructuredText string.
     :return: a dict with the title and the fragment of the generated HTML.
     """
-    
+
     parts = publish_parts(
         source = rst,
         writer_name = 'html4css1',
@@ -69,12 +69,12 @@ def rst2html(rst):
 def load_config(app):
     """This function merges the configuration parameters from the YAML
     file with the ``app.config`` object.
-    
+
     :param app: the application object.
     """
-    
+
     app.config.update(yaml.load(app.hg.config))
-    
+
     # debug parameters
     if app.debug:
         if 'GOOGLE_ANALYTICS' in app.config:
@@ -85,25 +85,25 @@ def load_config(app):
 def setup_mercurial(app):
     """This function adds a :class:`MercurialContent` instance to an
     application object, as a ``hg`` attribute, and reloads it as needed.
-    
+
     :param app: the application object.
     """
-    
+
     @app.before_request
     def before_request():
-        
+
         # always init the repository
         repo_path = app.config.get('REPO_PATH', '.')
         repo = hg.repository(ui.ui(), repo_path)
-        
+
         refresh = False
-        
+
         if app.debug:
             refresh = True
-        
+
         if not hasattr(app, 'hg'):
             refresh = True
-        
+
         # If we still don't want a refresh, it seems that we have an app.hg
         # object, then we need to check if it's new enough
         if not refresh:
@@ -111,23 +111,23 @@ def setup_mercurial(app):
             # want the committed stuff.
             if repo['tip'].rev() != app.hg.repo['tip'].rev():
                 refresh = True
-        
+
         if g is not None:
             g.refresh = refresh
-        
+
         # refreshing :)
         if refresh:
-            
+
             # Deleting the app.hg element. Not sure if it's worth :)
             if hasattr(app, 'hg'):
                 del app.hg
-            
+
             revision_id = None
             if not app.debug:
                 revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
             load_config(app)
-    
+
     @app.after_request
     def after_request(response):
         if g is not None:
@@ -137,66 +137,66 @@ def setup_mercurial(app):
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
-    
+
     config_file = 'config.yaml'
     content_dir = 'content'
-    
+
     def __init__(self, repo, revision_id):
         """Class constructor"""
-        
+
         self.repo = repo
         self.revision_id = revision_id
         self.revision = repo[revision_id]
-        
+
         if current_app is not None:
             self.content_dir = current_app.config['CONTENT_DIR']
-    
+
     @cached_property
     def _pages(self):
         """Method that returns an ordered list with all the pages/posts
         available.
-        
+
         :return: a list of :class:`Metadata` objects.
         """
-        
+
         metadata = []
         for filename in self.revision:
             if filename.startswith(self.content_dir + '/') and \
                filename.endswith('.rst'):
                 metadata.append(Metadata(self.repo, self.revision[filename]))
         return sorted(metadata, self._compare_by_date)
-    
+
     def _compare_by_date(self, a, b):
         """Method that compares 2 :class:`Metadata` objects by creation
         date.
         """
-        
+
         return b.date - a.date
-    
+
     def get(self, filename):
         """Method that returns a :class:`Metadata` object for a given
         filename.
-        
+
         :param filename: the file name string.
         :return: a :class:`Metadata` object.
         """
-        
+
         full_path = os.path.join(self.content_dir, filename + '.rst')
         for page in self._pages:
             if page.path == full_path:
                 return page
         return None
-    
+
     def get_all(self, only_posts=False):
         """Method that returns a list of :class:`Metadata` objects for
         all the available files, ordered by creation date.
-        
+
         :param only_posts: a boolean that makes the method returns only
                            the available posts for the given locale, not
                            the static pages.
         :return: a list of :class:`Metadata` objects.
         """
-        
+
         my_posts_dir = os.path.join(self.content_dir, 'post')
         metadata = []
         for page in self._pages:
@@ -206,15 +206,15 @@ class MercurialContent(object):
             if page.path.startswith(my_posts_dir):
                 metadata.append(page)
         return metadata
-    
+
     def get_by_tag(self, tag):
         """Method that returns a list of :class:`Metadata` objects for a
         given list of tag identifier strings.
-        
+
         :param tag: a list of tag identifier strings.
         :return: a list of :class:`Metadata` objects.
         """
-        
+
         posts = []
         for post in self.get_all(only_posts=True):
             valid = True
@@ -224,14 +224,14 @@ class MercurialContent(object):
             if valid:
                 posts.append(post)
         return posts
-    
+
     @cached_property
     def tags(self):
         """Method that returns a list of all the available tag identifiers.
-        
+
         :return: a list of tag identifiers strings.
         """
-        
+
         tags = []
         for post in self.get_all(only_posts=True):
             for tag in post.tags:
@@ -239,41 +239,41 @@ class MercurialContent(object):
                     tags.append(tag)
         tags.sort()
         return tags
-    
+
     @cached_property
     def config(self):
         """Method that returns a string with the content of the config.yaml
         file.
-        
+
         :return: a string with the content of the configuration file.
         """
-        
+
         if self.config_file not in list(self.revision):
             raise RuntimeError('Configuration file not found: %r' % \
                 self.config_file)
         return self.revision[self.config_file].data()
-    
+
     def __repr__(self):
         return '<MercurialContent %r>' % self.repo.root
-    
+
 
 class Metadata(object):
     """Static page/blog post metadata object."""
-    
+
     _title = None
     _content_dir = 'content'
-    
+
     def __init__(self, repo, filectx):
         """Class constructor.
-        
+
         :param repo: a Mercurial repository object (not
                      :class:`MercurialContent`)
         :param filectx: the Mercurial file context of the file.
         """
-        
+
         if current_app is not None:
             self._content_dir = current_app.config['CONTENT_DIR']
-        
+
         self._repo = repo
         self._filectx = filectx
         self._filecontent = filectx.data()
@@ -306,24 +306,24 @@ class Metadata(object):
         if 'mdate' in self._vars:
             self._vars['mdatetime'] = \
                 datetime.utcfromtimestamp(self._vars['mdate'])
-    
+
     def _set_title(self, title):
         if self._title is None:
             title = title.strip()
             if title != '':
                 self._title = title
-    
+
     @cached_property
     def path(self):
         return self._filectx.path()
-    
+
     @cached_property
     def slug(self):
         match = re.match(r'%s/(.+)\.rst' % self._content_dir,
             self._filectx.path())
         if match is not None:
             return match.group(1)
-    
+
     @cached_property
     def title(self):
         # workaround to load the title from rst
@@ -331,11 +331,11 @@ class Metadata(object):
         if self._title is not None:
             return self._title
         return self._vars.get('title', u'')
-    
+
     @cached_property
     def tags(self):
         return self._vars.get('tags', [])
-    
+
     @cached_property
     def abstract(self):
         return re_read_more.split(self._filecontent)[0].decode('utf-8')
@@ -345,29 +345,29 @@ class Metadata(object):
         parts = rst2html(self.abstract)
         self._set_title(parts['title'])
         return parts['fragment']
-    
+
     @cached_property
     def full(self):
         return self._filecontent.decode('utf-8')
-    
+
     @cached_property
     def full_html(self):
         parts = rst2html(self.full)
         self._set_title(parts['title'])
         return parts['fragment']
-    
+
     @cached_property
     def read_more(self):
         return len(re_read_more.split(self._filecontent)) > 1
-    
+
     def get(self, key, default=None):
         return self._vars.get(key, default)
-    
+
     def __getattr__(self, attr):
         return self.get(attr)
-    
+
     def __str__(self):
         return self._filecontent
-    
+
     def __repr__(self):
         return '<Metadata %r>' % self.slug
