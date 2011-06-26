@@ -50,13 +50,30 @@ def setup_theme(app):
 class MercurialLoader(BaseLoader):
     """A Jinja2 loader that loads templates from a Mercurial repository"""
 
+    def _filerev(self, filectx):
+        filelog = filectx.filelog()
+        revision_list = list(filelog)
+        if len(revision_list) == 0:
+            revision_id = 0
+        else:
+            revision_id = revision_list[-1]
+        return filelog.linkrev(revision_id)
+
     def get_source(self, environment, template):
         pieces = split_template_path(template)
         templates_dir = current_app.config['TEMPLATES_DIR']
         filename = posixpath.join(templates_dir, *pieces)
         if filename in list(current_app.hg.revision):
-            contents = current_app.hg.revision[filename].data().decode('utf-8')
-            return contents, filename, lambda: not g.refresh
+            filectx = current_app.hg.revision[filename]
+            contents = filectx.data().decode('utf-8')
+            revision = self._filerev(filectx)
+            def up2date():
+                if g is None or g.repo.rev() is None or revision == -1:
+                    return False
+                _filectx = g.repo[filename]
+                _revision = self._filerev(_filectx)
+                return revision >= _revision
+            return contents, filename, up2date
         raise TemplateNotFound(template)
 
     def list_templates(self):

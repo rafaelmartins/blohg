@@ -112,8 +112,12 @@ def setup_mercurial(app):
             if repo['tip'].rev() != app.hg.repo['tip'].rev():
                 refresh = True
 
+        revision_id = None
+        if not app.debug:
+            revision_id = 'tip'
+
         if g is not None:
-            g.refresh = refresh
+            g.repo = repo[revision_id]
 
         # refreshing :)
         if refresh:
@@ -122,17 +126,8 @@ def setup_mercurial(app):
             if hasattr(app, 'hg'):
                 del app.hg
 
-            revision_id = None
-            if not app.debug:
-                revision_id = 'tip'
             app.hg = MercurialContent(repo, revision_id)
             load_config(app)
-
-    @app.after_request
-    def after_request(response):
-        if g is not None:
-            g.refresh = False
-        return response
 
 
 class MercurialContent(object):
