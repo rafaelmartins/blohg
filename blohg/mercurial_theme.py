@@ -70,9 +70,7 @@ class MercurialLoader(BaseLoader):
             def up2date():
                 if g is None or g.repo.rev() is None or revision == -1:
                     return False
-                _filectx = g.repo[filename]
-                _revision = self._filerev(_filectx)
-                return revision >= _revision
+                return revision >= self._filerev(g.repo[filename])
             return contents, filename, up2date
         raise TemplateNotFound(template)
 
