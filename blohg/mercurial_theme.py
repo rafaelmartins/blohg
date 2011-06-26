@@ -94,9 +94,10 @@ class MercurialStaticFile(object):
         if mimetype is None:
             mimetype = 'application/octet-stream'
         try:
-            data = current_app.hg.revision[filename].data()
+            filectx = current_app.hg.revision[filename]
         except:
             abort(404)
+        data = filectx.data()
         rv = current_app.response_class(data, mimetype=mimetype,
             direct_passthrough=True)
         rv.cache_control.public = True
@@ -104,10 +105,9 @@ class MercurialStaticFile(object):
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
         try:
-            date = int(current_app.hg.revision[filename].date()[0])
+            date = int(filectx.date()[0])
         except:
             date = time()
         rv.set_etag('blohg-%s-%s-%s' % (date, len(data), adler32(filename) \
             & 0xffffffff))
-        rv = rv.make_conditional(request)
-        return rv
+        return rv.make_conditional(request)
