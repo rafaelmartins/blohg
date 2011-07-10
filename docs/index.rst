@@ -22,4 +22,5 @@ Contents:
    new-blog
    write
    deploy
+   upgrade
 
