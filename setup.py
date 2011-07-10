@@ -34,7 +34,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'docutils>=0.7',
-        'Flask>=0.6',
+        'Flask>=0.7',
         'Flask-Babel>=0.6',
         'Flask-Script>=0.3',
         'Jinja2>=2.5.2',
