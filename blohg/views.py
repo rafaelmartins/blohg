@@ -11,11 +11,11 @@
 
 import math
 
-from flask import Module, abort, current_app, make_response, render_template, \
+from flask import Blueprint, abort, current_app, make_response, render_template, \
      url_for
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 
-views = Module(__name__)
+views = Blueprint('views', __name__)
 
 
 @views.route('/atom/')

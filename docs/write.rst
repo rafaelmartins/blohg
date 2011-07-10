@@ -157,7 +157,7 @@ This file should be included in the main template, usually ``base.html``:
 .. code-block:: html+jinja
 
     <link type="text/css" media="screen" rel="stylesheet" href="{{
-        url_for('.static', filename='pygments.css') }}" />
+        url_for('static', filename='pygments.css') }}" />
 
 This directive is based on ``rst-directive.py``, created by Pygments authors.
 

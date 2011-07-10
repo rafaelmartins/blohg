@@ -36,7 +36,7 @@ def setup_theme(app):
         old_loader,
     ])
     app.add_url_rule(
-        app.static_path + '/<path:filename>',
+        app.static_url_path + '/<path:filename>',
         endpoint='static',
         view_func=MercurialStaticFile(app.config['STATIC_DIR'])
     )
