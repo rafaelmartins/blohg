@@ -18,6 +18,9 @@ Where ``my_blohg`` is the directory where the template will be installed.
 Make sure that the directory doesn't exists, or is empty, before try to
 initialize the repository.
 
+Do the initial commit::
+
+    $ hg commit -Am 'initial commit'
 
 Configuring your blog
 ---------------------
