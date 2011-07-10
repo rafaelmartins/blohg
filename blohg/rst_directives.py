@@ -130,7 +130,7 @@ class SourceCode(Directive):
     This file should be included in the main template, usually ``base.html``::
 
         <link type="text/css" media="screen" rel="stylesheet" href="{{
-            url_for('.static', filename='pygments.css') }}" />
+            url_for('static', filename='pygments.css') }}" />
 
     This directive is based on ``rst-directive.py``, created by Pygments authors.
     """
@@ -192,7 +192,7 @@ class AttachmentImage(Image):
                     self.name, full_path
                 )
             )
-        self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
+        self.arguments[0] = url_for('attachments', filename=my_file, _external=True)
         return Image.run(self)
 
 
@@ -207,7 +207,7 @@ class AttachmentFigure(Figure):
                     self.name, full_path
                 )
             )
-        self.arguments[0] = url_for('.attachments', filename=my_file, _external=True)
+        self.arguments[0] = url_for('attachments', filename=my_file, _external=True)
         return Figure.run(self)
 
 

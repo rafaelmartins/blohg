@@ -33,7 +33,7 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
         )
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
-    url = url_for('.attachments', filename=text, _external=True)
+    url = url_for('attachments', filename=text, _external=True)
     return [reference(url, url, refuri=url)], []
 
 
