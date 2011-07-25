@@ -23,6 +23,9 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
     attachment.
     """
 
+    label = ""
+    if '|' in text:
+        text, label = text.split('|')
     full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], text)
     if full_path not in list(current_app.hg.revision):
         msg = inliner.reporter.error(
@@ -34,7 +37,9 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     url = url_for('attachments', filename=text, _external=True)
-    return [reference(url, url, refuri=url)], []
+    if not label:
+        label = url
+    return [reference(url, label, refuri=url)], []
 
 
 __roles__ = {
