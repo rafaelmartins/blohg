@@ -69,16 +69,17 @@ Usage example:
 
 
 Interpreted Text Role ``attachment``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interpreted Text Role that generates a link to the attachment (``reference``
-node).
+node). You can add a custom label for link after '|'.
 
 Usage example:
 
 .. code-block:: rest
 
     This is the attachment link: :attachment:`mercurial.png`
+    This is the attachment link: :attachment:`mercurial.png|link to file`
 
 
 Additional reStructuredText directives
