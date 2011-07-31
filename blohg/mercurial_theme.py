@@ -95,9 +95,9 @@ class MercurialStaticFile(object):
             mimetype = 'application/octet-stream'
         try:
             filectx = current_app.hg.revision[filename]
+            data = filectx.data()
         except:
             abort(404)
-        data = filectx.data()
         rv = current_app.response_class(data, mimetype=mimetype,
             direct_passthrough=True)
         rv.cache_control.public = True
