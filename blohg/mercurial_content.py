@@ -32,6 +32,7 @@ except ImportError:
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
+re_author = re.compile(r'^(?P<name>[^<]*[^ ])( ?<(?P<email>[^<]*)>)?$')
 
 
 # registering docutils' directives
@@ -280,13 +281,13 @@ class Metadata(object):
                                   self._vars['tags'].split(',')]
         filelog = self._filectx.filelog()
         changesets = list(filelog)
+        first_changeset = self._repo[filelog.linkrev(0)]
         if 'date' in self._vars:
             try:
                 self._vars['date'] = int(self._vars['date'])
             except ValueError:
                 del self._vars['date']
         else:
-            first_changeset = self._repo[filelog.linkrev(0)]
             self._vars['date'] = int(first_changeset.date()[0])
             if self._vars['date'] == 0:
                 self._vars['date'] = int(time.time())
@@ -302,12 +303,40 @@ class Metadata(object):
         if 'mdate' in self._vars:
             self._vars['mdatetime'] = \
                 datetime.utcfromtimestamp(self._vars['mdate'])
+        if 'author' not in self._vars:
+            try:
+                self._vars['author'] = str(first_changeset.user())
+            except:
+                del self._vars['author']
+            else:
+                if self._vars['author'] == '':
+                    try:
+                        self._vars['author'] = str(self._filectx.user())
+                    except:
+                        del self._vars['author']
 
     def _set_title(self, title):
         if self._title is None:
             title = title.strip()
             if title != '':
                 self._title = title
+
+    @cached_property
+    def _parsed_author(self):
+        if 'author' not in self._vars:
+            return {}
+        rv = re_author.match(self._vars['author'])
+        if rv is None:
+            return {}
+        return rv.groupdict()
+
+    @cached_property
+    def author_name(self):
+        return self._parsed_author.get('name', '')
+
+    @cached_property
+    def author_email(self):
+        return self._parsed_author.get('email', '')
 
     @cached_property
     def path(self):

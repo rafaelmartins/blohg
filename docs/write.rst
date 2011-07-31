@@ -35,6 +35,19 @@ inside a reStructuredText comment:
 This is useful if you want to migrate content from another blog.
 
 
+Overriding the post/page author
+-------------------------------
+
+blohg retrieves the author of each post/page from the Mercurial repository,
+like it does with the creation date. This data can be used in templates through
+the variables ``post.author_name`` and ``post.author_email``. To override
+this data, add a reStructuredText comment like this:
+
+.. code-block:: rest
+    
+    .. author: John <john@example.com>
+
+
 Adding attachments
 ------------------
 
