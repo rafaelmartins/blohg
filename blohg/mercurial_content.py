@@ -108,14 +108,14 @@ def setup_mercurial(app):
         # If we still don't want a refresh, it seems that we have an app.hg
         # object, then we need to check if it's new enough
         if not refresh:
-            # using the 'tip' revision, as we're not debugging, and just
+            # using the head of default branch revision, as we're not debugging, and just
             # want the committed stuff.
-            if repo['tip'].rev() != app.hg.repo['tip'].rev():
+            if repo[repo.branchtags()["default"]].rev() != app.hg.repo[repo.branchtags()["default"]].rev():
                 refresh = True
 
         revision_id = None
         if not app.debug:
-            revision_id = 'tip'
+            revision_id = repo.branchtags()["default"]
 
         if g is not None:
             g.repo = repo[revision_id]
