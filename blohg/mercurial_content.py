@@ -110,7 +110,7 @@ def setup_mercurial(app):
         if not refresh:
             # using the head of default branch revision, as we're not debugging, and just
             # want the committed stuff.
-            if repo[repo.branchtags()["default"]].rev() != app.hg.repo[repo.branchtags()["default"]].rev():
+            if repo[repo.branchtags()["default"]].rev() != app.hg.repo[app.hg.repo.branchtags()["default"]].rev():
                 refresh = True
 
         revision_id = None
