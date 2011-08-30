@@ -34,7 +34,13 @@
 {% endif -%}
 
 <div class="metadata">
-    Author: <a href="mailto:{{ post.author_email }}">{{ post.author_name }}</a><br />
+    Author:
+    {% if post.author_email -%}
+    <a href="mailto:{{ post.author_email }}">{{ post.author_name }}</a>
+    {%- else %}
+    {{ post.author_name }}
+    {%- endif %}
+    <br />
     Published on: {{ post.datetime|datetimeformat }}
     {%- if post.mdatetime %} - Modified on: {{ post.mdatetime|datetimeformat }}{% endif %}
     <br />
