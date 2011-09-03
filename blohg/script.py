@@ -10,49 +10,21 @@
 """
 
 import os
-import shutil
 import sys
-
 from flaskext.script import Command, Manager, Server
-from mercurial import commands, ui, error
-from pkg_resources import resource_filename, resource_listdir
 
 from blohg import create_app
+from blohg.utils import create_repo
 
 
 class InitRepo(Command):
     """initialize a blohg repo, using the default template."""
 
     def handle(self, app):
-        repo_path = app.config.get('REPO_PATH')
-        template_path = resource_filename('blohg', 'repo_template')
-        template_rootfiles = resource_listdir('blohg', 'repo_template')
-
-        initialized = False
-        for f in template_rootfiles + ['.hg']:
-            if os.path.exists(os.path.join(repo_path, f)):
-                initialized = True
-
-        if initialized:
-            print >> sys.stderr, 'repository already initialized: %s' % repo_path
-            return
-
-        if not os.path.exists(repo_path):
-            os.makedirs(repo_path)
-
-        for f in template_rootfiles:
-            full_path = os.path.join(template_path, f)
-            if os.path.isdir(full_path):
-                shutil.copytree(full_path, os.path.join(repo_path, f))
-            elif os.path.isfile(full_path):
-                shutil.copy2(full_path, os.path.join(repo_path, f))
-            else:
-                print >> sys.stderr, 'unrecognized file: %s' % full_path
-
         try:
-            commands.init(ui.ui(), repo_path)
-        except error, err:
-            print >> sys.stderr, 'an error was occurred: %s' % err
+            create_repo(app)
+        except RuntimeError, err:
+            print >> sys.stderr, str(err)
 
 
 def create_script():
