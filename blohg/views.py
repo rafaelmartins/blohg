@@ -18,10 +18,12 @@ from werkzeug.contrib.atom import AtomFeed, FeedEntry
 views = Blueprint('views', __name__)
 
 
-@views.route('/atom/')
-@views.route('/atom/<path:tag>/')
+# this is like a stack. I want 'atom' to be used by url_for, then it should be
+# in the latest decorators
 @views.route('/rss/')  # dumb redirect to keep the compatibility
 @views.route('/rss/<path:tag>/')  # dumb redirect to keep the compatibility
+@views.route('/atom/')
+@views.route('/atom/<path:tag>/')
 def atom(tag=None):
     """General purpose atom feed."""
 
