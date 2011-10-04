@@ -12,7 +12,7 @@
 import math
 
 from flask import Blueprint, abort, current_app, make_response, render_template, \
-     url_for
+     url_for, redirect
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 
 views = Blueprint('views', __name__)
@@ -66,6 +66,10 @@ def content(slug):
     """Posts and static pages."""
     page = current_app.hg.get(slug)
     if page is None:
+        url = "/%s/" % slug
+        if url in current_app.hg.aliases:
+            code, slug = current_app.hg.aliases[url]
+            return redirect(url_for('views.content', slug=slug), code=code)
         abort(404)
     title = page.title
     if slug.startswith('post'):

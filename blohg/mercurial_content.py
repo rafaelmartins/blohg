@@ -238,6 +238,28 @@ class MercurialContent(object):
         return tags
 
     @cached_property
+    def aliases(self):
+        """Method that returns a mapping of all aliases to slugs.
+
+        :return: a mapping of aliases to a tuple of (http status code, slug).
+        """
+
+        aliases = {}
+        for post in self.get_all(only_posts=True):
+            for alias in post.aliases:
+                alias = alias.encode("utf-8")
+                if alias.startswith("301:"):
+                    code = 301
+                    alias = alias[4:]
+                elif alias.startswith("302:"):
+                    alias = alias[4:]
+                    code = 302
+                else:
+                    code = 302
+                aliases[alias.encode("utf-8")] = (code, post.slug)
+        return aliases
+
+    @cached_property
     def config(self):
         """Method that returns a string with the content of the config.yaml
         file.
@@ -280,6 +302,9 @@ class Metadata(object):
         if 'tags' in self._vars:
             self._vars['tags'] = [i.strip() for i in \
                                   self._vars['tags'].split(',')]
+        if 'aliases' in self._vars:
+            self._vars['aliases'] = [i.strip() for i in \
+                                  self._vars['aliases'].split(',')]
         filelog = self._filectx.filelog()
         changesets = list(filelog)
         first_changeset = self._repo[filelog.linkrev(0)]
@@ -361,6 +386,10 @@ class Metadata(object):
     @cached_property
     def tags(self):
         return self._vars.get('tags', [])
+
+    @cached_property
+    def aliases(self):
+        return self._vars.get('aliases', [])
 
     @cached_property
     def abstract(self):
