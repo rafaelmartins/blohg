@@ -245,18 +245,14 @@ class MercurialContent(object):
         """
 
         aliases = {}
-        for post in self.get_all(only_posts=True):
+        for post in self.get_all():
             for alias in post.aliases:
-                alias = alias.encode("utf-8")
-                if alias.startswith("301:"):
-                    code = 301
+                code = 302
+                alias = alias.encode('utf-8')
+                if alias[:4] in ('301:', '302:'):
+                    code = int(alias[:3])
                     alias = alias[4:]
-                elif alias.startswith("302:"):
-                    alias = alias[4:]
-                    code = 302
-                else:
-                    code = 302
-                aliases[alias.encode("utf-8")] = (code, post.slug)
+                aliases[alias.encode('utf-8')] = (code, post.slug)
         return aliases
 
     @cached_property
@@ -304,7 +300,7 @@ class Metadata(object):
                                   self._vars['tags'].split(',')]
         if 'aliases' in self._vars:
             self._vars['aliases'] = [i.strip() for i in \
-                                  self._vars['aliases'].split(',')]
+                                     self._vars['aliases'].split(',')]
         filelog = self._filectx.filelog()
         changesets = list(filelog)
         first_changeset = self._repo[filelog.linkrev(0)]
