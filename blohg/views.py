@@ -37,27 +37,19 @@ def atom(tag=None):
         posts = current_app.hg.get_by_tag(tags)
     else:
         posts = current_app.hg.get_all(True)
-    feed = AtomFeed(
-        title=title,
-        subtitle=current_app.config['TAGLINE'],
-        url=url_for('views.home'),
-        feed_url=url_for('views.atom', tag=tag),
-        author=current_app.config['AUTHOR'],
-        generator=('blohg', None, None)
-    )
+    feed = AtomFeed(title=title, subtitle=current_app.config['TAGLINE'],
+                    url=url_for('views.home'), feed_url=url_for('views.atom',
+                                                                tag=tag),
+                    author=current_app.config['AUTHOR'],
+                    generator=('blohg', None, None))
     for post in posts[:int(current_app.config['POSTS_PER_PAGE'])]:
-        feed.add(
-            FeedEntry(
-                title=post.title,
-                content=post.full_html,
-                summary=post.abstract_html,
-                id=url_for('views.content', slug=post.slug),
-                url=url_for('views.content', slug=post.slug, _external=True),
-                author=current_app.config['AUTHOR'],
-                published=post.datetime,
-                updated=post.datetime,
-            )
-        )
+        feed.add(FeedEntry(title=post.title, content=post.full_html,
+                           summary=post.abstract_html,
+                           id=url_for('views.content', slug=post.slug),
+                           url=url_for('views.content', slug=post.slug,
+                                       _external=True),
+                           author=current_app.config['AUTHOR'],
+                           published=post.datetime, updated=post.datetime))
     return feed
 
 
@@ -74,12 +66,8 @@ def content(slug):
     title = page.title
     if slug.startswith('post'):
         title = u'Post: %s' % page.title
-    return render_template(
-        '_posts.html',
-        title=title,
-        posts=[page],
-        full_content=True,
-    )
+    return render_template('_posts.html', title=title, posts=[page],
+                           full_content=True)
 
 
 @views.route('/', defaults={'page': 1})
@@ -92,26 +80,16 @@ def home(page):
     num_pages = int(math.ceil(float(len(pages)) / ppp))
     init = int((current - 1) * ppp)
     end = int(current * ppp)
-    return render_template(
-        '_posts.html',
-        posts=pages[init:end],
-        full_content=False,
-        pagination={
-            'num_pages': num_pages,
-            'current': page,
-        }
-    )
+    return render_template('_posts.html', posts=pages[init:end],
+                           full_content=False,
+                           pagination={'num_pages': num_pages, 'current': page})
 
 
 @views.route('/post/')
 def post_list():
     """Page with a simple list of posts (link + creation date)."""
-
-    return render_template(
-        'post_list.html',
-        title=u'Posts',
-        posts=current_app.hg.get_all(True),
-    )
+    return render_template('post_list.html', title=u'Posts',
+                           posts=current_app.hg.get_all(True))
 
 
 @views.route('/tag/<path:tag>/')
@@ -119,26 +97,19 @@ def tag(tag):
     """Page that lists the abstract of all available posts for the given
     tag.
     """
-
     tags = tag.split('/')
     for _tag in tags:
         if _tag not in current_app.hg.tags:
             abort(404)
     posts = current_app.hg.get_by_tag(tags)
-    return render_template(
-        '_posts.html',
-        title=u'Tag: %s' % ' + '.join(tags),
-        tag=tags,
-        posts=posts,
-        full_content=False,
-    )
+    return render_template('_posts.html', title=u'Tag: %s' % ' + '.join(tags),
+                           tag=tags, posts=posts, full_content=False)
 
 
 @views.route('/source/')  # just to make robots.txt's url_for happy :)
 @views.route('/source/<path:slug>/')
 def source(slug=None):
     """View that shows the source code of a given static page/post."""
-
     if slug is None:
         abort(404)
     source = current_app.hg.get(slug)
@@ -155,7 +126,6 @@ def robots():
     source files to be indexed by search engines. Can be disabled setting
     ROBOTS_TXT configuration parameter to ``False``
     """
-
     if not current_app.config['ROBOTS_TXT']:
         abort(404)
     response = make_response(render_template('robots.txt'))
