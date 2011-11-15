@@ -166,7 +166,7 @@ You can also use a static initial page for your blog, if you want, but you'll
 need to create a menu link pointing to the page with the list of posts. You can
 use the ``views.posts`` endpoint to build it:
 
-.. sourcecode:: html+jinja
+.. code-block:: html+jinja
 
    <a href="{{ url_for('views.posts') }}">Posts</a>
 
