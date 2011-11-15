@@ -14,6 +14,7 @@ import math
 from flask import Blueprint, abort, current_app, make_response, render_template, \
      url_for, redirect
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
+from werkzeug.exceptions import NotFound
 
 views = Blueprint('views', __name__)
 
@@ -70,10 +71,15 @@ def content(slug):
                            full_content=True)
 
 
-@views.route('/', defaults={'page': 1})
+@views.route('/')
 @views.route('/page/<int:page>/')
-def home(page):
+def home(page=None):
     """Page with the abstract of the posts. Part of the pagination."""
+    if page is None:
+        try:
+            return content('index')
+        except NotFound:
+            page = 1
     current = int(page)
     pages = current_app.hg.get_all(True)
     ppp = int(current_app.config['POSTS_PER_PAGE'])
@@ -83,6 +89,14 @@ def home(page):
     return render_template('_posts.html', posts=pages[init:end],
                            full_content=False,
                            pagination={'num_pages': num_pages, 'current': page})
+
+
+@views.route('/posts/')
+def posts():
+    """An alias to ``/page/1/``. Not adding it as a decorator to the existing
+    view to provide another endpoint.
+    """
+    return home(1)
 
 
 @views.route('/post/')

@@ -150,3 +150,24 @@ content to your ``config.yaml`` file:
 
    ROBOTS_TXT: False
 
+
+Using blohg as a CMS
+--------------------
+
+You can use blohg to manage your "static" website, without the concept of blog
+posts. Actually the default setup of blohg is already much like a CMS, but the
+initial page is a list of posts (or abstracts of posts), and you don't want it
+if you don't have blog posts at all.
+
+You can use a static page as the initial page. You just need to save the text
+file as ``content/index.rst`` on your repository.
+
+You can also use a static initial page for your blog, if you want, but you'll
+need to create a menu link pointing to the page with the list of posts. You can
+use the ``views.posts`` endpoint to build it:
+
+.. sourcecode:: html+jinja
+
+   <a href="{{ url_for('views.posts') }}">Posts</a>
+
+
