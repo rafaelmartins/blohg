@@ -10,7 +10,7 @@
 """
 
 # CHANGE ME BEFORE THE RELEASE!
-version = '0.7+'
+version = '0.8'
 
 # code snippet from sphinx
 # http://bitbucket.org/birkenfeld/sphinx/src/tip/sphinx/__init__.py
