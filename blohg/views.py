@@ -13,6 +13,7 @@ import math
 
 from flask import Blueprint, abort, current_app, make_response, render_template, \
      url_for, redirect
+from jinja2 import TemplateNotFound
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 from werkzeug.exceptions import NotFound
 
@@ -102,8 +103,11 @@ def posts():
 @views.route('/post/')
 def post_list():
     """Page with a simple list of posts (link + creation date)."""
-    return render_template('post_list.html', title=u'Posts',
-                           posts=current_app.hg.get_all(True))
+    try:
+        return render_template('post_list.html', title=u'Posts',
+                               posts=current_app.hg.get_all(True))
+    except TemplateNotFound:
+        abort(404)
 
 
 @views.route('/tag/<path:tag>/')
