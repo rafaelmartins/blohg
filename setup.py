@@ -37,6 +37,7 @@ setup(
         'Flask>=0.7',
         'Flask-Babel>=0.6',
         'Flask-Script>=0.3',
+        'Frozen-Flask>=0.7',
         'Jinja2>=2.5.2',
         'Mercurial>=1.6',
         'PyYAML',

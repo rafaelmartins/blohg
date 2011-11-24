@@ -129,7 +129,7 @@ def tag(tag):
 def source(slug=None):
     """View that shows the source code of a given static page/post."""
     if slug is None:
-        abort(404)
+        return ""
     source = current_app.hg.get(slug)
     if source is None:
         abort(404)
@@ -140,7 +140,7 @@ def source(slug=None):
 
 @views.route('/robots.txt')
 def robots():
-    """Viev that generates a robots.txt file for ``/source/``  path, to avoid
+    """View that generates a robots.txt file for ``/source/``  path, to avoid
     source files to be indexed by search engines. Can be disabled setting
     ROBOTS_TXT configuration parameter to ``False``
     """
