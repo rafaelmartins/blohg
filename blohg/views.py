@@ -127,9 +127,13 @@ def tag(tag):
 @views.route('/source/')  # just to make robots.txt's url_for happy :)
 @views.route('/source/<path:slug>/')
 def source(slug=None):
-    """View that shows the source code of a given static page/post."""
+    """View that shows the source code of a given static page/post. Can be
+    disabled setting SHOW_RST_SOURCE configuration parameter to ``False``
+    """
     if slug is None:
         return ""
+    if not current_app.config['SHOW_RST_SOURCE']:
+        abort(404)
     source = current_app.hg.get(slug)
     if source is None:
         abort(404)
