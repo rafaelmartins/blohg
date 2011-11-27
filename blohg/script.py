@@ -36,10 +36,17 @@ class Freeze(Command):
     option_list = (
         Option('--serve', '-s', dest='serve', default=False,
                 action='store_true'),
+        Option('--noindex', dest='no_index', default=False,
+                action='store_true')
     )
 
-    def remap_rules(self, map):
+    def remap_rules(self, map, map_html):
         """ remaping the rules with files extensions """
+        mapping = {'views.source': 'txt',
+                   'views.atom': 'atom'}
+        if map_html:
+            mapping['views.tag'] = 'html'
+            mapping['views.content'] = 'html'
         rules = []
         for rule in map.iter_rules():
             rule = rule.empty()
@@ -48,16 +55,13 @@ class Freeze(Command):
                 rules.append(rule)
                 continue
 
+            # special treatment for the robot.txt url
             if rule.rule == '/source/':
-                print "adding %s" % rule.rule
                 rules.append(rule)
                 continue
 
             try:
-                extension = {'views.source': 'txt',
-                             'views.atom': 'atom',
-                             'views.tag':'html',
-                             'views.content': 'html'}[rule.endpoint]
+                extension = mapping[rule.endpoint]
             except KeyError:
                 # the rest can go through
                 rules.append(rule)
@@ -71,9 +75,9 @@ class Freeze(Command):
             rules.append(rule)
         return Map(rules)
 
-    def handle(self, app, serve):
+    def handle(self, app, serve, no_index):
 
-        app.url_map = self.remap_rules(app.url_map)
+        app.url_map = self.remap_rules(app.url_map, no_index)
 
         # That's a risky one, it woud be better to give a parameter to the
         # freezer
