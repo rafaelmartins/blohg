@@ -1,7 +1,10 @@
 Deploying your blog
 ===================
 
-At this point you should have a Mercurial repositor with your blog ready to be
+Using a WSGI app
+----------------
+
+At this point you should have a Mercurial repository with your blog ready to be
 deployed.
 
 Copy it to your remote server as usual. e.g. using ``ssh``::
@@ -33,3 +36,33 @@ There's a sample ``blohg.wsgi`` file (for Apache_ mod_wsgi_) available here:
 .. _mod_wsgi: http://www.modwsgi.org/
 
 http://hg.rafaelmartins.eng.br/blohg/file/tip/share/blohg.wsgi
+
+Using static pages
+------------------
+
+.. program:: blohg freeze
+
+You can use the `freeze` command to generate a static version of your
+blog. This will create a :file:`build` directory with the content of
+your blog as static pages. This way, you can put those pages (via
+:command:`rsync`, :command:`hg`, ...) on a static hosting provider
+(BitBucket or Github for instance).
+
+.. option:: --serve
+
+   This option will serve your generated pages as a local web
+   server. This can be used to check that all links works fine, or
+   that all content has been generated.
+
+.. option:: --noindex
+
+   This option will generate your post as html files rather than as
+   directories containing a :file:`index.html` file.
+
+.. note::
+
+   This command uses `Frozen-Flask`_ as underlying generator. The
+   configuration parameters from Frozen-Flask are also efective for
+   this command.
+
+.. _`Frozen-Flask`: http://packages.python.org/Frozen-Flask/
