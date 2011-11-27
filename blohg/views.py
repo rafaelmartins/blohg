@@ -107,6 +107,8 @@ def post_list():
         return render_template('post_list.html', title=u'Posts',
                                posts=current_app.hg.get_all(True))
     except TemplateNotFound:
+        if 'FREEZER_BASE_URL' in current_app.config:  # freezing the blog
+            return ""
         abort(404)
 
 
@@ -130,9 +132,9 @@ def source(slug=None):
     """View that shows the source code of a given static page/post. Can be
     disabled setting SHOW_RST_SOURCE configuration parameter to ``False``
     """
-    if slug is None:
+    if 'FREEZER_BASE_URL' in current_app.config and slug is None:  # freezing the blog
         return ""
-    if not current_app.config['SHOW_RST_SOURCE']:
+    if not current_app.config['SHOW_RST_SOURCE'] or slug is None:
         abort(404)
     source = current_app.hg.get(slug)
     if source is None:
