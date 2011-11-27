@@ -151,6 +151,14 @@ content to your ``config.yaml`` file:
    ROBOTS_TXT: False
 
 
+Hiding reStructuredText sources
+-------------------------------
+
+blohg enables a ``/source/`` endpoint by default, that shows the reStructuredText
+source for any post/page of the blog. You can disable it by setting the
+``SHOW_RST_SOURCE`` configuration parametar to ``False``. It will raise a 404 error.
+
+
 Using blohg as a CMS
 --------------------
 

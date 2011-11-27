@@ -40,6 +40,7 @@ def create_app(repo_path=None):
     app.config.setdefault('STATIC_DIR', 'static')
     app.config.setdefault('ATTACHMENT_DIR', 'content/attachments')
     app.config.setdefault('ROBOTS_TXT', True)
+    app.config.setdefault('SHOW_RST_SOURCE', True)
 
     app.config['REPO_PATH'] = repo_path
 
