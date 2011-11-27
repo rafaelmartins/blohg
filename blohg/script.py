@@ -75,7 +75,9 @@ class Freeze(Command):
 
         app.url_map = self.remap_rules(app.url_map)
 
-        print app.url_map
+        # That's a risky one, it woud be better to give a parameter to the
+        # freezer
+        app.root_path = app.config.get('REPO_PATH')
 
         freezer = Freezer(app)
         freezer.freeze()
