@@ -47,6 +47,9 @@ class Freeze(Command):
         if map_html:
             mapping['views.tag'] = 'html'
             mapping['views.content'] = 'html'
+            mapping['views.post_list'] = 'html'
+            mapping['views.posts'] = 'html'
+            mapping['views.home'] = 'html'
         rules = []
         for rule in map.iter_rules():
             rule = rule.empty()
@@ -70,6 +73,8 @@ class Freeze(Command):
             rule.is_leaf = True
             # and we add an extension
             url = rule.rule[:-1]
+            if url == "":
+                url = '/index'
             rule.rule = url+'.'+extension
             # and we add the modified rule
             rules.append(rule)
