@@ -11,6 +11,7 @@
 
 import os
 import sys
+import posixpath
 from flaskext.script import Command, Manager, Server, Option
 
 from blohg import create_app
@@ -89,6 +90,18 @@ class Freeze(Command):
         app.root_path = app.config.get('REPO_PATH')
 
         freezer = Freezer(app)
+
+        @freezer.register_generator
+        def static():
+            """ Walk the static dir and freeze everything """
+            static_path = os.path.join(app.config.get('REPO_PATH'),
+                                             app.config['STATIC_DIR'])
+            for root, dirs, files in os.walk(static_path):
+                for f in files:
+                    # make it relative
+                    path = posixpath.join(root,f)[len(static_path) + 1:]
+                    yield {'filename': path}
+
         freezer.freeze()
         if serve:
             freezer.serve()
