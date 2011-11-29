@@ -67,14 +67,14 @@ def rst2html(rst):
     }
 
 
-def load_config(app):
+def load_config(app, repo, revision_id):
     """This function merges the configuration parameters from the YAML
     file with the ``app.config`` object.
 
     :param app: the application object.
     """
 
-    app.config.update(yaml.load(app.hg.config))
+    app.config.update(yaml.load(get_config(repo, revision_id)))
 
     # debug parameters
     if app.debug:
@@ -82,6 +82,10 @@ def load_config(app):
             del app.config['GOOGLE_ANALYTICS']
         app.config['DISQUS_DEVELOPER'] = True
 
+def init_config(app):
+    repo = hg.repository(ui.ui(), app.config['REPO_PATH'])
+
+    load_config(app, repo, repo.branchtags()['default'])
 
 def setup_mercurial(app):
     """This function adds a :class:`MercurialContent` instance to an
@@ -89,6 +93,8 @@ def setup_mercurial(app):
 
     :param app: the application object.
     """
+
+    init_config(app)
 
     @app.before_request
     def before_request():
@@ -128,14 +134,25 @@ def setup_mercurial(app):
             if hasattr(app, 'hg'):
                 del app.hg
 
+            load_config(app, repo, revision_id)
             app.hg = MercurialContent(repo, revision_id)
-            load_config(app)
 
+CONFIG_FILE = 'config.yaml'
+def get_config(repo, revision_id):
+    """Function that returns a string with the content of the config.yaml
+    file.
+
+    :return: a string with the content of the configuration file.
+    """
+    revision = repo[revision_id]
+    if CONFIG_FILE not in list(revision):
+        raise RuntimeError('Configuration file not found: %r' % \
+                           CONFIG_FILE)
+    return revision[CONFIG_FILE].data()
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
 
-    config_file = 'config.yaml'
     content_dir = 'content'
 
     def __init__(self, repo, revision_id):
@@ -254,19 +271,6 @@ class MercurialContent(object):
                     alias = alias[4:]
                 aliases[alias.encode('utf-8')] = (code, post.slug)
         return aliases
-
-    @cached_property
-    def config(self):
-        """Method that returns a string with the content of the config.yaml
-        file.
-
-        :return: a string with the content of the configuration file.
-        """
-
-        if self.config_file not in list(self.revision):
-            raise RuntimeError('Configuration file not found: %r' % \
-                self.config_file)
-        return self.revision[self.config_file].data()
 
     def __repr__(self):
         return '<MercurialContent %r>' % self.repo.root
