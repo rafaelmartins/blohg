@@ -45,8 +45,8 @@ Using static pages
 You can use the `freeze` command to generate a static version of your
 blog. This will create a :file:`build` directory with the content of
 your blog as static pages. This way, you can put those pages (via
-:command:`rsync`, :command:`hg`, ...) on a static hosting provider
-(BitBucket or Github for instance).
+:command:`ftp`, :command:`rsync`, :command:`hg`, ...) on a static
+hosting provider.
 
 .. option:: --serve
 
@@ -63,6 +63,9 @@ your blog as static pages. This way, you can put those pages (via
 
    This command uses `Frozen-Flask`_ as underlying generator. The
    configuration parameters from Frozen-Flask are also efective for
-   this command.
+   this command, just put them inside blohg's :ref:`configuration file
+   <configuration>`. One worth mentionning is ``FREEZER_BASE_URL``, as
+   it indicates which base url to put in front of the external links,
+   like is used for all the attachments.
 
 .. _`Frozen-Flask`: http://packages.python.org/Frozen-Flask/

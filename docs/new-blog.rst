@@ -22,6 +22,8 @@ Do the initial commit::
 
     $ hg commit -Am 'initial commit'
 
+.. _configuration:
+
 Configuring your blog
 ---------------------
 
