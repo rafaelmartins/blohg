@@ -82,10 +82,12 @@ def load_config(app, repo, revision_id):
             del app.config['GOOGLE_ANALYTICS']
         app.config['DISQUS_DEVELOPER'] = True
 
+
 def init_config(app):
     repo = hg.repository(ui.ui(), app.config['REPO_PATH'])
 
     load_config(app, repo, repo.branchtags()['default'])
+
 
 def setup_mercurial(app):
     """This function adds a :class:`MercurialContent` instance to an
@@ -137,6 +139,7 @@ def setup_mercurial(app):
             load_config(app, repo, revision_id)
             app.hg = MercurialContent(repo, revision_id)
 
+
 CONFIG_FILE = 'config.yaml'
 def get_config(repo, revision_id):
     """Function that returns a string with the content of the config.yaml
@@ -149,6 +152,7 @@ def get_config(repo, revision_id):
         raise RuntimeError('Configuration file not found: %r' % \
                            CONFIG_FILE)
     return revision[CONFIG_FILE].data()
+
 
 class MercurialContent(object):
     """Object that represents a blohg Mercurial repository."""
