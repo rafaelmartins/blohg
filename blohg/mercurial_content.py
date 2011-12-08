@@ -19,7 +19,7 @@ from datetime import datetime
 from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
 from docutils.parsers.rst.roles import register_local_role
-from mercurial import hg, ui
+from mercurial import hg, ui, error as hgerr
 from werkzeug.utils import cached_property
 
 from blohg import rst_directives, rst_roles
@@ -84,7 +84,10 @@ def load_config(app, repo, revision_id):
 
 
 def init_config(app):
-    repo = hg.repository(ui.ui(), app.config['REPO_PATH'])
+    try:
+        repo = hg.repository(ui.ui(), app.config['REPO_PATH'])
+    except hgerr.RepoError:
+        return
 
     load_config(app, repo, repo.branchtags()['default'])
 
