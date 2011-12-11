@@ -60,6 +60,7 @@ class Hg(object):
         self.posts = []
         self.tags = set()
         self.aliases = {}
+        self.reload()
 
     def reload(self):
         """Method to reload stuff from the Mercurial repository. It is able to
