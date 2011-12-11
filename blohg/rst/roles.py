@@ -9,10 +9,10 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from docutils.nodes import reference
+from docutils.nodes import reference, paragraph
 from flask import current_app, url_for
 
-import posixpath
+import posixpath, re
 
 
 __all__ = ['attachment_role']
@@ -42,6 +42,33 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
     return [reference(url, label, refuri=url)], []
 
 
+# \x00 means the "<" was backslash-escaped
+explicit_title_re = re.compile(r'^(.+?)\s*(?<!\x00)<(.*?)>$', re.DOTALL)
+
+def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
+    """ to generate a link to another page/post
+    use as :page:`slug`, or :page:`title <slug>`. In the first case, the
+    title used will be the one of the post itself.
+    """
+
+    title = None
+    target = text
+    match = explicit_title_re.match(text)
+    if match:
+        title, target = match.group(1), match.group(2)
+
+    metadata = current_app.hg.get(target)
+    if metadata is None:
+        if title is not None:
+            target = title
+        return [paragraph(rawtext, target)], []
+    url = url_for('views.content', slug=metadata.slug, _external=True)
+    if title is None:
+        title =  metadata.title
+    return [reference(url, title, refuri=url)], []
+
+
 __roles__ = {
     'attachment': attachment_role,
+    'page': page_role,
 }
