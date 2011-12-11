@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst_directives
+    blohg.rst.directives
     ~~~~~~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText directives.

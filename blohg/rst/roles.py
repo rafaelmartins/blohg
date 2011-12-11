@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst_roles
+    blohg.rst.roles
     ~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText roles.

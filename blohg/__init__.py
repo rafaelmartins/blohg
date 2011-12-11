@@ -13,8 +13,7 @@ from flask import Flask, render_template, request
 from flaskext.babel import Babel
 
 # import blohg stuff
-from blohg.mercurial_content import setup_mercurial
-from blohg.mercurial_theme import setup_theme
+from blohg.hgapi import setup_mercurial
 from blohg.version import version as __version__
 from blohg.views import views
 
@@ -48,7 +47,6 @@ def create_app(repo_path=None):
     setup_mercurial(app)
 
     # setup extensions
-    setup_theme(app)
     babel = Babel(app)
 
     @app.context_processor
