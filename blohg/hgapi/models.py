@@ -12,6 +12,8 @@
 import re
 import time
 
+from mercurial import encoding
+
 from datetime import datetime
 from werkzeug.utils import cached_property
 
@@ -21,6 +23,9 @@ re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
 re_author = re.compile(r'^(?P<name>[^<]*[^ ])( ?<(?P<email>[^<]*)>)?$')
 
+def hg2u(s):
+    """ returns a unicode object representing the mercurial string """
+    return encoding.fromlocal(s).decode("utf-8")
 
 class Page(object):
     """Pages are the very basic content element of a blog. They don't have tags
@@ -35,7 +40,7 @@ class Page(object):
 
         # get metadata variables from rst source
         for i in re_metadata.finditer(self._filecontent):
-            self._vars[i.group(1)] = i.group(2).decode('utf-8')
+            self._vars[i.group(1)] = hg2u(i.group(2))
 
         # handle aliases
         if 'aliases' in self._vars:
@@ -78,13 +83,13 @@ class Page(object):
         # commiter of this content to the repository.
         if 'author' not in self._vars:
             try:
-                self._vars['author'] = str(first_changeset.user())
+                self._vars['author'] = hg2u(first_changeset.user())
             except:
                 del self._vars['author']
             else:
-                if self._vars['author'] == '':
+                if self._vars['author'] == u'':
                     try:
-                        self._vars['author'] = str(self._filectx.user())
+                        self._vars['author'] = hg2u(self._filectx.user())
                     except:
                         del self._vars['author']
 
@@ -136,7 +141,7 @@ class Page(object):
 
     @cached_property
     def abstract(self):
-        return re_read_more.split(self._filecontent)[0].decode('utf-8')
+        return hg2u(re_read_more.split(self._filecontent)[0])
 
     @cached_property
     def abstract_html(self):
@@ -144,7 +149,7 @@ class Page(object):
 
     @cached_property
     def full(self):
-        return self._filecontent.decode('utf-8')
+        return hg2u(self._filecontent)
 
     @cached_property
     def full_html(self):
