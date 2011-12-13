@@ -14,7 +14,7 @@ import re
 import yaml
 
 from jinja2.loaders import ChoiceLoader
-from mercurial import hg, ui
+from mercurial import hg, ui, cmdutil
 from blohg.hgapi.models import Page, Post
 from blohg.hgapi.static import MercurialStaticFile
 from blohg.hgapi.templates import MercurialLoader
@@ -70,7 +70,9 @@ class Hg(object):
 
         # a new repo object is always needed, for reloads or vefify the if the
         # current stuff is new enough
-        repo = hg.repository(ui.ui(), self.app.config.get('REPO_PATH', '.'))
+        repopath = self.app.config.get('REPO_PATH', '.')
+        repopath = cmdutil.findrepo(repopath)
+        repo = hg.repository(ui.ui(), repopath)
         try:
             default_branch = repo.branchtags()['default']
         except KeyError:
