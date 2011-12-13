@@ -130,7 +130,8 @@ class Page(object):
 
     @cached_property
     def slug(self):
-        rv = re.match(r'^' + self._parent.content_dir + r'[\\/](.+)\.rst$',
+        rv = re.match(r'^' + self._parent.content_dir + r'[\\/](.+)' +
+                      '\\' + self._parent.post_ext + '$' ,
                       self._filectx.path())
         if rv is not None:
             return rv.group(1)

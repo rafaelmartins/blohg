@@ -56,6 +56,7 @@ class Hg(object):
         self.revision_id = None
         self.default_branch = None
         self.content_dir = None
+        self.post_ext = None
         self.pages = []
         self.posts = []
         self.tags = set()
@@ -123,8 +124,9 @@ class Hg(object):
 
         # build a regular expression for search posts/pages.
         self.content_dir = self.app.config.get('CONTENT_DIR', 'content')
+        self.post_ext = self.app.config.get('POST_EXT', '.rst')
         re_content = re.compile(r'^' + self.content_dir + \
-                                r'[\\/](post)?.+\.rst$')
+                                r'[\\/](post)?.+' + '\\'+ self.post_ext + '$')
 
         # get all the content
         self.pages = []
