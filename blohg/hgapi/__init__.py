@@ -73,6 +73,11 @@ class Hg(object):
         # current stuff is new enough
         repopath = self.app.config.get('REPO_PATH', '.')
         repopath = cmdutil.findrepo(repopath)
+
+        # if findrepo returns None we don't have a repo (yet).
+        if repopath is None:
+            return
+
         repo = hg.repository(ui.ui(), repopath)
         try:
             default_branch = repo.branchtags()['default']
