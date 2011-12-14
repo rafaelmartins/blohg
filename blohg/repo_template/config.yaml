@@ -5,3 +5,4 @@ TAGLINE: Your cool tagline
 AUTHOR: Your name
 #DISQUS: your-disqus-id
 TIMEZONE: UTC
+#POST_EXT: .rst
