@@ -238,6 +238,21 @@ files on it. Subdirectories are also allowed.
 This directive will just show the files from the root of the directory. It's not recursive.
 
 
+Interpreted Text Role ``page``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Interpreted Text Role that generates a link to the given page. The
+text displayed is by default the title of the linked page. You can
+replace it by a custom title using this syntax: ``:page:`Link title
+<linked-page>```.
+
+Usage example:
+
+.. code-block:: rest
+
+    This is the :page:`posts/my-first-blog-post`
+    This is my :page:`Introduction Post <posts/my-first-blog-post>`
+
 Previewing your post/page
 -------------------------
 
