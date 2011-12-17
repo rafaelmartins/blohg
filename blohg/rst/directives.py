@@ -62,7 +62,12 @@ class Youtube(Directive):
             self.options['align'] = 'center'
         html = '''\
 <div align="%(align)s">
-    <iframe width="%(width)i" height="%(height)i" src="http://www.youtube.com/embed/%(vid)s" frameborder="0" allowfullscreen></iframe>
+    <iframe width="%(width)i"
+            height="%(height)i"
+            src="http://www.youtube.com/embed/%(vid)s"
+            frameborder="0"
+            allowfullscreen>
+    </iframe>
 </div>
 '''
         return [nodes.raw('', html % self.options, format='html')]
@@ -118,8 +123,8 @@ class SourceCode(Directive):
 
     The ``linenos`` option enables the line numbering.
 
-    To be able to use this directive you should generate a CSS file with the style
-    definitions, using the ``pygmentize`` script, shipped with Pygments.
+    To be able to use this directive you should generate a CSS file with the
+    style definitions, using the ``pygmentize`` script, shipped with Pygments.
 
     ::
 
@@ -132,7 +137,8 @@ class SourceCode(Directive):
         <link type="text/css" media="screen" rel="stylesheet" href="{{
             url_for('static', filename='pygments.css') }}" />
 
-    This directive is based on ``rst-directive.py``, created by Pygments authors.
+    This directive is based on ``rst-directive.py``, created by Pygments
+    authors.
     """
 
     required_arguments = 1
@@ -185,14 +191,16 @@ class AttachmentImage(Image):
 
     def run(self):
         my_file = directives.uri(self.arguments[0])
-        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], my_file)
+        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
+                                   my_file)
         if full_path not in list(current_app.hg.revision):
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path
                 )
             )
-        self.arguments[0] = url_for('attachments', filename=my_file, _external=True)
+        self.arguments[0] = url_for('attachments', filename=my_file,
+                                    _external=True)
         return Image.run(self)
 
 
@@ -200,20 +208,22 @@ class AttachmentFigure(Figure):
 
     def run(self):
         my_file = directives.uri(self.arguments[0])
-        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], my_file)
+        full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
+                                   my_file)
         if full_path not in list(current_app.hg.revision):
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path
                 )
             )
-        self.arguments[0] = url_for('attachments', filename=my_file, _external=True)
+        self.arguments[0] = url_for('attachments', filename=my_file,
+                                    _external=True)
         return Figure.run(self)
 
 
 class SubPages(Directive):
-    """reStructuredText directive that creates a bullet-list with the subpages of
-    the current page, or of a given page.
+    """reStructuredText directive that creates a bullet-list with the subpages
+    of the current page, or of a given page.
 
     Usage example::
 
@@ -226,8 +236,8 @@ class SubPages(Directive):
     Supposing that you have a directory called ``content/projects`` and some
     reStructuredText files on it. Subdirectories are also allowed.
 
-    This directive will just show the files from the root of the directory. It's
-    not recursive.
+    This directive will just show the files from the root of the directory.
+    It's not recursive.
     """
 
     required_arguments = 0
@@ -257,11 +267,13 @@ class SubPages(Directive):
         for metadata in sorted(tmp_metadata, self._compare_by_slug):
             link = url_for('views.content', slug=metadata.slug)
             reference = nodes.reference(link, metadata.title, refuri=link)
-            final_metadata.append(nodes.list_item('', nodes.paragraph('', '', reference)))
+            final_metadata.append(nodes.list_item('',
+                                                  nodes.paragraph('', '',
+                                                                  reference)))
         return [nodes.bullet_list('', *final_metadata)]
 
 
-__directives__ = {
+index = {
     'youtube': Youtube,
     'math': Math,
     'code': Code,

@@ -12,13 +12,15 @@
 from docutils.nodes import reference, paragraph
 from flask import current_app, url_for
 
-import posixpath, re
+import posixpath
+import re
 
 
 __all__ = ['attachment_role']
 
 
-def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]):
+def attachment_role(name, rawtext, text, lineno, inliner, options={},
+                    content=[]):
     """reStructuredText role that creates a Text node with the full url for an
     attachment.
     """
@@ -45,6 +47,7 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={}, content=[]
 # \x00 means the "<" was backslash-escaped
 explicit_title_re = re.compile(r'^(.+?)\s*(?<!\x00)<(.*?)>$', re.DOTALL)
 
+
 def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
     """ to generate a link to another page/post
     use as :page:`slug`, or :page:`title <slug>`. In the first case, the
@@ -64,11 +67,11 @@ def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
         return [paragraph(rawtext, target)], []
     url = url_for('views.content', slug=metadata.slug, _external=True)
     if title is None:
-        title =  metadata.title
+        title = metadata.title
     return [reference(url, title, refuri=url)], []
 
 
-__roles__ = {
+index = {
     'attachment': attachment_role,
     'page': page_role,
 }

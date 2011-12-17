@@ -75,7 +75,7 @@ class Freeze(Command):
             url = rule.rule[:-1]
             if url == "":
                 url = '/index'
-            rule.rule = url+'.'+extension
+            rule.rule = url + '.' + extension
             # and we add the modified rule
             rules.append(rule)
         return Map(rules)
@@ -98,7 +98,7 @@ class Freeze(Command):
             for root, dirs, files in os.walk(static_path):
                 for f in files:
                     # make it relative
-                    path = posixpath.join(root,f)[len(static_path) + 1:]
+                    path = posixpath.join(root, f)[len(static_path) + 1:]
                     yield {'filename': path}
 
         freezer.freeze()
@@ -114,8 +114,8 @@ def create_script():
     """
 
     script = Manager(create_app, with_default_commands=False)
-    script.add_option('-r', '--repo-path', dest='repo_path', default=os.getcwd(),
-        required=False)
+    script.add_option('-r', '--repo-path', dest='repo_path',
+                      default=os.getcwd(), required=False)
     server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
     script.add_command('runserver', server)

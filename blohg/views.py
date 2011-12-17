@@ -11,8 +11,8 @@
 
 import math
 
-from flask import Blueprint, abort, current_app, make_response, render_template, \
-     url_for, redirect
+from flask import Blueprint, abort, current_app, make_response, \
+     render_template, url_for, redirect
 from jinja2 import TemplateNotFound
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 from werkzeug.exceptions import NotFound
@@ -89,7 +89,8 @@ def home(page=None):
     end = int(current * ppp)
     return render_template('_posts.html', posts=pages[init:end],
                            full_content=False,
-                           pagination={'num_pages': num_pages, 'current': page})
+                           pagination={'num_pages': num_pages,
+                                       'current': page})
 
 
 @views.route('/posts/')
@@ -132,8 +133,8 @@ def source(slug=None):
     """View that shows the source code of a given static page/post. Can be
     disabled setting SHOW_RST_SOURCE configuration parameter to ``False``
     """
-    if 'FREEZER_BASE_URL' in current_app.config and slug is None:  # freezing the blog
-        return ""
+    if 'FREEZER_BASE_URL' in current_app.config and slug is None:  # freezing
+        return ''
     if not current_app.config['SHOW_RST_SOURCE'] or slug is None:
         abort(404)
     source = current_app.hg.get(slug)

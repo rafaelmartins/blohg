@@ -95,7 +95,8 @@ class Hg(object):
         # if we don't need a refresh yet, let's verify if our current revision
         # is new enough
         if not needed:
-            if repo[default_branch].rev() != self.repo[self.default_branch].rev():
+            if repo[default_branch].rev() != \
+               self.repo[self.default_branch].rev():
                 needed = True
 
         if not needed:
@@ -131,7 +132,7 @@ class Hg(object):
         self.content_dir = self.app.config.get('CONTENT_DIR', 'content')
         self.post_ext = self.app.config.get('POST_EXT', '.rst')
         re_content = re.compile(r'^' + self.content_dir + \
-                                r'[\\/](post)?.+' + '\\'+ self.post_ext + '$')
+                                r'[\\/](post)?.+' + '\\' + self.post_ext + '$')
 
         # get all the content
         self.pages = []
@@ -156,7 +157,7 @@ class Hg(object):
                         self.aliases[alias.encode('utf-8')] = (code, post.slug)
 
         # sort posts reverse by date. sort pages is useless :P
-        self.posts = sorted(self.posts, lambda a,b: b.date - a.date)
+        self.posts = sorted(self.posts, lambda a, b: b.date - a.date)
 
     def get(self, slug):
         """Method that returns a :class:`Page` or a :class:`Post` object for

@@ -86,7 +86,8 @@ class HgApiTestCase(TestCaseWithNewRepo):
             assert data.path == 'content/about.rst', 'Invalid path'
             assert data.slug == 'about', 'Failed to parse the slug'
             assert data.author_name == 'foo', 'Failed to parse author name'
-            assert data.author_email == 'foo@bar.com', 'Failed to parse author email'
+            assert data.author_email == 'foo@bar.com', 'Failed to parse ' \
+                   'author email'
 
             # TODO: test aliases
 
@@ -121,8 +122,8 @@ class HgApiTestCase(TestCaseWithNewRepo):
         app.hg.reload()
         with app.test_request_context():
             data = app.hg.get('post/foo-bar')
-            assert data is not None, 'Reload failed. Uncommited stuff wasn\'t ' \
-                   'reloaded, with debug enabled'
+            assert data is not None, 'Reload failed. Uncommited stuff ' \
+                   'wasn\'t reloaded, with debug enabled'
 
         app.debug = False
         commit(self.ui, self.repo, message='foo')

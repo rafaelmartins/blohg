@@ -3,7 +3,8 @@
     blohg.hgapi.templates
     ~~~~~~~~~~~~~~~~~~~~~
 
-    Module with stuff to deal with Jinja2 templates from Mercurial repositories.
+    Module with stuff to deal with Jinja2 templates from Mercurial
+    repositories.
 
     :copyright: (c) 2011 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
@@ -39,7 +40,8 @@ class MercurialLoader(BaseLoader):
             def up2date():
                 if current_app.hg.revision.rev() is None or revision == -1:
                     return False
-                return revision >= self._filerev(current_app.hg.revision[filename])
+                return revision >= \
+                       self._filerev(current_app.hg.revision[filename])
 
             return contents, filename, up2date
         raise TemplateNotFound(template)

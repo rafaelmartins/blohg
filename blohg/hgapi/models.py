@@ -23,9 +23,11 @@ re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
 re_author = re.compile(r'^(?P<name>[^<]*[^ ])( ?<(?P<email>[^<]*)>)?$')
 
+
 def hg2u(s):
     """ returns a unicode object representing the mercurial string """
     return encoding.fromlocal(s).decode("utf-8")
+
 
 class Page(object):
     """Pages are the very basic content element of a blog. They don't have tags
@@ -72,8 +74,8 @@ class Page(object):
             except ValueError:
                 del self._vars['mdate']
         if 'mdate' not in self._vars and len(changesets) > 1:
-            last_changeset = self._parent.repo[filelog.linkrev(len(changesets) \
-                                                               - 1)]
+            last_changeset = self._parent.repo[filelog.linkrev(
+                len(changesets) - 1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
         if 'mdate' in self._vars:
             self._vars['mdatetime'] = \
@@ -131,7 +133,7 @@ class Page(object):
     @cached_property
     def slug(self):
         rv = re.match(r'^' + self._parent.content_dir + r'[\\/](.+)' +
-                      '\\' + self._parent.post_ext + '$' ,
+                      '\\' + self._parent.post_ext + '$',
                       self._filectx.path())
         if rv is not None:
             return rv.group(1)
