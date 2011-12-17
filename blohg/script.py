@@ -12,12 +12,16 @@
 import os
 import sys
 import posixpath
-from flask_frozen import Freezer
+from flask_frozen import Freezer, MissingURLGeneratorWarning
 from flaskext.script import Command, Manager, Server, Option
+from warnings import filterwarnings
 from werkzeug.routing import Map
 
 from blohg import create_app
 from blohg.utils import create_repo
+
+# filter MissingURLGeneratorWarning warnings.
+filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 
 class InitRepo(Command):
@@ -33,15 +37,13 @@ class InitRepo(Command):
 class Freeze(Command):
     """ freeze the blog into a set of static files. """
 
-    option_list = (
-        Option('--serve', '-s', dest='serve', default=False,
-                action='store_true'),
-        Option('--noindex', dest='no_index', default=False,
-                action='store_true')
-    )
+    option_list = (Option('--serve', '-s', dest='serve', default=False,
+                          action='store_true'),
+                   Option('--noindex', dest='no_index', default=False,
+                          action='store_true'))
 
     def remap_rules(self, map, map_html):
-        """ remaping the rules with files extensions """
+        """remaping the rules with files extensions"""
         mapping = {'views.source': 'txt',
                    'views.atom': 'atom'}
         if map_html:
@@ -73,7 +75,7 @@ class Freeze(Command):
             rule.is_leaf = True
             # and we add an extension
             url = rule.rule[:-1]
-            if url == "":
+            if url == '':
                 url = '/index'
             rule.rule = url + '.' + extension
             # and we add the modified rule
@@ -90,16 +92,21 @@ class Freeze(Command):
 
         freezer = Freezer(app)
 
+        def static_generator(static_dir):
+            for f in app.hg.revision:
+                if f.startswith(static_dir):
+                    yield dict(filename=f[len(static_dir):] \
+                               .strip(posixpath.sep))
+
         @freezer.register_generator
         def static():
-            """ Walk the static dir and freeze everything """
-            static_path = os.path.join(app.config.get('REPO_PATH'),
-                                             app.config['STATIC_DIR'])
-            for root, dirs, files in os.walk(static_path):
-                for f in files:
-                    # make it relative
-                    path = posixpath.join(root, f)[len(static_path) + 1:]
-                    yield {'filename': path}
+            """Walk the static dir and freeze everything"""
+            return static_generator(app.config['STATIC_DIR'])
+
+        @freezer.register_generator
+        def attachments():
+            """Walk the attachment dir and freeze everything"""
+            return static_generator(app.config['ATTACHMENT_DIR'])
 
         freezer.freeze()
         if serve:
