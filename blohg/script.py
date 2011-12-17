@@ -12,14 +12,12 @@
 import os
 import sys
 import posixpath
+from flask_frozen import Freezer
 from flaskext.script import Command, Manager, Server, Option
+from werkzeug.routing import Map
 
 from blohg import create_app
 from blohg.utils import create_repo
-
-from flask_frozen import Freezer
-
-from werkzeug.routing import Map
 
 
 class InitRepo(Command):
@@ -30,6 +28,7 @@ class InitRepo(Command):
             create_repo(app)
         except RuntimeError, err:
             print >> sys.stderr, str(err)
+
 
 class Freeze(Command):
     """ freeze the blog into a set of static files. """
@@ -105,6 +104,7 @@ class Freeze(Command):
         freezer.freeze()
         if serve:
             freezer.serve()
+
 
 def create_script():
     """Script object factory
