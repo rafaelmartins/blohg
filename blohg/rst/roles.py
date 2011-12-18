@@ -24,18 +24,13 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={},
     """reStructuredText role that creates a Text node with the full url for an
     attachment.
     """
-
     label = ""
     if '|' in text:
         text, label = text.split('|')
     full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], text)
     if full_path not in list(current_app.hg.revision):
-        msg = inliner.reporter.error(
-            'Error in "%s" role: File not found: %s.' % (
-                name, full_path
-            ),
-            line=lineno
-        )
+        msg = inliner.reporter.error('Error in "%s" role: File not found: %s.' \
+                                     % (name, full_path), line=lineno)
         prb = inliner.problematic(rawtext, rawtext, msg)
         return [prb], [msg]
     url = url_for('attachments', filename=text, _external=True)
@@ -49,17 +44,15 @@ explicit_title_re = re.compile(r'^(.+?)\s*(?<!\x00)<(.*?)>$', re.DOTALL)
 
 
 def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
-    """ to generate a link to another page/post
+    """reStructuredText role to generate a link to another page/post
     use as :page:`slug`, or :page:`title <slug>`. In the first case, the
     title used will be the one of the post itself.
     """
-
     title = None
     target = text
     match = explicit_title_re.match(text)
     if match:
         title, target = match.group(1), match.group(2)
-
     metadata = current_app.hg.get(target)
     if metadata is None:
         if title is not None:
