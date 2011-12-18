@@ -1,15 +1,18 @@
 Installing blohg
 ================
 
-These are some of the ways to install blohg at your system. blohg isn't
-currently tested in any operating system but Linux_, but should works properly
-in anything capable to run Flask_ powered application.
+These are some of the ways to install blohg at your system. blohg is currently
+tested on Linux_ and Windows_, but should works properly in any Operating
+System capable to run Flask_ powered applications.
+
+blohg is known to work on Python 2.6 and 2.7. 
 
 blohg is available at the *Python Package Index* (PyPI_):
 
 http://pypi.python.org/pypi/blohg
 
 .. _Linux: http://kernel.org/
+.. _Windows: http://windows.microsoft.com/
 .. _Flask: http://flask.pocoo.org/
 .. _PyPI: http://pypi.python.org/
 
