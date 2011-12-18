@@ -23,4 +23,4 @@ Contents:
    write
    deploy
    upgrade
-
+   license

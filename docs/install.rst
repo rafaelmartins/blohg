@@ -33,6 +33,7 @@ Or using ``easy_install``, type::
 
     # easy_install blohg
 
+
 Gentoo Linux
 ------------
 
@@ -42,4 +43,16 @@ using::
     # emerge -av www-apps/blohg
 
 .. _Gentoo: http://www.gentoo.org/
+
+
+Windows
+-------
+
+You can install blohg easily on Windows using ``pip``/``easy_install``, but
+it will try to build the Mercurial C extensions by default, and will fail
+if you don't have a compiler installed. You may install a compiler, or just
+install the pure Python implementation of Mercurial before install blohg,
+using something like this inside a directory with Mercurial sources extracted::
+
+    # python setup.py --pure install
 

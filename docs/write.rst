@@ -118,8 +118,8 @@ Usage example:
     This is the attachment link: :attachment:`mercurial.png|link to file`
 
 
-Additional reStructuredText directives
---------------------------------------
+Additional reStructuredText directives/interpreted text roles
+-------------------------------------------------------------
 
 These are some additional custom directives, that adds some interesting
 functionality to the standard reStructuredText_ syntax.
