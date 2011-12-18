@@ -64,7 +64,7 @@ class HgApiTestCase(TestCaseWithNewRepo):
                   os.path.join('templates', 'base.html'),
                   os.path.join('templates', 'posts.html'),
                   os.path.join('templates', 'post_list.html'),
-                  'config.yaml']:
+                  'config.yaml', '.hgignore']:
             full_f = os.path.join(self.repo_path, f)
             size_f = os.stat(full_f).st_size
             assert full_f in e, 'File not found: ' + f

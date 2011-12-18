@@ -9,6 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import codecs
 import os
 import shutil
 
@@ -44,6 +45,14 @@ def create_repo(app):
             shutil.copy2(full_path, os.path.join(repo_path, f))
         else:
             raise RuntimeError('unrecognized file: %s' % full_path)
+
+    # create a .hgignore, to avoid people to acidentally push a build/ dir
+    # with stuff built with 'blohg freeze'. creating the file here because a
+    # .hgignore file in the repo may cause some weird behavior that we are not
+    # aware of.
+    with codecs.open(os.path.join(repo_path, '.hgignore'), 'w',
+                     encoding='utf-8') as fp:
+        fp.write('^build/' + os.linesep)
 
     try:
         commands.init(ui.ui(), repo_path)
