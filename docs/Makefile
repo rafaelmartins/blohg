@@ -130,6 +130,6 @@ doctest:
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 upload: dirhtml
-	rsync -axvzc --progress --stats --delete \
+	rsync -axvzc --progress --stats --delete --rsh='ssh -p 2234' \
 		$(BUILDDIR)/dirhtml/* \
-		www@walrus.rafaelmartins.com:/var/www/domains/blohg.org/docs/htdocs/
+		storm.rafaelmartins.com:/var/www/docs.blohg.org/htdocs/
