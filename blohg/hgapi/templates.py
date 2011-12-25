@@ -10,6 +10,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import os
 import posixpath
 
 from flask import current_app
@@ -43,10 +44,11 @@ class MercurialLoader(BaseLoader):
                 return revision >= \
                        self._filerev(current_app.hg.revision[filename])
 
-            return contents, filename, up2date
+            return contents, os.path.join(templates_dir, *pieces), up2date
         raise TemplateNotFound(template)
 
     def list_templates(self):
-        templates_dir = current_app.config['TEMPLATES_DIR']
-        return sorted([i for i in current_app.hg.revision \
-            if i.startswith(templates_dir + '/')])
+        templates_dir = current_app.config['TEMPLATES_DIR'].strip(os.linesep)
+        return sorted([i[len(templates_dir) + 1:] for i in \
+                       current_app.hg.revision \
+                       if i.startswith(templates_dir + '/')])

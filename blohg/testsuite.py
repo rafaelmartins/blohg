@@ -13,6 +13,7 @@ import codecs
 import os
 import unittest
 from jinja2.loaders import ChoiceLoader
+from jinja2.exceptions import TemplateNotFound
 from mercurial import hg, ui
 from mercurial.commands import add, commit, rollback, revert
 from shutil import rmtree
@@ -40,11 +41,7 @@ class TestCaseWithNewRepo(unittest.TestCase):
         except:
             pass
 
-
-class HgApiTestCase(TestCaseWithNewRepo):
-
-    def test_repo_structure(self):
-
+    def walk(self, p):
         def walk(entries, path):
             for entry in os.listdir(path):
                 full_entry = os.path.join(path, entry)
@@ -54,8 +51,14 @@ class HgApiTestCase(TestCaseWithNewRepo):
                     entries.append(full_entry)
 
         e = []
-        walk(e, self.repo_path)
+        walk(e, p)
+        return e
 
+
+class HgApiTestCase(TestCaseWithNewRepo):
+
+    def test_repo_structure(self):
+        e = self.walk(self.repo_path)
         for f in [os.path.join('content', 'attachments', 'mercurial.png'),
                   os.path.join('content', 'post', 'example-post.rst'),
                   os.path.join('content', 'post', 'lorem-ipsum.rst'),
@@ -132,11 +135,89 @@ class HgApiTestCase(TestCaseWithNewRepo):
             data = app.hg.get('post/foo-bar')
             assert data is not None, 'Reload failed. Commited stuff wasn\'t ' \
                    'reloaded'
+        os.unlink(new_file)
         rollback(self.ui, self.repo)
         revert(self.ui, self.repo, all=True, no_backup=True)
+
+
+class MercurialLoaderTestCase(TestCaseWithNewRepo):
+
+    def test_get_source(self):
+        app = create_app(self.repo_path)
+
+        with app.test_request_context():
+            with self.assertRaises(TemplateNotFound):
+                app.jinja_loader.get_source(app.jinja_env, 'test.html')
+
+        new_file = os.path.join(self.repo_path, app.config['TEMPLATES_DIR'],
+                                'test.html')
+
+        with codecs.open(new_file, 'w', encoding='utf-8') as fp:
+            fp.write('foo')
+        add(self.ui, self.repo, new_file)
+
+        app.hg.reload()
+        with app.test_request_context():
+            with self.assertRaises(TemplateNotFound):
+                app.jinja_loader.get_source(app.jinja_env, 'test.html')
+
+        app.debug = True
+        app.hg.reload()
+        with app.test_request_context():
+            contents, filename, up2date = app.jinja_loader.get_source(
+                app.jinja_env, 'test.html')
+            assert 'foo' in contents, 'Invalid template!'
+            # TODO: fix and test filename
+            assert not up2date(), 'up2date failed. It should always return ' \
+                   'False when debug is enabled'
+
+        app.debug = False
+        app.hg.reload()
+        with app.test_request_context():
+            contents, filename, up2date = app.jinja_loader.get_source(
+                app.jinja_env, 'test.html')
+            assert not up2date(), 'up2date failed. Debug disabled. Before ' \
+                   'commit.'
+            commit(self.ui, self.repo, message='foo')
+            app.hg.reload()
+            contents, filename, up2date = app.jinja_loader.get_source(
+                app.jinja_env, 'test.html')
+            assert up2date(), 'up2date failed. Debug disabled. After commit.'
+            with codecs.open(new_file, 'a', encoding='utf-8') as fp:
+                fp.write('bar')
+            commit(self.ui, self.repo, message='bar')
+            app.hg.reload()
+            assert not up2date(), 'up2date failed. Debug disabled. After ' \
+                   '2nd commit'
+
+        # half-ass cleanup :(
+        os.unlink(new_file)
+        revert(self.ui, self.repo, all=True, no_backup=True, rev=0)
+        commit(self.ui, self.repo, message='revert')
+
+    def test_list_templates(self):
+        app = create_app(self.repo_path)
+        default_templates_dir = os.path.join(os.path.dirname(
+            os.path.abspath(__file__)), 'templates')
+        templates_dir = os.path.join(self.repo_path,
+                                     app.config['TEMPLATES_DIR'])
+        e = self.walk(default_templates_dir) + self.walk(templates_dir)
+        with app.test_request_context():
+            for f in app.jinja_loader.list_templates():
+                full_f1 = os.path.join(default_templates_dir, f)
+                full_f2 = os.path.join(templates_dir, f)
+                if full_f1 in e:
+                    full_f = full_f1
+                elif full_f2 in e:
+                    full_f = full_f2
+                else:
+                    assert False, 'File not found: ' + f
+                size_f = os.stat(full_f).st_size
+                assert size_f > 0, 'Empty file: ' + f
 
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(HgApiTestCase))
+    suite.addTest(unittest.makeSuite(MercurialLoaderTestCase))
     return suite
