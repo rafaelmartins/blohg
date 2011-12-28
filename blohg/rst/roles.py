@@ -16,7 +16,7 @@ import posixpath
 import re
 
 
-__all__ = ['attachment_role']
+__all__ = ['attachment_role', 'page_role']
 
 
 def attachment_role(name, rawtext, text, lineno, inliner, options={},
