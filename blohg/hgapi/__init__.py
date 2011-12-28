@@ -63,6 +63,15 @@ class Hg(object):
         self.aliases = {}
         self.reload()
 
+    def _parse_aliases(self, post_or_page):
+        for alias in post_or_page.aliases:
+            code = 302
+            alias = alias.encode('utf-8')
+            if alias[:4] in ('301:', '302:'):
+                code = int(alias[:3])
+                alias = alias[4:]
+            self.aliases[alias.encode('utf-8')] = (code, post_or_page.slug)
+
     def reload(self):
         """Method to reload stuff from the Mercurial repository. It is able to
         reload as needed, to save resources.
@@ -143,18 +152,15 @@ class Hg(object):
             rv = re_content.match(fname)
             if rv is not None:
                 if rv.group(1) is None:  # page
-                    self.pages.append(Page(self, self.revision[fname]))
+                    page = Page(self, self.revision[fname])
+                    self._parse_aliases(page)
+                    self.pages.append(page)
                 else:  # post
                     post = Post(self, self.revision[fname])
+                    self._parse_aliases(post)
                     self.posts.append(post)
                     self.tags = self.tags.union(set(post.tags))
-                    for alias in post.aliases:
-                        code = 302
-                        alias = alias.encode('utf-8')
-                        if alias[:4] in ('301:', '302:'):
-                            code = int(alias[:3])
-                            alias = alias[4:]
-                        self.aliases[alias.encode('utf-8')] = (code, post.slug)
+
 
         # sort posts reverse by date. sort pages is useless :P
         self.posts = sorted(self.posts, lambda a, b: b.date - a.date)
