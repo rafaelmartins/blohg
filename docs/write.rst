@@ -141,6 +141,25 @@ Usage example:
        :height: 344
        :width: 425
 
+Directive ``vimeo``
+~~~~~~~~~~~~~~~~~~~~~
+
+reStructuredText_ directive that creates an embed object to display a video
+from Vimeo_.
+
+.. _Vimeo: http://vimeo.com/
+
+   Usage example:
+
+.. code-block:: rest
+
+   .. vimeo:: 2539741
+      :align: center
+      :height: 344
+      :width: 425
+
+
+
 
 Directive ``code``
 ~~~~~~~~~~~~~~~~~~
