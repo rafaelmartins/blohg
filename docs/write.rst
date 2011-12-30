@@ -149,7 +149,7 @@ from Vimeo_.
 
 .. _Vimeo: http://vimeo.com/
 
-   Usage example:
+Usage example:
 
 .. code-block:: rest
 
