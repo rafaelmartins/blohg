@@ -21,7 +21,7 @@ from urllib import pathname2url
 import posixpath
 
 
-__all__ = ['Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
+__all__ = ['Vimeo','Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
            'AttachmentFigure', 'SubPages']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
@@ -29,6 +29,48 @@ GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
 def align(argument):
     return directives.choice(argument, ('left', 'center', 'right'))
+
+
+class Vimeo(Directive):
+    """reStructuredText directive that creates an embed object to display
+    a video from Vimeo
+
+    Usage example::
+
+        .. vimeo:: QFwQIRwuAM0
+           :align: center
+           :height: 344
+           :width: 425
+    """
+
+    required_arguments = 1
+    optional_arguments = 0
+    option_spec = {
+        'height': directives.nonnegative_int,
+        'width': directives.nonnegative_int,
+        'align': align,
+    }
+    has_content = False
+
+    def run(self):
+        self.options['vid'] = self.arguments[0]
+        if not 'width' in self.options:
+            self.options['width'] = 425
+        if not 'height' in self.options:
+            self.options['height'] = 344
+        if not 'align' in self.options:
+            self.options['align'] = 'center'
+        html = '''\
+<div align="%(align)s">
+    <iframe width="%(width)i"
+            height="%(height)i"
+            src="http://player.vimeo.com/video/%(vid)s"
+            frameborder="0"
+            allowfullscreen>
+    </iframe>
+</div>
+'''
+        return [nodes.raw('', html % self.options, format='html')]
 
 
 class Youtube(Directive):
@@ -274,6 +316,7 @@ class SubPages(Directive):
 
 
 index = {
+    'vimeo': Vimeo,
     'youtube': Youtube,
     'math': Math,
     'code': Code,
