@@ -12,5 +12,6 @@ Patches and Suggestions
 
 - Anton Novosyolov
 - Benoit Allard
+- Bruno Yporti
 - Christian Joergensen
 - Ry4an Brase
