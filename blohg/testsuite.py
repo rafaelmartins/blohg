@@ -146,8 +146,8 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
         app = create_app(self.repo_path)
 
         with app.test_request_context():
-            with self.assertRaises(TemplateNotFound):
-                app.jinja_loader.get_source(app.jinja_env, 'test.html')
+            self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
+                              app.jinja_env, 'test.html')
 
         new_file = os.path.join(self.repo_path, app.config['TEMPLATES_DIR'],
                                 'test.html')
@@ -158,8 +158,8 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
 
         app.hg.reload()
         with app.test_request_context():
-            with self.assertRaises(TemplateNotFound):
-                app.jinja_loader.get_source(app.jinja_env, 'test.html')
+            self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
+                              app.jinja_env, 'test.html')
 
         app.debug = True
         app.hg.reload()
