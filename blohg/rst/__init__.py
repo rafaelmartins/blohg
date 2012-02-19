@@ -16,6 +16,7 @@ from docutils.parsers.rst.roles import register_local_role
 
 from blohg.rst.directives import index as directives_index
 from blohg.rst.roles import index as roles_index
+from blohg.rst.writer import BlohgWriter
 
 # registering docutils' directives
 for directive in directives_index:
@@ -27,7 +28,7 @@ for role in roles_index:
 
 
 def parser(content):
-    parts = publish_parts(source=content, writer_name='html4css1',
+    parts = publish_parts(source=content, writer=BlohgWriter(),
                           settings_overrides={'input_encoding': 'utf-8',
                                               'output_encoding': 'utf-8',
                                               'initial_header_level': 3})

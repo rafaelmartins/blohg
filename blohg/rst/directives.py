@@ -18,10 +18,12 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
+from blohg.rst.nodes import iframe_flash_video
+
 import posixpath
 
 
-__all__ = ['Vimeo','Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
+__all__ = ['Vimeo', 'Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
            'AttachmentFigure', 'SubPages']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
@@ -29,6 +31,10 @@ GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
 def align(argument):
     return directives.choice(argument, ('left', 'center', 'right'))
+
+
+def boolean(argument):
+    return directives.choice(argument, ('true', 'false'))
 
 
 class Vimeo(Directive):
@@ -46,31 +52,23 @@ class Vimeo(Directive):
     required_arguments = 1
     optional_arguments = 0
     option_spec = {
-        'height': directives.nonnegative_int,
-        'width': directives.nonnegative_int,
+        'height': directives.length_or_unitless,
+        'width': directives.length_or_percentage_or_unitless,
+        'border': directives.length_or_unitless,
         'align': align,
+        'allowfullscreen': boolean,
     }
     has_content = False
 
     def run(self):
-        self.options['vid'] = self.arguments[0]
-        if not 'width' in self.options:
-            self.options['width'] = 425
-        if not 'height' in self.options:
-            self.options['height'] = 344
-        if not 'align' in self.options:
-            self.options['align'] = 'center'
-        html = '''\
-<div align="%(align)s">
-    <iframe width="%(width)i"
-            height="%(height)i"
-            src="http://player.vimeo.com/video/%(vid)s"
-            frameborder="0"
-            allowfullscreen>
-    </iframe>
-</div>
-'''
-        return [nodes.raw('', html % self.options, format='html')]
+        self.options['uri'] = 'http://player.vimeo.com/video/' \
+            + self.arguments[0]
+        self.options.setdefault('width', '425px')
+        self.options.setdefault('height', '344px')
+        self.options.setdefault('align', 'center')
+        self.options.setdefault('border', '0')
+        self.options.setdefault('allowfullscreen', 'true')
+        return [iframe_flash_video('', **self.options)]
 
 
 class Youtube(Directive):
@@ -88,31 +86,23 @@ class Youtube(Directive):
     required_arguments = 1
     optional_arguments = 0
     option_spec = {
-        'height': directives.nonnegative_int,
-        'width': directives.nonnegative_int,
+        'height': directives.length_or_unitless,
+        'width': directives.length_or_percentage_or_unitless,
+        'border': directives.length_or_unitless,
         'align': align,
+        'allowfullscreen': boolean,
     }
     has_content = False
 
     def run(self):
-        self.options['vid'] = self.arguments[0]
-        if not 'width' in self.options:
-            self.options['width'] = 425
-        if not 'height' in self.options:
-            self.options['height'] = 344
-        if not 'align' in self.options:
-            self.options['align'] = 'center'
-        html = '''\
-<div align="%(align)s">
-    <iframe width="%(width)i"
-            height="%(height)i"
-            src="http://www.youtube.com/embed/%(vid)s"
-            frameborder="0"
-            allowfullscreen>
-    </iframe>
-</div>
-'''
-        return [nodes.raw('', html % self.options, format='html')]
+        self.options['uri'] = 'http://www.youtube.com/embed/' \
+            + self.arguments[0]
+        self.options.setdefault('width', '425px')
+        self.options.setdefault('height', '344px')
+        self.options.setdefault('align', 'center')
+        self.options.setdefault('border', '0')
+        self.options.setdefault('allowfullscreen', 'true')
+        return [iframe_flash_video('', **self.options)]
 
 
 class Code(Directive):
