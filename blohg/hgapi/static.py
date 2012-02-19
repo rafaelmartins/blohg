@@ -5,7 +5,7 @@
 
     Module with stuff to deal with static files from Mercurial repositories.
 
-    :copyright: (c) 2011 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 

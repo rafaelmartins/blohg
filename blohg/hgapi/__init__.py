@@ -6,7 +6,7 @@
     Package with Mercurial-related stuff needed by blohg to load posts
     and static pages.
 
-    :copyright: (c) 2010-2011 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
@@ -160,7 +160,6 @@ class Hg(object):
                     self._parse_aliases(post)
                     self.posts.append(post)
                     self.tags = self.tags.union(set(post.tags))
-
 
         # sort posts reverse by date. sort pages is useless :P
         self.posts = sorted(self.posts, lambda a, b: b.date - a.date)

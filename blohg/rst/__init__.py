@@ -6,7 +6,7 @@
     Package with reStructuredText-related stuff needed by blohg, like
     directives and roles.
 
-    :copyright: (c) 2010-2011 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
