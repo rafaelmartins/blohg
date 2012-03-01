@@ -13,7 +13,7 @@ import codecs
 import os
 import shutil
 
-from mercurial import commands, ui, error
+from mercurial import commands, error
 from pkg_resources import resource_filename, resource_listdir
 
 
@@ -55,6 +55,6 @@ def create_repo(app):
         fp.write('^build/' + os.linesep)
 
     try:
-        commands.init(ui.ui(), repo_path)
+        commands.init(app.hgui, repo_path)
     except error, err:
         raise RuntimeError('an error was occurred: %s' % err)

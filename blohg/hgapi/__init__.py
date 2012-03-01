@@ -20,15 +20,17 @@ from blohg.hgapi.static import MercurialStaticFile
 from blohg.hgapi.templates import MercurialLoader
 
 
-def setup_mercurial(app):
+def setup_mercurial(app, hgui=None):
     """This function adds a :class:`Hg` instance to an application object, as a
     ``hg`` attribute, and reloads it as needed.
 
     :param app: the application object, must have a 'REPO_PATH' configuration
                 parameter.
+    :param hgui: a Mercurial ui object.
     """
 
-    # attach the Hg object
+    # create an ui object and attach the Hg object to app
+    app.hgui = hgui or ui.ui()
     app.hg = Hg(app)
 
     # setup our jinja2 custom loader and static file handlers
@@ -87,7 +89,7 @@ class Hg(object):
         if repopath is None:
             return
 
-        repo = hg.repository(ui.ui(), repopath)
+        repo = hg.repository(self.app.hgui, repopath)
         try:
             default_branch = repo.branchtags()['default']
         except KeyError:

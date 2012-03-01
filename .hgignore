@@ -2,4 +2,4 @@
 ^(env|dist|blohg\.egg-info)/
 ^build/
 ^docs/_build/[^(.keep)]
-\.wpr$
+\.wp[ru]$

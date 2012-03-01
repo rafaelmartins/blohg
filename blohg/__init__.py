@@ -18,7 +18,7 @@ from blohg.version import version as __version__
 from blohg.views import views
 
 
-def create_app(repo_path=None):
+def create_app(repo_path=None, hgui=None):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -45,7 +45,7 @@ def create_app(repo_path=None):
     app.config['REPO_PATH'] = repo_path
 
     # init mercurial stuff
-    setup_mercurial(app)
+    setup_mercurial(app, hgui=hgui)
 
     # setup extensions
     babel = Babel(app)
