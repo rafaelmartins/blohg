@@ -254,6 +254,19 @@ Or:
 Supposing that you have a directory called ``content/projects`` and some reStructuredText_
 files on it. Subdirectories are also allowed.
 
+It is also possible to change the way the bullet-list is sorted, using the
+options ``sort-by`` and ``sort-order``:
+
+.. code-block:: rest
+
+    .. subpages::
+       :sort-by: slug
+       :sort-order: desc
+
+Available options for ``sort-by`` are ``slug`` (default option), ``title``
+and ``date``, and for ``sort-order`` are ``asc`` (default option) and
+``desc``.
+
 This directive will just show the files from the root of the directory. It's not recursive.
 
 
