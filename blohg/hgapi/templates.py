@@ -33,7 +33,7 @@ class MercurialLoader(BaseLoader):
         pieces = split_template_path(template)
         templates_dir = current_app.config['TEMPLATES_DIR']
         filename = posixpath.join(templates_dir, *pieces)
-        if filename in list(current_app.hg.revision):
+        if filename in current_app.hg.revision.manifest():
             filectx = current_app.hg.revision[filename]
             contents = filectx.data().decode('utf-8')
             revision = self._filerev(filectx)
@@ -50,5 +50,5 @@ class MercurialLoader(BaseLoader):
     def list_templates(self):
         templates_dir = current_app.config['TEMPLATES_DIR'].strip(os.linesep)
         return sorted([i[len(templates_dir) + 1:] for i in \
-                       current_app.hg.revision \
+                       current_app.hg.revision.manifest() \
                        if i.startswith(templates_dir + '/')])

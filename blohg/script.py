@@ -93,7 +93,7 @@ class Freeze(Command):
         freezer = Freezer(app)
 
         def static_generator(static_dir):
-            for f in app.hg.revision:
+            for f in app.hg.revision.manifest():
                 if f.startswith(static_dir):
                     yield dict(filename=f[len(static_dir):] \
                                .strip(posixpath.sep))

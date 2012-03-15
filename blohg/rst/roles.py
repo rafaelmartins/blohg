@@ -28,7 +28,7 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={},
     if '|' in text:
         text, label = text.split('|')
     full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], text)
-    if full_path not in list(current_app.hg.revision):
+    if full_path not in current_app.hg.revision.manifest():
         msg = inliner.reporter.error('Error in "%s" role: File not found: %s.' \
                                      % (name, full_path), line=lineno)
         prb = inliner.problematic(rawtext, rawtext, msg)

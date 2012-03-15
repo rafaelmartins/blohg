@@ -46,7 +46,6 @@ class TestCaseWithNewRepo(unittest.TestCase):
         self.app = create_app(self.repo_path, hgui=self.ui)
         create_repo(self.app)
         self.repo = hg.repository(self.ui, self.repo_path)
-        self.add()
         self.app.hg.reload()
 
     def tearDown(self):
@@ -74,7 +73,7 @@ class HgApiTestCase(TestCaseWithNewRepo):
                   posixpath.join('templates', 'posts.html'),
                   posixpath.join('templates', 'post_list.html'),
                   'config.yaml', '.hgignore']:
-            self.assertTrue(f in self.app.hg.revision,
+            self.assertTrue(f in self.app.hg.revision.manifest(),
                             'File not found: %s' % f)
 
     def test_setup_mercurial(self):
@@ -117,7 +116,6 @@ class HgApiTestCase(TestCaseWithNewRepo):
                                 'foo-bar.rst')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write(os.linesep.join(['Foo', '---', '', 'Bar']))
-        self.add(new_file)
 
         self.app.hg.reload()
         with self.app.test_request_context():
@@ -133,7 +131,7 @@ class HgApiTestCase(TestCaseWithNewRepo):
                              'wasn\'t reloaded, with debug enabled')
 
         self.app.debug = False
-        self.commit(message='foo')
+        self.commit(message='foo', addremove=True)
         self.app.hg.reload()
         with self.app.test_request_context():
             data = self.app.hg.get('post/foo-bar')
@@ -154,7 +152,6 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
 
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
-        self.add(new_file)
 
         self.app.hg.reload()
         with self.app.test_request_context():
@@ -179,7 +176,7 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
                 self.app.jinja_env, 'test.html')
             self.assertFalse(up2date(), 'up2date failed. Debug disabled. ' \
                              'Before commit.')
-            self.commit(message='foo')
+            self.commit(message='foo', addremove=True)
             self.app.hg.reload()
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
@@ -187,7 +184,7 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
                             'After commit.')
             with codecs.open(new_file, 'a', encoding='utf-8') as fp:
                 fp.write('bar')
-            self.commit(message='bar')
+            self.commit(message='bar', addremove=True)
             self.app.hg.reload()
             self.assertFalse(up2date(), 'up2date failed. Debug disabled. ' \
                              'After 2nd commit')

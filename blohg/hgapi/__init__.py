@@ -127,7 +127,7 @@ class Hg(object):
         self.default_branch = default_branch
 
         # load configs
-        if self.config_file not in self.revision:
+        if self.config_file not in self.revision.manifest():
             raise RuntimeError('Configuration file not found: %s' % \
                                self.config_file)
         config = self.revision[self.config_file].data()
@@ -150,7 +150,7 @@ class Hg(object):
         self.posts = []
         self.tags = set()
         self.aliases = {}
-        for fname in self.revision:
+        for fname in self.revision.manifest():
             rv = re_content.match(fname)
             if rv is not None:
                 if rv.group(1) is None:  # page
