@@ -34,14 +34,6 @@ User's Guide
    upgrade
 
 
-API Reference
--------------
-
-.. toctree::
-   :maxdepth: 2
-
-
-
 Additional Notes
 ----------------
 
