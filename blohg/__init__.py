@@ -29,18 +29,18 @@ def create_app(repo_path=None, hgui=None):
     app = Flask(__name__)
 
     # register some sane default config values
-    app.config.setdefault('AUTHOR', 'Your Name Here')
+    app.config.setdefault('AUTHOR', u'Your Name Here')
     app.config.setdefault('POSTS_PER_PAGE', 10)
     app.config.setdefault('TAGLINE', u'Your cool tagline')
     app.config.setdefault('TITLE', u'Your title')
     app.config.setdefault('TITLE_HTML', u'Your HTML title')
-    app.config.setdefault('CONTENT_DIR', 'content')
-    app.config.setdefault('TEMPLATES_DIR', 'templates')
-    app.config.setdefault('STATIC_DIR', 'static')
-    app.config.setdefault('ATTACHMENT_DIR', 'content/attachments')
+    app.config.setdefault('CONTENT_DIR', u'content')
+    app.config.setdefault('TEMPLATES_DIR', u'templates')
+    app.config.setdefault('STATIC_DIR', u'static')
+    app.config.setdefault('ATTACHMENT_DIR', u'content/attachments')
     app.config.setdefault('ROBOTS_TXT', True)
     app.config.setdefault('SHOW_RST_SOURCE', True)
-    app.config.setdefault('POST_EXT', '.rst')
+    app.config.setdefault('POST_EXT', u'.rst')
 
     app.config['REPO_PATH'] = repo_path
 

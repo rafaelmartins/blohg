@@ -1,8 +1,10 @@
+.. upgrade:
+
 Upgrading blohg
 ===============
 
-From <=0.5.1 to 0.6
--------------------
+From <=0.5.1
+------------
 
 blohg 0.6 introduces support to Flask 0.7, that comes with some backwards
 incompatibilities.

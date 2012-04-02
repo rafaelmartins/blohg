@@ -70,7 +70,7 @@ setup(
     name='blohg',
     version=__version__,
     license='GPL-2',
-    description='A Mercurial-based blog engine',
+    description='A Mercurial-based blogging engine',
     long_description=open(os.path.join(cwd, 'README.rst')).read(),
     author='Rafael Goncalves Martins',
     author_email='rafael@rafaelmartins.eng.br',

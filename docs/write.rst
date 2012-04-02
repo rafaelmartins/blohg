@@ -11,7 +11,7 @@ Tagging posts
 -------------
 
 blohg implements the concept of tags for posts. Tags are defined as a
-comma-separated list inside a reStructuredText comment:
+comma-separated list inside a reStructuredText comment in the post source:
 
 .. code-block:: rest
 
@@ -297,11 +297,6 @@ Supposing that your Mercurial repository is the ``my_blohg`` directory.
 
 If the blohg script is running on the debug mode, that is the default, it will
 load all the uncommited stuff available on your local copy.
-
-.. warning::
-
-    If you're using Mercurial >= 1.9, make sure that you added your files to the
-    repository, using ``hg add``. Take a look at ``hg help add``.
 
 If you disable the debug mode (``--no-debug`` option), it will just load the
 stuff that was already commited. This is the default behavior of the application

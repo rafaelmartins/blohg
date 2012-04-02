@@ -1,21 +1,30 @@
-.. blohg documentation master file, created by
-   sphinx-quickstart on Tue Apr 26 23:45:47 2011.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to blohg's documentation!
-=================================
+blohg, a Mercurial-based blogging engine
+========================================
 
 :Author: Rafael Goncalves Martins
 :Website: http://blohg.org/
 :Source code: http://hg.rafaelmartins.eng.br/blohg/
-:Bugs to: blohg@librelist.com
+:Mailing list: blohg@librelist.com
 :Version: |release|
 
-Contents:
+
+This is blohg, a full-featured blogging engine, that uses Mercurial as the 
+storage backend.
+
+Here you will find a complete documentation about the usage and the concepts
+behind blohg.
+
+Have fun, and feel free to contact us, using the mailing list, if you have
+some questions.
+
+Enjoy!
+
+
+User's Guide
+------------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
 
    about
    install
@@ -23,4 +32,21 @@ Contents:
    write
    deploy
    upgrade
+
+
+API Reference
+-------------
+
+.. toctree::
+   :maxdepth: 2
+
+
+
+Additional Notes
+----------------
+
+.. toctree::
+   :maxdepth: 2
+
    license
+

@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'blohg'
-copyright = u'2011, Rafael G. Martins'
+copyright = u'2011-2012, Rafael G. Martins'
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cwd, '..', 'blohg'))
