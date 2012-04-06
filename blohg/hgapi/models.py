@@ -116,7 +116,7 @@ class Page(object):
 
     @cached_property
     def title(self):
-        return self.parsed_source['title']
+        return self._vars.get('title', self.parsed_source['title'])
 
     @cached_property
     def author_name(self):
