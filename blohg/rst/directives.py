@@ -9,22 +9,26 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from docutils import nodes
+from docutils import nodes, statemachine
+from docutils.error_reporting import ErrorString
+from docutils.io import FileInput
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
+from docutils.parsers.rst.directives.misc import Include
 from flask import current_app, request, url_for
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
+from blohg.hgapi.io import MercurialFile
 from blohg.rst.nodes import iframe_flash_video
 
 import posixpath
 
 
 __all__ = ['Vimeo', 'Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
-           'AttachmentFigure', 'SubPages']
+           'AttachmentFigure', 'SubPages', 'IncludeHg']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
 
@@ -317,6 +321,76 @@ class SubPages(Directive):
         return [nodes.bullet_list('', *final_metadata)]
 
 
+class IncludeHg(Include):
+
+    def run(self):
+        if not self.state.document.settings.file_insertion_enabled:
+            raise self.warning('"%s" directive disabled.' % self.name)
+        path = directives.path(self.arguments[0])
+        # ALL the included files are relative to the repository root.
+        # we need to remove absolute paths
+        if path.startswith('/'):
+            raise self.severe('Problem with "%s" directive path:\npath ' \
+                              'should be relative' % self.name)
+        encoding = self.options.get(
+            'encoding', self.state.document.settings.input_encoding)
+        tab_width = self.options.get(
+            'tab-width', self.state.document.settings.tab_width)
+        try:
+            self.state.document.settings.record_dependencies.add(path)
+            include_file = FileInput(
+                source=MercurialFile(path), encoding=encoding,
+                error_handler=(self.state.document.settings.\
+                               input_encoding_error_handler),
+                handle_io_errors=None)
+        except IOError, error:
+            raise self.severe(u'Problems with "%s" directive path:\n%s.' %
+                      (self.name, ErrorString(error)))
+        startline = self.options.get('start-line', None)
+        endline = self.options.get('end-line', None)
+        try:
+            if startline or (endline is not None):
+                lines = include_file.readlines()
+                rawtext = ''.join(lines[startline:endline])
+            else:
+                rawtext = include_file.read()
+        except UnicodeError, error:
+            raise self.severe(u'Problem with "%s" directive:\n%s' %
+                              (self.name, ErrorString(error)))
+        # start-after/end-before: no restrictions on newlines in match-text,
+        # and no restrictions on matching inside lines vs. line boundaries
+        after_text = self.options.get('start-after', None)
+        if after_text:
+            # skip content in rawtext before *and incl.* a matching text
+            after_index = rawtext.find(after_text)
+            if after_index < 0:
+                raise self.severe('Problem with "start-after" option of "%s" '
+                                  'directive:\nText not found.' % self.name)
+            rawtext = rawtext[after_index + len(after_text):]
+        before_text = self.options.get('end-before', None)
+        if before_text:
+            # skip content in rawtext after *and incl.* a matching text
+            before_index = rawtext.find(before_text)
+            if before_index < 0:
+                raise self.severe('Problem with "end-before" option of "%s" '
+                                  'directive:\nText not found.' % self.name)
+            rawtext = rawtext[:before_index]
+        if 'literal' in self.options:
+            # Convert tabs to spaces, if `tab_width` is positive.
+            if tab_width >= 0:
+                text = rawtext.expandtabs(tab_width)
+            else:
+                text = rawtext
+            literal_block = nodes.literal_block(rawtext, text, source=path)
+            literal_block.line = 1
+            return [literal_block]
+        else:
+            include_lines = statemachine.string2lines(
+                rawtext, tab_width, convert_whitespace=1)
+            self.state_machine.insert_input(include_lines, path)
+            return []
+
+
 index = {
     'vimeo': Vimeo,
     'youtube': Youtube,
@@ -326,4 +400,5 @@ index = {
     'attachment-image': AttachmentImage,
     'attachment-figure': AttachmentFigure,
     'subpages': SubPages,
+    'include-hg': IncludeHg,
 }
