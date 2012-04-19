@@ -9,6 +9,9 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import os
+os.environ['HGENCODING'] = 'utf-8'
+
 # If you're using virtualenv, uncomment the code below
 #import site
 #site.addsitedir('/path/to/your/virtualenv/lib/pythonX.Y/site-packages')
