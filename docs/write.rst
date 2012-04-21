@@ -233,6 +233,27 @@ Usage example:
         \frac{x^2}{1+x}
 
 
+Directive ``include-hg``
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+reStructuredText_ directive that reads a reStructuredText-formatted text file
+and parses it in the current document's context at the point of the directive.
+The directive argument is the path to the file to be included.
+
+Usage example:
+
+.. code-block:: rest
+
+    .. include-hg:: inclusion.txt
+
+More detailed documentation can be viewed in the `Docutils' documentation`__.
+
+__ http://docutils.sourceforge.net/docs/ref/rst/directives.html#id48
+
+``include-hg`` directive, unlike ``include``, will include files stored in the Mercurial
+repository.
+
+
 Directive ``subpages``
 ~~~~~~~~~~~~~~~~~~~~~~
 
