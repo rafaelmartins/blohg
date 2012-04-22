@@ -118,6 +118,15 @@ class Page(object):
         return self._vars.get('title', self.parsed_source['title'])
 
     @locked_cached_property
+    def description(self):
+        return self._vars.get('description',
+                              self.parsed_source['first_paragraph_as_text'])
+
+    @locked_cached_property
+    def description_image(self):
+        return self.parsed_source.get('first_image', None)
+
+    @locked_cached_property
     def author_name(self):
         return self.parsed_author['name']
 

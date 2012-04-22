@@ -32,4 +32,6 @@ def parser(content):
                           settings_overrides={'input_encoding': 'utf-8',
                                               'output_encoding': 'utf-8',
                                               'initial_header_level': 3})
-    return {'title': parts['title'], 'fragment': parts['fragment']}
+    return {'title': parts['title'], 'fragment': parts['fragment'],
+            'first_paragraph_as_text': parts['first_paragraph_as_text'],
+            'first_image': parts['first_image']}

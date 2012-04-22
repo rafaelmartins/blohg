@@ -7,6 +7,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="generator" content="blohg {{ version }}" />  
+        <meta property="og:title" content="{{ title }}" />
+        {% if description -%}
+        <meta property="og:description" content="{{ description }}" />
+        {% endif -%}
+        {% if description_image -%}
+        <meta property="og:image" content="{{ description_image }}" />
+        {% endif -%}
         <link type="text/css" media="screen" rel="stylesheet" href="{{
             url_for('static', filename='screen.css') }}" />
         <link rel="alternate" type="application/atom+xml" href="{{
