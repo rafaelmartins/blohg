@@ -70,7 +70,8 @@ def content(slug):
         title = u'Post: %s' % page.title
     return render_template('_posts.html', title=title, posts=[page],
                            full_content=True, description=page.description,
-                           description_image=page.description_image)
+                           description_image=page.description_image,
+                           title_raw=page.title)
 
 
 @views.route('/')
