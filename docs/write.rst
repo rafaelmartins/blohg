@@ -39,7 +39,7 @@ Overriding the post/page author
 -------------------------------
 
 blohg retrieves the author of each post/page from the Mercurial repository,
-like it does with the creation date. This data can be used in templates through
+as it does with the creation date. This data can be used in templates through
 the variables ``post.author_name`` and ``post.author_email``. To override
 this data, add a reStructuredText comment like this:
 
@@ -121,7 +121,7 @@ Usage example:
 Additional reStructuredText directives/interpreted text roles
 -------------------------------------------------------------
 
-These are some additional custom directives, that adds some interesting
+These are additional custom directives, that add some interesting
 functionality to the standard reStructuredText_ syntax.
 
 Directive ``youtube``
@@ -215,7 +215,7 @@ This file should be included in the main template, usually ``base.html``:
     <link type="text/css" media="screen" rel="stylesheet" href="{{
         url_for('static', filename='pygments.css') }}" />
 
-This directive is based on ``rst-directive.py``, created by Pygments authors.
+This directive is based on ``rst-directive.py``, created by the Pygments authors.
 
 
 Directive ``math``
@@ -288,7 +288,8 @@ Available options for ``sort-by`` are ``slug`` (default option), ``title``
 and ``date``, and for ``sort-order`` are ``asc`` (default option) and
 ``desc``.
 
-This directive will just show the files from the root of the directory. It's not recursive.
+This directive will only show the files from the root of the directory. It's not
+recursive.
 
 
 Interpreted Text Role ``page``
@@ -296,7 +297,7 @@ Interpreted Text Role ``page``
 
 Interpreted Text Role that generates a link to the given page. The
 text displayed is by default the title of the linked page. You can
-replace it by a custom title using this syntax: ``:page:`Link title
+replace it with a custom title using this syntax: ``:page:`Link title
 <linked-page>```.
 
 Usage example:
@@ -309,18 +310,18 @@ Usage example:
 Previewing your post/page
 -------------------------
 
-After write your post/page you will want to preview it in your browser. You
+After writing your post/page you will want to preview it in your browser. You
 should use the ``blohg`` script to run the development server::
 
     $ blohg runserver --repo-path my_blohg
 
 Supposing that your Mercurial repository is the ``my_blohg`` directory.
 
-If the blohg script is running on the debug mode, that is the default, it will
-load all the uncommited stuff available on your local copy.
+If the blohg script is running on the debug mode, which is the default, it will
+load all the uncommited content available on your local copy.
 
-If you disable the debug mode (``--no-debug`` option), it will just load the
-stuff that was already commited. This is the default behavior of the application
+If you disable the debug mode (``--no-debug`` option), it will only load the
+content that was already commited. This is the default behavior of the application
 when running on the production server.
 
 For help with the script options, type::
@@ -330,6 +331,6 @@ For help with the script options, type::
 Commiting your post/page
 ------------------------
 
-After finish your post and preview it on your browser, feel free to commit your
+After finishing your post and previewing it in your browser, commit your
 reStructuredText to the repo as usual.
 

@@ -18,7 +18,7 @@ Supposing that your Mercurial repository is ``my_blohg``.
 Don't forget to add the remote path to your local ``my_blohg/.hg/hgrc`` [paths]
 section.
 
-blohg deployment process is similar to any other Flask_-powered application.
+The blohg deployment process is similar to any other Flask_-powered application.
 Take a look at the Flask_ deployment documentation:
 
 .. _Flask: http://flask.pocoo.org/

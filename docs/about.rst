@@ -4,9 +4,9 @@ About blohg
 ===========
 
 blohg_ is a Mercurial_-based blogging engine written in Python_, built on the
-top of the Flask_ micro-framework and some of his extensions. All the content of
-the blogs is stored inside Mercurial_ repositories and the repository history
-is used for build the posts and pages.
+top of the Flask_ micro-framework and some of its extensions. All the content of
+the blogs are stored inside Mercurial_ repositories, and the repository history
+is used to build the posts and pages.
 
 .. _blohg: http://blohg.org/
 .. _Mercurial: http://mercurial.selenic.com/
@@ -17,9 +17,9 @@ is used for build the posts and pages.
 Motivation
 ----------
 
-Everybody knows that we have a big number of blogging engines lying around the
-blogosphere, but there's not a lot of choices for programmers, that are used to
-work daily with source-code editors and version control systems, and may be more
+Everybody knows that we have a large number of blogging engines lying around the
+blogosphere, but there are not a many choices for programmers, who are used to
+working daily with source-code editors and version control systems and may be more
 productive when blogging using these tools, instead of the fancy WYSIWYG_
 editors and administration interfaces.
 
@@ -27,14 +27,14 @@ editors and administration interfaces.
 
 Actually this isn't the first project trying to implement a VCS_-based blogging
 engine, but most of the existing projects aren't tied to a VCS_ and are just
-using text files that can be versioned with a VCS_, without take all his
-advantages.
+using text files that can be versioned with a VCS_, without taking full
+advantage of the VCS's revision history.
 
 .. _VCS: http://en.wikipedia.org/wiki/Revision_control
 
-This project uses Mercurial_ as VCS_, reStructuredText_ as markup language
-and Jinja2_ as template engine. All of them are pretty popular on the Python
-ecosystem and pretty easy to use.
+This project uses Mercurial_ as the VCS_, reStructuredText_ as the markup
+language and Jinja2_ as the template engine. All of these are pretty popular
+within the Python ecosystem and easy to use.
 
 .. _reStructuredText: http://docutils.sourceforge.net/rst.html
 .. _Jinja2: http://jinja.pocoo.org/
@@ -43,16 +43,16 @@ ecosystem and pretty easy to use.
 Basic concepts
 --------------
 
-These are some of the basic concepts needed to understand how blohg works.
-Additionally, you should know how Mercurial_ works, the reStructuredText_
+Here are some of the basic concepts needed to understand how blohg works:
+In addition, you should know how Mercurial_ works, the reStructuredText_
 syntax and the Jinja2_ syntax.
 
 Pages
 ~~~~~
 
-Pages are composed by static content, like an "About me" page. They aren't
-listed in atom feeds or in the home, and you may want to create a menu entry
-manually in the template. Pages are ``.rst`` files stored in any directory
+Pages are static content, such as an "About me" page. They aren't listed in atom
+feeds or in the home view.  You may want to create a menu entry
+manually in the template to them.  Pages are ``.rst`` files stored in any directory
 inside ``content/``, excluding ``content/post/``. Sub-directories are allowed.
 
 Posts
@@ -67,7 +67,7 @@ Tags
 
 Tags are identifiers that are used to classify posts by topic. Each tag
 generates a HTML page and an atom feed with related posts. Tags aren't
-allowed in pages, just posts.
+allowed in pages, only posts.
 
 
 Main features

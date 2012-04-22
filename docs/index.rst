@@ -15,7 +15,7 @@ Here you will find a complete documentation about the usage and the concepts
 behind blohg.
 
 Have fun, and feel free to contact us, using the mailing list, if you have
-some questions.
+any questions.
 
 Enjoy!
 

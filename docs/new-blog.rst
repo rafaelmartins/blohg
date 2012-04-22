@@ -3,7 +3,7 @@
 Creating a new blog
 ===================
 
-This section will guide you through all the steps required to get a blohg-based
+This section will guide you through the steps required to get a blohg-based
 blog up and running.
 
 Make sure that you read all the content available here in order to know how
@@ -15,7 +15,7 @@ to use blohg properly.
 Initializing the repository
 ---------------------------
 
-blohg will install a script called ``blohg`` for you. This script is capable to
+blohg will install a script called ``blohg`` for you. This script is able to
 create a new Mercurial repository, using the default template and/or run the
 development server. It will be your main tool to interact with blohg.
 
@@ -25,7 +25,7 @@ To create a new repository, type::
 
 Where ``my_blohg`` is the directory where the new repository will be created.
 
-Make sure that the directory doesn't exists, or is empty, before try to
+Make sure that the directory doesn't exist, or is empty, before try to
 initialize the repository.
 
 When the repository is created, do the initial commit::
@@ -114,8 +114,8 @@ These are the built-in configuration options for the ``config.yaml`` file:
 |                      | attachments are stored.                           |                         |
 +----------------------+---------------------------------------------------+-------------------------+
 | ROBOTS_TXT           | Enable ``robots.txt``, to prevent search engines  | ``True``                |
-|                      | to index source files, a.k.a. don't follow "View  |                         |
-|                      | Source" hiperlinks.                               |                         |
+|                      | from indexing source files, a.k.a. don't follow   |                         |
+|                      | "View Source" hiperlinks.                         |                         |
 +----------------------+---------------------------------------------------+-------------------------+
 | SHOW_RST_SOURCE      | Enable the view that shows the reStructured text  | ``True``                |
 |                      | source of your posts and pages.                   |                         |
@@ -165,7 +165,7 @@ These are the blohg built-in variables globally available for your templates:
 Built-in templates
 ~~~~~~~~~~~~~~~~~~
 
-These are the built-in templates, that can be overrided from the repository:
+These are the built-in templates, that can be overriden from the repository:
 
 404.html
 ````````
@@ -210,8 +210,8 @@ account at http://disqus.com/.
 base.html
 `````````
 
-The main template file, it's mandatory to be provided in the Mercurial
-repository. This template is inherited by all the other ones.
+The main template file, it's mandatory that this provided in the Mercurial
+repository. This template is inherited from by all others.
 
 
 posts.html
@@ -219,7 +219,7 @@ posts.html
 
 Template used by the views that show partial/full content of pages and posts.
 
-It's inherited by ``_posts.html`` and can make use of his Jinja2_ blocks.
+It inherites from ``_posts.html`` and can make use of its Jinja2_ blocks.
 
 Local variables available for this tempalte:
 
@@ -230,7 +230,7 @@ Local variables available for this tempalte:
 +------------------+-----------------------------------------------------------+
 | ``posts``        | A list with all the posts (Metadata objects).             |
 +------------------+-----------------------------------------------------------+
-| ``full_content`` | A boolean that enable display full content of ``posts``   |
+| ``full_content`` | A boolean that enables display full content of ``posts``  |
 |                  | and not just the abstracts.                               |
 +------------------+-----------------------------------------------------------+
 | ``pagination``   | A dictionary with 2 items (``num_pages``: number of       |
@@ -263,7 +263,7 @@ Static files
 ------------
 
 The ``static/`` directory will store your static files, like CSS_ and images.
-You should avoid store big files inside the Mercurial repository.
+You should avoid storing big files inside the Mercurial repository.
 
 .. _CSS: http://www.w3.org/Style/CSS/
 
@@ -333,16 +333,16 @@ blohg generates an Atom_ feed for all the posts and/or tags.
 
 .. _Atom: http://en.wikipedia.org/wiki/Atom_%28standard%29
 
-For all the posts (actually just the ``POSTS_PER_PAGE`` last posts), use the
-following URL:
+To include all the posts (actually just the ``POSTS_PER_PAGE`` last posts), use
+the following URL:
 
 http://example.org/atom/
 
-For each tag, use the following URLs:
+For each tag, use URLs of this form:
 
 - http://example.org/atom/foo/
 - http://example.org/atom/bar/
 
-For multiple combined tags, use the following URL:
+For multiple combined tags, use URLs of this form:
 
 - http://example.org/atom/foo/bar/

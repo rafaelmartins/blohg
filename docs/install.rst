@@ -3,10 +3,10 @@
 Installing blohg
 ================
 
-This section will guide you through the alternatives to setup blohg in
+This section will guide you through the alternatives for setting up blohg in
 your operating system. blohg is currently tested on Linux_ and Windows_,
 but should works in any operating system where Flask_ and Mercurial_
-runs properly.
+run properly.
 
 blohg works on Python 2.6 and 2.7. 
 
@@ -57,7 +57,7 @@ Windows
 .. _Mercurial: http://mercurial.selenic.com/
 
 You can install blohg easily on Windows using ``pip``/``easy_install``, but
-it will try to build the Mercurial C extensions by default, and will fail
+it will try to build the Mercurial C extensions by default, which will fail
 if you don't have a compiler installed. You may want to install a compiler,
 or just install the pure Python implementations of Mercurial extensions
 before install blohg, using something like this inside a directory with
