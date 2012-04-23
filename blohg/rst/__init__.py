@@ -34,4 +34,4 @@ def parser(content):
                                               'initial_header_level': 3})
     return {'title': parts['title'], 'fragment': parts['fragment'],
             'first_paragraph_as_text': parts['first_paragraph_as_text'],
-            'first_image': parts['first_image']}
+            'images': parts['images']}

@@ -41,6 +41,7 @@ def create_app(repo_path=None, hgui=None):
     app.config.setdefault('ROBOTS_TXT', True)
     app.config.setdefault('SHOW_RST_SOURCE', True)
     app.config.setdefault('POST_EXT', u'.rst')
+    app.config.setdefault('OPENGRAPH', True)
 
     app.config['REPO_PATH'] = repo_path
 

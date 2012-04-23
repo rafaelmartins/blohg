@@ -69,9 +69,10 @@ def content(slug):
     if slug.startswith('post'):
         title = u'Post: %s' % page.title
     return render_template('_posts.html', title=title, posts=[page],
-                           full_content=True, description=page.description,
-                           description_image=page.description_image,
-                           title_raw=page.title)
+                           full_content=True,
+                           meta=dict(title=page.title,
+                                     description=page.description,
+                                     images=page.images))
 
 
 @views.route('/')

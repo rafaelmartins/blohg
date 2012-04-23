@@ -123,8 +123,8 @@ class Page(object):
                               self.parsed_source['first_paragraph_as_text'])
 
     @locked_cached_property
-    def description_image(self):
-        return self.parsed_source.get('first_image', None)
+    def images(self):
+        return self.parsed_source.get('images', [])
 
     @locked_cached_property
     def author_name(self):

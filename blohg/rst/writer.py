@@ -22,11 +22,11 @@ class BlohgWriter(Writer):
 
     def assemble_parts(self):
         # we will add 2 new parts to the writer: 'first_paragraph_as_text' and
-        # 'first_image'
+        # 'images'
         Writer.assemble_parts(self)
         self.parts['first_paragraph_as_text'] = \
             self.visitor.first_paragraph_as_text
-        self.parts['first_image'] = self.visitor.first_image
+        self.parts['images'] = self.visitor.images
 
 
 class BlohgHTMLTranslator(HTMLTranslator):
@@ -34,7 +34,7 @@ class BlohgHTMLTranslator(HTMLTranslator):
     def __init__(self, document):
         HTMLTranslator.__init__(self, document)
         self.first_paragraph_as_text = None
-        self.first_image = None
+        self.images = []
 
     def visit_iframe_flash_video(self, node):
         atts = dict(src=node['uri'])
@@ -74,6 +74,7 @@ class BlohgHTMLTranslator(HTMLTranslator):
         HTMLTranslator.visit_paragraph(self, node)
 
     def visit_image(self, node):
-        if self.first_image is None:
-            self.first_image = node['uri']
+        # opengraph specs allows multiple images.
+        # http://ogp.me/#array
+        self.images.append(node['uri'])
         HTMLTranslator.visit_image(self, node)

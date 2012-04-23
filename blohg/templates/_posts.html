@@ -1,4 +1,19 @@
 {%- extends 'posts.html' %}
+
+{%- block opengraph_header %}
+{%- if config.OPENGRAPH %}
+<meta property="og:title" content="{% if meta and meta.title %}{{
+    meta.title }}{% else %}{{ config.TITLE }}{% endif %}" />
+<meta property="og:description" content="{% if meta and meta.description %}{{
+    meta.description }}{% else %}{{ config.TAGLINE }}{% endif %}" />
+{%- if meta %}
+{%- for image in meta.images %}
+<meta property="og:image" content="{{ image }}" />
+{%- endfor %}
+{%- endif %}
+{%- endif %}
+{%- endblock %}
+
 {%- block disqus_header %}
 {%- if is_post(current_path) and config.DISQUS %}
 <script type="text/javascript">
@@ -7,7 +22,7 @@
     {%- if config.DISQUS_DEVELOPER %}
     var disqus_developer = 1;
     {%- endif %}
-</script> 
+</script>
 {%- endif %}
 {%- endblock %}
 
