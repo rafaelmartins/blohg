@@ -36,3 +36,23 @@ template, inside of the ``<head>`` and ``</head>`` tags:
     {% block opengraph_header %}{% endblock %}
     <!-- end opengraph header -->
 
+blohg 0.10 uses ``jinja2.Markup`` to return HTML content from the models,
+deprecating the usage of the ``safe`` filter. You may want to fix your templates:
+
+.. sourcecode:: diff
+
+    --- a/templates/posts.html
+    +++ b/templates/posts.html
+    @@ -21,9 +21,9 @@
+    
+     <!-- begin html parsed by docutils -->
+     {% if full_content -%}
+    -    {{ post.full_html|safe }}
+    +    {{ post.full_html }}
+     {% else -%}
+    -    {{ post.abstract_html|safe }}
+    +    {{ post.abstract_html }}
+     {%- endif %}
+     <!-- end html parsed by docutils -->
+    
+
