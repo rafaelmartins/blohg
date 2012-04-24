@@ -14,6 +14,7 @@ import time
 
 from datetime import datetime
 from flask.helpers import locked_cached_property
+from jinja2 import Markup
 from mercurial import encoding
 
 from blohg.rst import parser
@@ -156,7 +157,7 @@ class Page(object):
 
     @locked_cached_property
     def abstract_html(self):
-        return self.parsed_abstract['fragment']
+        return Markup(self.parsed_abstract['fragment'])
 
     @locked_cached_property
     def full(self):
@@ -164,7 +165,7 @@ class Page(object):
 
     @locked_cached_property
     def full_html(self):
-        return self.parsed_source['fragment']
+        return Markup(self.parsed_source['fragment'])
 
     @locked_cached_property
     def read_more(self):
