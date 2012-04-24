@@ -95,6 +95,8 @@ class HgApiTestCase(TestCaseWithNewRepo):
                              'Failed to parse author name')
             self.assertEqual(data.author_email, 'foo@bar.com',
                              'Failed to parse author email')
+            self.assertEqual(data.description, 'This is an example page!')
+            self.assertTrue('mercurial.png' in data.images[0])
 
             # TODO: test aliases
 
