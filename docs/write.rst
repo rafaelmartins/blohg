@@ -259,6 +259,9 @@ the Mercurial repository.
 
 The directive ``include-hg`` is an alias for this directive.
 
+reStructuredText variables declared as comments in the included files are
+going to be ignored.
+
 
 Directive ``subpages``
 ~~~~~~~~~~~~~~~~~~~~~~
