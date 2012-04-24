@@ -401,4 +401,5 @@ index = {
     'attachment-figure': AttachmentFigure,
     'subpages': SubPages,
     'include-hg': IncludeHg,
+    'include': IncludeHg,
 }
