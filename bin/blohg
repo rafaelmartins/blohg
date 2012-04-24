@@ -7,7 +7,7 @@
 
     Main blohg command-line interface, useful for run the local server.
 
-    :copyright: (c) 2010 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
