@@ -55,4 +55,9 @@ deprecating the usage of the ``safe`` filter. You may want to fix your templates
      {%- endif %}
      <!-- end html parsed by docutils -->
     
+The directive ``.. include::`` was patched and will just have access to files
+from the Mercurial repository for now. This change improves the security,
+avoiding the access of files from the host filesystem, and makes it possible to
+include files inside the repository. Please remove any calls of this directive
+that were using files outside the repository.
 
