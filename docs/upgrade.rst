@@ -17,7 +17,7 @@ repository to fix your templates, as described in the Flask documentation:
 http://flask.pocoo.org/docs/upgrading/#version-0-7
 
 
-From <=0.9.1
+From <=0.9.2
 ------------
 
 blohg 0.10 introduces Facebook_/`Google+`_ integration using the
