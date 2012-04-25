@@ -80,9 +80,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'docutils>=0.7',
+        'docutils>=0.8',
         'Flask>=0.7',
-        'Flask-Babel>=0.6',
+        'Flask-Babel>=0.7',
         'Flask-Script>=0.3',
         'Frozen-Flask>=0.7',
         'Jinja2>=2.5.2',
