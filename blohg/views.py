@@ -17,8 +17,6 @@ from jinja2 import TemplateNotFound
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 from werkzeug.exceptions import NotFound
 
-from blohg.version import version
-
 views = Blueprint('views', __name__)
 
 
