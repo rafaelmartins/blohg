@@ -15,7 +15,7 @@ import re
 # CHANGE ME BEFORE THE RELEASE!
 # when this file got installed from a mercurial repository, the hash of the
 # current changeset is appended to the 'version' variable.
-version = '0.10.1'
+version = '0.10.1+'
 
 # the file isn't installed but this isn't a stable release, then we may be
 # running from a mercurial repository. let's verify.
