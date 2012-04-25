@@ -160,12 +160,20 @@ class Page(object):
         return Markup(self.parsed_abstract['fragment'])
 
     @locked_cached_property
+    def abstract_raw_html(self):
+        return self.parsed_abstract['fragment']
+
+    @locked_cached_property
     def full(self):
         return hg2u(self._filecontent)
 
     @locked_cached_property
     def full_html(self):
         return Markup(self.parsed_source['fragment'])
+
+    @locked_cached_property
+    def full_raw_html(self):
+        return self.parsed_source['fragment']
 
     @locked_cached_property
     def read_more(self):

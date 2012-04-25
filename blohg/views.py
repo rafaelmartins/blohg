@@ -17,6 +17,8 @@ from jinja2 import TemplateNotFound
 from werkzeug.contrib.atom import AtomFeed, FeedEntry
 from werkzeug.exceptions import NotFound
 
+from blohg.version import version
+
 views = Blueprint('views', __name__)
 
 
@@ -40,17 +42,19 @@ def atom(tag=None):
     else:
         posts = current_app.hg.get_all(True)
     feed = AtomFeed(title=title, subtitle=current_app.config['TAGLINE'],
-                    url=url_for('views.home'), feed_url=url_for('views.atom',
-                                                                tag=tag),
+                    url=url_for('views.home', _external=True),
+                    id=url_for('views.atom', tag=tag),
+                    feed_url=url_for('views.atom', tag=tag, _external=True),
                     author=current_app.config['AUTHOR'],
                     generator=('blohg', None, None))
     for post in posts[:int(current_app.config['POSTS_PER_PAGE'])]:
-        feed.add(FeedEntry(title=post.title, content=post.full_html,
-                           summary=post.abstract_html,
+        feed.add(FeedEntry(title=post.title, content=post.full_raw_html,
+                           summary=post.abstract_raw_html,
                            id=url_for('views.content', slug=post.slug),
                            url=url_for('views.content', slug=post.slug,
                                        _external=True),
-                           author=current_app.config['AUTHOR'],
+                           author=dict(name=post.author_name,
+                                       email=post.author_email),
                            published=post.datetime, updated=post.datetime))
     return feed
 
