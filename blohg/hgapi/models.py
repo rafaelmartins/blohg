@@ -111,7 +111,7 @@ class Page(object):
             return {}
         rv = re_author.match(self._vars['author'])
         if rv is None:
-            return {}
+            return {'name': self._vars['author']}
         return rv.groupdict()
 
     @locked_cached_property
@@ -129,11 +129,13 @@ class Page(object):
 
     @locked_cached_property
     def author_name(self):
-        return self.parsed_author['name']
+        if 'name' in self.parsed_author:
+            return self.parsed_author['name']
 
     @locked_cached_property
     def author_email(self):
-        return self.parsed_author['email']
+        if 'email' in self.parsed_author:
+            return self.parsed_author['email']
 
     @locked_cached_property
     def path(self):
