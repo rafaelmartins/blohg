@@ -10,7 +10,8 @@
     meta.description }}{% elif tag %}Tag: {{ ' + '.join(tag) }}{% else %}{{
     config.TAGLINE }}{% endif %}" />
 {%- if meta %}
-<meta property="og:type" content="article" />
+<meta property="og:type" content="{% if meta.flash_videos %}video{%
+    else %}article{% endif %}" />
 {%- for image in meta.images %}
 <meta property="og:image" content="{{ image }}" />
 {%- endfor %}
