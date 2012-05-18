@@ -27,6 +27,7 @@ class BlohgWriter(Writer):
         self.parts['first_paragraph_as_text'] = \
             self.visitor.first_paragraph_as_text
         self.parts['images'] = self.visitor.images
+        self.parts['flash_videos'] = self.visitor.flash_videos
 
 
 class BlohgHTMLTranslator(HTMLTranslator):
@@ -35,8 +36,10 @@ class BlohgHTMLTranslator(HTMLTranslator):
         HTMLTranslator.__init__(self, document)
         self.first_paragraph_as_text = None
         self.images = []
+        self.flash_videos = []
 
     def visit_iframe_flash_video(self, node):
+        self.flash_videos.append(node['raw_uri'])
         atts = dict(src=node['uri'])
         if 'width' in node:
             atts['width'] = node['width']
@@ -60,12 +63,11 @@ class BlohgHTMLTranslator(HTMLTranslator):
             atts['style'] = ' '.join(style)
         if 'align' in node:
             atts['class'] = 'align-%s' % node['align']
-        self.context.append('')
         self.body.append(self.starttag(node, 'iframe', '', **atts) + \
                          '</iframe>\n')
 
     def depart_iframe_flash_video(self, node):
-        self.body.append(self.context.pop())
+        pass
 
     def visit_paragraph(self, node):
         if self.first_paragraph_as_text is None:

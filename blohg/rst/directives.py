@@ -99,8 +99,11 @@ class Youtube(Directive):
     has_content = False
 
     def run(self):
-        self.options['uri'] = 'http://www.youtube.com/embed/' \
-            + self.arguments[0]
+        self.options['uri'] = 'http://www.youtube.com/embed/%s' % \
+            self.arguments[0]
+        self.options['raw_uri'] = \
+            'http://www.youtube.com/v/%s?version=3&autohide=1' % \
+            self.arguments[0]
         self.options.setdefault('width', '425px')
         self.options.setdefault('height', '344px')
         self.options.setdefault('align', 'center')

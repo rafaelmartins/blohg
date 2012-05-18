@@ -128,6 +128,10 @@ class Page(object):
         return self.parsed_source.get('images', [])
 
     @locked_cached_property
+    def flash_videos(self):
+        return self.parsed_source.get('flash_videos', [])
+
+    @locked_cached_property
     def author_name(self):
         if 'name' in self.parsed_author:
             return self.parsed_author['name']
