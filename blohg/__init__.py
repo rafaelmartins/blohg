@@ -43,6 +43,7 @@ def create_app(repo_path=None, hgui=None):
     app.config.setdefault('POST_EXT', u'.rst')
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
+    app.config.setdefault('RST_HEADER_LEVEL', 3)
 
     app.config['REPO_PATH'] = repo_path
 

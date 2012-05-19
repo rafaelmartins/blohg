@@ -13,6 +13,7 @@
 from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
 from docutils.parsers.rst.roles import register_local_role
+from flask import current_app
 
 from blohg.rst.directives import index as directives_index
 from blohg.rst.roles import index as roles_index
@@ -28,10 +29,10 @@ for role in roles_index:
 
 
 def parser(content):
+    settings = {'input_encoding': 'utf-8', 'output_encoding': 'utf-8',
+                'initial_header_level': current_app.config['RST_HEADER_LEVEL']}
     parts = publish_parts(source=content, writer=BlohgWriter(),
-                          settings_overrides={'input_encoding': 'utf-8',
-                                              'output_encoding': 'utf-8',
-                                              'initial_header_level': 3})
+                          settings_overrides=settings)
     return {'title': parts['title'], 'fragment': parts['fragment'],
             'first_paragraph_as_text': parts['first_paragraph_as_text'],
             'images': parts['images'], 'flash_videos': parts['flash_videos']}
