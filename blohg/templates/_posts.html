@@ -10,7 +10,6 @@
     meta.description }}{% elif tag %}Tag: {{ ' + '.join(tag) }}{% else %}{{
     config.TAGLINE }}{% endif %}" />
 {%- if meta %}
-<meta property="og:type" content="article" />
 {%- for image in meta.images %}
 <meta property="og:image" content="{{ image }}" />
 {%- endfor %}
@@ -18,11 +17,14 @@
 <meta property="og:video" content="{{ flash_video }}" />
 <meta property="og:video:type" content="application/x-shockwave-flash">
 {%- endfor %}
+{%- if is_post(current_path) %}
+<meta property="og:type" content="article" />
 <meta property="article:published_time" content="{{
     meta.datetime.strftime('%Y-%m-%dT%H:%M:%SZ') }}" />
 {%- if meta.mdatetime %}
 <meta property="article:modified_time" content="{{
     meta.mdatetime.strftime('%Y-%m-%dT%H:%M:%SZ') }}" />
+{%- endif %}
 {%- endif %}
 {%- if meta.tags %}
 {%- for tag in meta.tags %}
