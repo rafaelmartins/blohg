@@ -3,6 +3,7 @@
 {%- block opengraph_header %}
 {%- if config.OPENGRAPH %}
 <meta prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article#" />
+<meta property="og:site_name" content="{{ config.TITLE }}" />
 <meta property="og:url" content="{{ request.url }}" />
 <meta property="og:title" content="{% if meta and meta.title %}{{
     meta.title }}{% else %}{{ config.TITLE }}{% endif %}" />

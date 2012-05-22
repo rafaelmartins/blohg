@@ -39,7 +39,10 @@ class BlohgHTMLTranslator(HTMLTranslator):
         self.flash_videos = []
 
     def visit_iframe_flash_video(self, node):
-        self.flash_videos.append(node['raw_uri'])
+        if 'raw_uri' in node:
+            self.flash_videos.append(node['raw_uri'])
+        if 'thumbnail_uri' in node:
+            self.images.append(node['thumbnail_uri'])
         atts = dict(src=node['uri'])
         if 'width' in node:
             atts['width'] = node['width']
