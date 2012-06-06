@@ -55,8 +55,11 @@
     {% if is_post(post.slug) and config.DISQUS -%}
     <a href="{{ url_for('views.content', slug=post.slug) }}#disqus_thread">Comments</a> -
     {%- endif %}
-    <a href="{{ url_for('views.content', slug=post.slug) }}">Permalink</a> -
+    <a href="{{ url_for('views.content', slug=post.slug) }}">Permalink</a>
+    {%- if config.SHOW_RST_SOURCE %}
+    -
     <a href="{{ url_for('views.source', slug=post.slug) }}">Source code</a>
+    {%- endif %}
 </div>
 
 <!-- start disqus post -->
