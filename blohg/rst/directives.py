@@ -95,20 +95,14 @@ class Youtube(Directive):
         'border': directives.length_or_unitless,
         'align': align,
         'allowfullscreen': boolean,
-        'opengraph': directives.flag,
     }
     has_content = False
 
     def run(self):
         self.options['uri'] = 'http://www.youtube.com/embed/%s' % \
             self.arguments[0]
-        if 'opengraph' in self.options:
-            self.options['raw_uri'] = \
-                'http://www.youtube.com/v/%s?version=3&autohide=1' % \
-                self.arguments[0]
-            self.options['thumbnail_uri'] = \
-                'http://img.youtube.com/vi/%s/hqdefault.jpg' % \
-                self.arguments[0]
+        self.options['thumbnail_uri'] = \
+            'http://img.youtube.com/vi/%s/hqdefault.jpg' % self.arguments[0]
         self.options.setdefault('width', '425px')
         self.options.setdefault('height', '344px')
         self.options.setdefault('align', 'center')

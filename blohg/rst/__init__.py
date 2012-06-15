@@ -35,4 +35,4 @@ def parser(content):
                           settings_overrides=settings)
     return {'title': parts['title'], 'fragment': parts['fragment'],
             'first_paragraph_as_text': parts['first_paragraph_as_text'],
-            'images': parts['images'], 'flash_videos': parts['flash_videos']}
+            'images': parts['images']}
