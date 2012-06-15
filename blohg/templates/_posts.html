@@ -14,10 +14,20 @@
 {%- for image in meta.images %}
 <meta property="og:image" content="{{ image }}" />
 {%- endfor %}
-{%- for flash_video in meta.flash_videos %}
-<meta property="og:video" content="{{ flash_video }}" />
-<meta property="og:video:type" content="application/x-shockwave-flash">
+{%- if is_post(current_path) %}
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="{{
+    meta.datetime.strftime('%Y-%m-%dT%H:%M:%SZ') }}" />
+{%- if meta.mdatetime %}
+<meta property="article:modified_time" content="{{
+    meta.mdatetime.strftime('%Y-%m-%dT%H:%M:%SZ') }}" />
+{%- endif %}
+{%- endif %}
+{%- if meta.tags %}
+{%- for tag in meta.tags %}
+<meta property="article:tag" content="{{ tag }}" />
 {%- endfor %}
+{%- endif %}
 {%- endif %}
 {%- endif %}
 {%- endblock %}
