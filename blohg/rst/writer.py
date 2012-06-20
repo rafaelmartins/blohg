@@ -70,8 +70,12 @@ class BlohgHTMLTranslator(HTMLTranslator):
 
     def visit_paragraph(self, node):
         if self.first_paragraph_as_text is None:
-            self.first_paragraph_as_text = \
-                ' '.join([i.strip() for i in node.astext().splitlines(False)])
+            # just paragraphs at the root of the document should be used.
+            # warnings, blockquotes and similar aren't good descriptions.
+            if node.parent.tagname.strip() == 'document':
+                self.first_paragraph_as_text = \
+                    ' '.join([i.strip() \
+                              for i in node.astext().splitlines(False)])
         HTMLTranslator.visit_paragraph(self, node)
 
     def visit_image(self, node):
