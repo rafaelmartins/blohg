@@ -11,6 +11,7 @@
 """
 
 import re
+import time
 import yaml
 
 from jinja2.loaders import ChoiceLoader
@@ -150,15 +151,20 @@ class Hg(object):
         self.posts = []
         self.tags = set()
         self.aliases = {}
+        now = int(time.time())
         for fname in self.revision.manifest():
             rv = re_content.match(fname)
             if rv is not None:
                 if rv.group(1) is None:  # page
                     page = Page(self, self.revision[fname])
+                    if not self.app.debug and page.date > now:
+                        continue
                     self._parse_aliases(page)
                     self.pages.append(page)
                 else:  # post
                     post = Post(self, self.revision[fname])
+                    if not self.app.debug and post.date > now:
+                        continue
                     self._parse_aliases(post)
                     self.posts.append(post)
                     self.tags = self.tags.union(set(post.tags))

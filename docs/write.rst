@@ -32,7 +32,29 @@ inside a reStructuredText comment:
 
    .. date: 1304124215
 
+UNIX timestamp should be in UTC.
+
 This is useful if you want to migrate content from another blog.
+
+
+Scheduling the post/page for a future date
+------------------------------------------
+
+If you want to have a post/page published in a future date automatically, you
+can add the same reStructuredText comment of the previous section, but with the
+UNIX timestamp of the future date. The page/post will not be listed until that
+date.
+
+.. warning::
+
+   Make sure the date of your server is properly setup. Run NTP would be a good
+   idea. :)
+
+.. warning::
+
+   If your Mercurial repository is public (e.g. you have a hgweb instance
+   running), people will be able to see the reStructuredText source before the
+   publishing date.
 
 
 Overriding the post/page author
