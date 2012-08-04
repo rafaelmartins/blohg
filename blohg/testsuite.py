@@ -46,6 +46,7 @@ class TestCaseWithNewRepo(unittest.TestCase):
         self.app = create_app(self.repo_path, hgui=self.ui)
         create_repo(self.app)
         self.repo = hg.repository(self.ui, self.repo_path)
+        commands.add(self.ui, self.repo)
         self.app.hg.reload()
 
     def tearDown(self):
@@ -118,6 +119,7 @@ class HgApiTestCase(TestCaseWithNewRepo):
                                 'foo-bar.rst')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write(os.linesep.join(['Foo', '---', '', 'Bar']))
+        commands.add(self.ui, self.repo)
 
         self.app.hg.reload()
         with self.app.test_request_context():
@@ -154,6 +156,7 @@ class MercurialLoaderTestCase(TestCaseWithNewRepo):
 
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
+        commands.add(self.ui, self.repo)
 
         self.app.hg.reload()
         with self.app.test_request_context():
