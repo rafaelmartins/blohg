@@ -10,7 +10,7 @@
 """
 
 from flask import Flask, render_template, request
-from flaskext.babel import Babel
+from flask.ext.babel import Babel
 
 # import blohg stuff
 from blohg.hgapi import setup_mercurial

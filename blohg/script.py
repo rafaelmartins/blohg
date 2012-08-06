@@ -12,8 +12,8 @@
 import os
 import sys
 import posixpath
+from flask.ext.script import Command, Manager, Server, Option
 from flask_frozen import Freezer, MissingURLGeneratorWarning
-from flaskext.script import Command, Manager, Server, Option
 from warnings import filterwarnings
 from werkzeug.routing import Map
 
