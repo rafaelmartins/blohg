@@ -32,7 +32,13 @@ inside a reStructuredText comment:
 
    .. date: 1304124215
 
-UNIX timestamp should be in UTC.
+A more readable timestamp format is also allowed (``YYYY-MM-DD HH:MM:SS``):
+
+.. code-block:: rest
+
+   .. date: 2011-04-30 00:43:35
+
+Timestamps should be in UTC.
 
 This is useful if you want to migrate content from another blog.
 
@@ -42,8 +48,7 @@ Scheduling the post/page for a future date
 
 If you want to have a post/page published in a future date automatically, you
 can add the same reStructuredText comment of the previous section, but with the
-UNIX timestamp of the future date. The page/post will not be listed until that
-date.
+timestamp of the future date. The page/post will not be listed until that date.
 
 .. warning::
 

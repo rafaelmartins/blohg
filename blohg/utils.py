@@ -13,8 +13,11 @@ import codecs
 import os
 import shutil
 
+from calendar import timegm
+from flask import current_app
 from mercurial import commands, error
 from pkg_resources import resource_filename, resource_listdir
+from time import strptime, time
 
 
 def create_repo(app):
@@ -58,3 +61,24 @@ def create_repo(app):
         commands.init(app.hgui, repo_path)
     except error, err:
         raise RuntimeError('an error was occurred: %s' % err)
+
+
+def parse_date(datestring):
+    """blohg used to accept datetimes formated as UNIX timestamps to override
+    the datetimes provided by the Mercurial API, but UNIX timestamps are hard
+    to read and guess. This function allows users to write datetimes using a
+    more readable format::
+
+        YYYY-MM-DD HH:MM:SS
+
+    UNIX timestamps are still a valid input format.
+    """
+    if datestring.isdigit():
+        return int(datestring)
+    try:
+        timetuple = strptime(datestring, '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        if current_app.debug:
+            raise
+        return int(time())
+    return timegm(timetuple)

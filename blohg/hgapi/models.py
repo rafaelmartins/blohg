@@ -18,6 +18,7 @@ from jinja2 import Markup
 from mercurial import encoding
 
 from blohg.rst import parser
+from blohg.utils import parse_date
 
 re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
 re_read_more = re.compile(r'\.\. +read_more')
@@ -55,10 +56,7 @@ class Page(object):
         changesets = list(filelog)
         first_changeset = self._parent.repo[filelog.linkrev(0)]
         if 'date' in self._vars:
-            try:
-                self._vars['date'] = int(self._vars['date'])
-            except ValueError:
-                del self._vars['date']
+            self._vars['date'] = parse_date(self._vars['date'])
         else:
             self._vars['date'] = int(first_changeset.date()[0])
             if self._vars['date'] == 0:
@@ -69,10 +67,7 @@ class Page(object):
         # changes for this content, from the creation date, if this content was
         # never changed, or from the 'mdate' variable.
         if 'mdate' in self._vars:
-            try:
-                self._vars['mdate'] = int(self._vars['mdate'])
-            except ValueError:
-                del self._vars['mdate']
+            self._vars['mdate'] = parse_date(self._vars['mdate'])
         if 'mdate' not in self._vars and len(changesets) > 1:
             last_changeset = self._parent.repo[filelog.linkrev(
                 len(changesets) - 1)]
