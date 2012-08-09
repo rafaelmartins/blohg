@@ -20,7 +20,7 @@ from mercurial import encoding
 from blohg.rst import parser
 from blohg.utils import parse_date
 
-re_metadata = re.compile(r'\.\. +([a-z]*): (.*)')
+re_metadata = re.compile(r'\.\. +([a-z]+): *(.+)')
 re_read_more = re.compile(r'\.\. +read_more')
 re_author = re.compile(r'^(?P<name>[^<]*[^ ])( ?<(?P<email>[^<]*)>)?$')
 
