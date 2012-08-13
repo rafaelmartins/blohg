@@ -169,6 +169,9 @@ class Hg(object):
                     self.posts.append(post)
                     self.tags = self.tags.union(set(post.tags))
 
+        # sort tags by "name" and convert them back to a list
+        self.tags = sorted(self.tags)
+
         # sort posts reverse by date. sort pages is useless :P
         self.posts = sorted(self.posts, lambda a, b: b.date - a.date)
 
