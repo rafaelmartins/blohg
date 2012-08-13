@@ -231,7 +231,7 @@ definitions, using the ``pygmentize`` script, shipped with Pygments.
 
 ::
 
-    $ pygmentyze -S friendly -f html > static/pygments.css
+    $ pygmentize -S friendly -f html > static/pygments.css
 
 Where ``friendly`` will be your Pygments style of choice.
 
