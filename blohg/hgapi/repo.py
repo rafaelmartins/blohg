@@ -52,6 +52,11 @@ class RepoStateBase(object):
     def get(self, path):
         return self.get_fctx(path).data()
 
+    def get_filelog(self, path):
+        filelog = self.get_fctx(path).filelog()
+        for i in filelog:
+            yield self._repo[filelog.linkrev(i)]
+
 
 class RepoStateStable(RepoStateBase):
     """Class with the specific implementation details for the stable state of

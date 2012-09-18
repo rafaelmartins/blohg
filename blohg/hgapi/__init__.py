@@ -15,13 +15,14 @@ import time
 import yaml
 
 from jinja2.loaders import ChoiceLoader
-from mercurial import hg, ui, cmdutil
+from mercurial import hg, ui as _ui
 from blohg.hgapi.models import Page, Post
+from blohg.hgapi.repo import Repository, STATE_STABLE, STATE_VARIABLE
 from blohg.hgapi.static import MercurialStaticFile
 from blohg.hgapi.templates import MercurialLoader
 
 
-def setup_mercurial(app, hgui=None):
+def setup_mercurial(app, ui=None):
     """This function adds a :class:`Hg` instance to an application object, as a
     ``hg`` attribute, and reloads it as needed.
 
@@ -31,8 +32,7 @@ def setup_mercurial(app, hgui=None):
     """
 
     # create an ui object and attach the Hg object to app
-    app.hgui = hgui or ui.ui()
-    app.hg = Hg(app)
+    app.hg = Hg(app, ui)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader
@@ -51,15 +51,25 @@ def setup_mercurial(app, hgui=None):
 class Hg(object):
     """Main class of the Mercurial layer."""
 
-    def __init__(self, app, config_file=None):
+    def __init__(self, app, ui=None):
         self.app = app
-        self.config_file = config_file or 'config.yaml'
-        self.repo = None
-        self.revision = None
-        self.revision_id = None
-        self.default_branch = None
+        self.repo = Repository(self.app.config.get('REPO_PATH', '.'), ui)
+
+        # the state comes from the Flask configuration, but NOT from the yaml
+        # file in the repository.
+        state_name = self.app.config.get('STATE', 'stable').lower()
+        if state_name == 'stable':
+            self.state_id = STATE_STABLE
+        elif state_name == 'variable':
+            self.state_id = STATE_VARIABLE
+        else:
+            raise RuntimeError('Invalid state: %s' % state_name)
+        self.state = self.repo.get_repostate(self.state_id)
+        self._load_config()
+
         self.content_dir = None
         self.post_ext = None
+        self.rst_header_level = None
         self.pages = []
         self.posts = []
         self.tags = set()
@@ -75,70 +85,31 @@ class Hg(object):
                 alias = alias[4:]
             self.aliases[alias.encode('utf-8')] = (code, post_or_page.slug)
 
+    def _load_config(self):
+        config = yaml.load(self.state.get('config.yaml'))
+
+        # state can't be defined by the config.yaml file. filter it.
+        if 'STATE' in config:
+            del config['STATE']
+
+        # monkey-patch configs when running from built-in server
+        if self.app.config.get('RUNNING_FROM_CLI', False):
+            if 'GOOGLE_ANALYTICS' in config:
+                del config['GOOGLE_ANALYTICS']
+            config['DISQUS_DEVELOPER'] = True
+
+        self.app.config.update(config)
+
     def reload(self):
         """Method to reload stuff from the Mercurial repository. It is able to
         reload as needed, to save resources.
         """
-        needed = False
 
-        # a new repo object is always needed, for reloads or vefify the if the
-        # current stuff is new enough
-        repopath = self.app.config.get('REPO_PATH', '.')
-        repopath = cmdutil.findrepo(repopath)
-
-        # if findrepo returns None we don't have a repo (yet).
-        if repopath is None:
+        if not self.state.needs_reload():
             return
 
-        repo = hg.repository(self.app.hgui, repopath)
-        try:
-            default_branch = repo.branchtags()['default']
-        except KeyError:
-            default_branch = None
-
-        # initialize it if needed
-        if self.repo is None or self.revision is None:
-            needed = True
-
-        # debug mode wants a reload
-        if self.app.debug:
-            needed = True
-
-        # if we don't need a refresh yet, let's verify if our current revision
-        # is new enough
-        if not needed:
-            if repo[default_branch].rev() != \
-               self.repo[self.default_branch].rev():
-                needed = True
-
-        if not needed:
-            return
-
-        # check which stuff we want.
-        #     None: uncommited stuff.
-        #     default: last commited stuff.
-        revision_id = None
-        if not self.app.debug:
-            revision_id = default_branch
-
-        # register our shiny new stuff
-        self.repo = repo
-        self.revision = repo[revision_id]
-        self.revision_id = revision_id
-        self.default_branch = default_branch
-
-        # load configs
-        if self.config_file not in self.revision.manifest():
-            raise RuntimeError('Configuration file not found: %s' % \
-                               self.config_file)
-        config = self.revision[self.config_file].data()
-        self.app.config.update(yaml.load(config))
-
-        # monkey-patch configs for debug
-        if self.app.debug:
-            if 'GOOGLE_ANALYTICS' in self.app.config:
-                del self.app.config['GOOGLE_ANALYTICS']
-            self.app.config['DISQUS_DEVELOPER'] = True
+        self.state = self.repo.get_repostate(self.state_id)
+        self._load_config()
 
         # build a regular expression for search posts/pages.
         self.content_dir = self.app.config.get('CONTENT_DIR', 'content')
@@ -146,23 +117,29 @@ class Hg(object):
         re_content = re.compile(r'^' + self.content_dir + \
                                 r'[\\/](post)?.+' + '\\' + self.post_ext + '$')
 
+        self.rst_header_level = self.app.config['RST_HEADER_LEVEL']
+
         # get all the content
         self.pages = []
         self.posts = []
         self.tags = set()
         self.aliases = {}
         now = int(time.time())
-        for fname in self.revision.manifest():
+        for fname in self.state.files:
             rv = re_content.match(fname)
             if rv is not None:
                 if rv.group(1) is None:  # page
-                    page = Page(self, self.revision[fname])
+                    page = Page(self.app.hg.state._repo, self.state.get_fctx(fname),
+                                self.content_dir, self.post_ext,
+                                self.rst_header_level)
                     if not self.app.debug and page.date > now:
                         continue
                     self._parse_aliases(page)
                     self.pages.append(page)
                 else:  # post
-                    post = Post(self, self.revision[fname])
+                    post = Post(self.app.hg.state._repo, self.state.get_fctx(fname),
+                                self.content_dir, self.post_ext,
+                                self.rst_header_level)
                     if not self.app.debug and post.date > now:
                         continue
                     self._parse_aliases(post)

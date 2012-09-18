@@ -12,7 +12,7 @@
 import os
 import sys
 import posixpath
-from flask.ext.script import Command, Manager, Server, Option
+from flask.ext.script import Command, Manager, Server as _Server, Option
 from flask_frozen import Freezer, MissingURLGeneratorWarning
 from warnings import filterwarnings
 from werkzeug.routing import Map
@@ -24,12 +24,29 @@ from blohg.utils import create_repo
 filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 
+class Server(_Server):
+
+    def get_options(self):
+        options = _Server.get_options(self)
+        options += (Option('--no-working-dir', '-n', dest='working_dir',
+                           default=True, action='store_false'),)
+        return options
+
+    def handle(self, app, *args, **kwargs):
+        app.config['REVISION'] = 'working_dir'
+        if 'working_dir' in kwargs:
+            app.config['REVISION'] = kwargs['working_dir'] and 'working_dir' \
+                or 'default'
+            del kwargs['working_dir']
+        _Server.handle(self, app, *args, **kwargs)
+
+
 class InitRepo(Command):
     """initialize a blohg repo, using the default template."""
 
     def handle(self, app):
         try:
-            create_repo(app)
+            create_repo(app.config['REPO_PATH'])
         except RuntimeError, err:
             print >> sys.stderr, str(err)
 

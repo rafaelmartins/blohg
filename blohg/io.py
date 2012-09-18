@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.hgapi.io
-    ~~~~~~~~~~~~~~
+    blohg.io
+    ~~~~~~~~
 
     File-like objects for Mercurial.
 

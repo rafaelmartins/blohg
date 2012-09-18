@@ -44,8 +44,19 @@ class RepoStateBaseTestCase(unittest.TestCase):
         except:
             pass
 
+    @property
+    def state_id(self):
+        raise NotImplementedError
+
+    def test_filelog(self):
+        state = self.repo.get_repostate(self.state_id)
+        for f in self.repo_files:
+            print state.get_filelog(f)
+
 
 class RepoStateStableTestCase(RepoStateBaseTestCase):
+
+    state_id = STATE_STABLE
 
     def test_files(self):
 
@@ -57,7 +68,7 @@ class RepoStateStableTestCase(RepoStateBaseTestCase):
             fp.write('testing\n')
 
         # before commit files
-        state = self.repo.get_repostate(STATE_STABLE)
+        state = self.repo.get_repostate(self.state_id)
         for f in self.repo_files:
             self.assertTrue(f in state.files, 'file not found in stable'
                             'state: %s' % f)
@@ -67,13 +78,13 @@ class RepoStateStableTestCase(RepoStateBaseTestCase):
         self.repo.commit(message='foo', addremove=True)
 
         # after commit files
-        state = self.repo.get_repostate(STATE_STABLE)
+        state = self.repo.get_repostate(self.state_id)
         for f in self.repo_files + [new_file]:
             self.assertTrue(f in state.files, 'file not found in stable'
                             'state: %s' % f)
 
     def test_needs_reload(self):
-        state = self.repo.get_repostate(STATE_STABLE)
+        state = self.repo.get_repostate(self.state_id)
         self.assertFalse(state.needs_reload())
 
         # add a file to repo
@@ -90,13 +101,15 @@ class RepoStateStableTestCase(RepoStateBaseTestCase):
         self.assertTrue(state.needs_reload())
 
         # reload
-        state = self.repo.get_repostate(STATE_STABLE)
+        state = self.repo.get_repostate(self.state_id)
 
         # shouldn't need a reload again
         self.assertFalse(state.needs_reload())
 
 
 class RepoStateVariableTestCase(RepoStateBaseTestCase):
+
+    state_id = STATE_VARIABLE
 
     def test_files(self):
 
@@ -108,7 +121,7 @@ class RepoStateVariableTestCase(RepoStateBaseTestCase):
             fp.write('testing\n')
 
         # before commit files
-        state = self.repo.get_repostate(STATE_VARIABLE)
+        state = self.repo.get_repostate(self.state_id)
         for f in self.repo_files + [new_file]:
             self.assertTrue(f in state.files, 'file not found in variable'
                             'state: %s' % f)
@@ -118,13 +131,13 @@ class RepoStateVariableTestCase(RepoStateBaseTestCase):
         self.repo.commit(message='foo', addremove=True)
 
         # after commit files
-        state = self.repo.get_repostate(STATE_VARIABLE)
+        state = self.repo.get_repostate(self.state_id)
         for f in self.repo_files + [new_file]:
             self.assertTrue(f in state.files, 'file not found in variable'
                             'state: %s' % f)
 
     def test_needs_reload(self):
-        state = self.repo.get_repostate(STATE_VARIABLE)
+        state = self.repo.get_repostate(self.state_id)
         self.assertTrue(state.needs_reload())
 
         # add a file to repo
@@ -141,7 +154,7 @@ class RepoStateVariableTestCase(RepoStateBaseTestCase):
         self.assertTrue(state.needs_reload())
 
         # reload
-        state = self.repo.get_repostate(STATE_VARIABLE)
+        state = self.repo.get_repostate(self.state_id)
 
         # should still need a reload, right after the reload
         self.assertTrue(state.needs_reload())
@@ -158,3 +171,6 @@ class RepositoryTestCase(RepoStateBaseTestCase):
         self.assertTrue(isinstance(self.repo.get_repostate(STATE_VARIABLE),
                                    RepoStateVariable), 'variable state object '
                         'is not an instance of RepoStateVariable')
+
+    def test_filelog(self):
+        pass

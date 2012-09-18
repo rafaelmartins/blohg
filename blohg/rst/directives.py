@@ -21,7 +21,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
-from blohg.hgapi.io import MercurialFile
+from blohg.io import MercurialFile
 from blohg.rst.nodes import iframe_flash_video
 
 import posixpath
@@ -231,7 +231,7 @@ class AttachmentImage(Image):
         my_file = directives.uri(self.arguments[0])
         full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
                                    my_file)
-        if full_path not in current_app.hg.revision.manifest():
+        if full_path not in current_app.hg.ctx.files:
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path
@@ -248,7 +248,7 @@ class AttachmentFigure(Figure):
         my_file = directives.uri(self.arguments[0])
         full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
                                    my_file)
-        if full_path not in current_app.hg.revision.manifest():
+        if full_path not in current_app.hg.ctx.files:
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path

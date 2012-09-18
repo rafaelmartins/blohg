@@ -34,9 +34,12 @@ class Page(object):
     """Pages are the very basic content element of a blog. They don't have tags
     nor other fancy stuff that belongs to posts."""
 
-    def __init__(self, parent, filectx):
-        self._parent = parent
+    def __init__(self, repo, filectx, content_dir, post_ext, rst_header_level):
+        self._repo = repo
         self._filectx = filectx
+        self._content_dir = content_dir
+        self._post_ext = post_ext
+        self._rst_header_level = rst_header_level
         self._filecontent = filectx.data()
         self._vars = {}
         self._title = None
@@ -54,7 +57,7 @@ class Page(object):
         # content or from the 'date' variable.
         filelog = self._filectx.filelog()
         changesets = list(filelog)
-        first_changeset = self._parent.repo[filelog.linkrev(0)]
+        first_changeset = self._repo[filelog.linkrev(0)]
         if 'date' in self._vars:
             self._vars['date'] = parse_date(self._vars['date'])
         else:
@@ -69,7 +72,7 @@ class Page(object):
         if 'mdate' in self._vars:
             self._vars['mdate'] = parse_date(self._vars['mdate'])
         if 'mdate' not in self._vars and len(changesets) > 1:
-            last_changeset = self._parent.repo[filelog.linkrev(
+            last_changeset = self._repo[filelog.linkrev(
                 len(changesets) - 1)]
             self._vars['mdate'] = int(last_changeset.date()[0])
         if 'mdate' in self._vars:
@@ -92,13 +95,13 @@ class Page(object):
 
     @locked_cached_property
     def parsed_source(self):
-        return parser(self.full)
+        return parser(self.full, self._rst_header_level)
 
     @locked_cached_property
     def parsed_abstract(self):
         if not self.read_more:
             return self.parsed_source
-        return parser(self.abstract)
+        return parser(self.abstract, self._rst_header_level)
 
     @locked_cached_property
     def parsed_author(self):
@@ -142,8 +145,8 @@ class Page(object):
 
     @locked_cached_property
     def slug(self):
-        rv = re.match(r'^' + self._parent.content_dir + r'[\\/](.+)' +
-                      '\\' + self._parent.post_ext + '$',
+        rv = re.match(r'^' + self._content_dir + r'[\\/](.+)' +
+                      '\\' + self._post_ext + '$',
                       self._filectx.path())
         if rv is not None:
             return rv.group(1)
@@ -196,8 +199,9 @@ class Page(object):
 class Post(Page):
     """Posts are like pages, but with tags support."""
 
-    def __init__(self, parent, filectx):
-        Page.__init__(self, parent, filectx)
+    def __init__(self, repo, filectx, content_dir, post_ext, rst_header_level):
+        Page.__init__(self, repo, filectx, content_dir, post_ext,
+                      rst_header_level)
 
         # handle tags
         if 'tags' in self._vars:

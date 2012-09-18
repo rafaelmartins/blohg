@@ -11,14 +11,43 @@
 
 from flask import Flask, render_template, request
 from flask.ext.babel import Babel
+from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
-from blohg.hgapi import setup_mercurial
+from blohg.models import Hg
+from blohg.static import MercurialStaticFile
+from blohg.templating import MercurialLoader
 from blohg.version import version as __version__
 from blohg.views import views
 
 
-def create_app(repo_path=None, hgui=None):
+def setup_mercurial(app, ui=None):
+    """This function adds a :class:`Hg` instance to an application object, as a
+    ``hg`` attribute, and reloads it as needed.
+
+    :param app: the application object, must have a 'REPO_PATH' configuration
+                parameter.
+    :param ui: a Mercurial ui object.
+    """
+
+    # create an ui object and attach the Hg object to app
+    app.hg = Hg(app, ui)
+
+    # setup our jinja2 custom loader and static file handlers
+    old_loader = app.jinja_loader
+    app.jinja_loader = ChoiceLoader([MercurialLoader(), old_loader])
+    app.add_url_rule(app.static_url_path + '/<path:filename>',
+                     endpoint='static',
+                     view_func=MercurialStaticFile('STATIC_DIR'))
+    app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
+                     view_func=MercurialStaticFile('ATTACHMENT_DIR'))
+
+    @app.before_request
+    def before_request():
+        app.hg.reload()
+
+
+def create_app(repo_path=None, ui=None):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -48,7 +77,7 @@ def create_app(repo_path=None, hgui=None):
     app.config['REPO_PATH'] = repo_path
 
     # init mercurial stuff
-    setup_mercurial(app, hgui=hgui)
+    setup_mercurial(app, ui)
 
     # setup extensions
     babel = Babel(app)

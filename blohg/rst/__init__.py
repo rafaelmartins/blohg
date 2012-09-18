@@ -28,9 +28,9 @@ for role in roles_index:
     register_local_role(role, roles_index[role])
 
 
-def parser(content):
+def parser(content, rst_header_level):
     settings = {'input_encoding': 'utf-8', 'output_encoding': 'utf-8',
-                'initial_header_level': current_app.config['RST_HEADER_LEVEL']}
+                'initial_header_level': rst_header_level}
     parts = publish_parts(source=content, writer=BlohgWriter(),
                           settings_overrides=settings)
     return {'title': parts['title'], 'fragment': parts['fragment'],
