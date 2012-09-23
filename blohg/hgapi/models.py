@@ -43,7 +43,7 @@ class Page(object):
 
         # get metadata variables from rst source
         for i in re_metadata.finditer(self._filecontent):
-            self._vars[i.group(1)] = hg2u(i.group(2))
+            self._vars[i.group(1)] = hg2u(i.group(2).strip())
 
         # handle aliases
         if 'aliases' in self._vars:

@@ -75,10 +75,5 @@ def parse_date(datestring):
     """
     if datestring.isdigit():
         return int(datestring)
-    try:
-        timetuple = strptime(datestring, '%Y-%m-%d %H:%M:%S')
-    except ValueError:
-        if current_app.debug:
-            raise
-        return int(time())
+    timetuple = strptime(datestring, '%Y-%m-%d %H:%M:%S')
     return timegm(timetuple)
