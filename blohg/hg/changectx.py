@@ -65,9 +65,12 @@ class ChangeCtxDefault(ChangeCtxBase):
         if self.revno is None:
             return True
         repo = hg.repository(self._ui, self._repo.root)
-        #revision = repo[self.revision_id]
-        print repo, self._repo[self.revision_id].rev(), repo[self.revision_id].rev()
-        return repo[self.revision_id].rev() > self._repo[self.revision_id].rev()
+        try:
+            revision_id = repo.branchtags()['default']
+        except Exception:
+            return True
+        revision = repo[revision_id]
+        return revision.rev() > self.revno
 
 
 class ChangeCtxWorkingDir(ChangeCtxBase):

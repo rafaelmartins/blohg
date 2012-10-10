@@ -207,7 +207,6 @@ class Hg(object):
         self.posts = []
         self.tags = set()
         self.aliases = {}
-        self.reload(True)
 
     def _parse_aliases(self, post_or_page):
         for alias in post_or_page.aliases:
@@ -233,7 +232,7 @@ class Hg(object):
 
         self.app.config.update(config)
 
-    def reload(self, force=False):
+    def reload(self):
         """Method to reload stuff from the Mercurial repository. It is able to
         reload as needed, to save resources.
         """
@@ -253,13 +252,9 @@ class Hg(object):
         if not os.path.exists(self.repo.path):
             return
 
-        if self.ctx is None:
-            self.ctx = self.repo.get_changectx(self.revision_id)
-
-        if not self.ctx.needs_reload() and not force:
+        if self.ctx is not None and not self.ctx.needs_reload():
             return
 
-        print 'reloading'
         self.ctx = self.repo.get_changectx(self.revision_id)
         self._load_config()
 

@@ -217,9 +217,3 @@ class HgTestCase(unittest.TestCase):
             rmtree(self.repo_path)
         except:
             pass
-
-    def test_foo(self):
-        hg = Hg(self.app, self.ui)
-        hg.reload()
-        for i in hg.posts+hg.pages:
-            print repr(i)

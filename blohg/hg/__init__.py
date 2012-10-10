@@ -32,7 +32,6 @@ class HgRepository(object):
     def __init__(self, path, ui=None):
         self.path = path
         self._ui = ui or _ui.ui()
-        self._repo = None
 
     def get_changectx(self, revision=REVISION_DEFAULT):
         """Method that returns a change context for a given Revision state.
@@ -52,13 +51,9 @@ class HgRepository(object):
         repository state object will be used later by the parsers to generate
         content suitable for publishing.
         """
-
-        # initialize repo on demand
-        if self._repo is None:
-            self._repo = hg.repository(self._ui, self.path)
-
+        repo = hg.repository(self._ui, self.path)
         if revision == REVISION_DEFAULT:
-            return ChangeCtxDefault(self._repo, self._ui)
+            return ChangeCtxDefault(repo, self._ui)
         elif revision == REVISION_WORKING_DIR:
-            return ChangeCtxWorkingDir(self._repo, self._ui)
+            return ChangeCtxWorkingDir(repo, self._ui)
         raise RuntimeError('Invalid repository revision: %r' % revision)

@@ -11,6 +11,7 @@
 
 import unittest
 
+from blohg.tests.app import AppTestCase
 from blohg.tests.hg import HgRepositoryTestCase
 from blohg.tests.hg.changectx import ChangeCtxDefaultTestCase, \
      ChangeCtxWorkingDirTestCase
@@ -34,6 +35,7 @@ def suite():
     suite.addTest(unittest.makeSuite(PageTestCase))
     suite.addTest(unittest.makeSuite(PostTestCase))
     suite.addTest(unittest.makeSuite(HgTestCase))
+    suite.addTest(unittest.makeSuite(AppTestCase))
 
     #suite.addTest(unittest.makeSuite(HgApiTestCase))
     suite.addTest(unittest.makeSuite(UtilsTestCase))
