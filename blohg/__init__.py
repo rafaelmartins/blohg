@@ -35,12 +35,12 @@ def setup_mercurial(app, ui=None):
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader
-    app.jinja_loader = ChoiceLoader([MercurialLoader(), old_loader])
+    app.jinja_loader = ChoiceLoader([MercurialLoader(app), old_loader])
     app.add_url_rule(app.static_url_path + '/<path:filename>',
                      endpoint='static',
-                     view_func=MercurialStaticFile('STATIC_DIR'))
+                     view_func=MercurialStaticFile(app, 'STATIC_DIR'))
     app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
-                     view_func=MercurialStaticFile('ATTACHMENT_DIR'))
+                     view_func=MercurialStaticFile(app, 'ATTACHMENT_DIR'))
 
     @app.before_request
     def before_request():
@@ -73,6 +73,7 @@ def create_app(repo_path=None, ui=None):
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
     app.config.setdefault('RST_HEADER_LEVEL', 3)
+    app.config.setdefault('REVISION', 'default')
 
     app.config['REPO_PATH'] = repo_path
 

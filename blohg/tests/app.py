@@ -15,6 +15,7 @@ import codecs
 import os
 import unittest
 
+from jinja2 import ChoiceLoader
 from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
@@ -39,11 +40,17 @@ class AppTestCase(unittest.TestCase):
         except:
             pass
 
+    def test_setup_mercurial(self):
+        self.assertTrue(hasattr(self.app, 'hg'), 'mercurial not setup.')
+        self.assertTrue(isinstance(self.app.jinja_loader, ChoiceLoader),
+                        'Invalid Jinja2 loader.')
+
     def test_reload_changectx_default(self):
         self.app.config['REVISION'] = 'default'
         commands.add(self.ui, self.repo)
-        commands.forget(self.ui, self.repo, os.path.join(self.repo_path,
-                                                         'content'))
+        commands.forget(self.ui, self.repo,
+                        os.path.join(self.repo_path,
+                                     self.app.config['CONTENT_DIR']))
         commands.commit(self.ui, self.repo, message='foo')
         client = self.app.test_client()
         rv = client.get('/')
@@ -57,6 +64,28 @@ class AppTestCase(unittest.TestCase):
         rv = client.get('/')
         self.assertTrue('post/lorem-ipsum' in rv.data)
         self.assertTrue('post/example-post' in rv.data)
+        with codecs.open(os.path.join(self.repo_path,
+                                      self.app.config['CONTENT_DIR'],
+                                      'about.rst'),
+                         'a', encoding='utf-8') as fp:
+            fp.write('\n\nTHIS IS A TEST!\n')
+        rv = client.get('/about/')
+        self.assertFalse('THIS IS A TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message='foo')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS A TEST!' in rv.data)
+        with codecs.open(os.path.join(self.repo_path,
+                                      self.app.config['CONTENT_DIR'],
+                                      'about.rst'),
+                         'a', encoding='utf-8') as fp:
+            fp.write('\n\nTHIS IS another TEST!\n')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS A TEST!' in rv.data)
+        self.assertFalse('THIS IS another TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message='foo')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS A TEST!' in rv.data)
+        self.assertTrue('THIS IS another TEST!' in rv.data)
 
     def test_reload_changectx_working_dir(self):
         self.app.config['REVISION'] = 'working_dir'
@@ -72,8 +101,23 @@ class AppTestCase(unittest.TestCase):
         rv = client.get('/')
         self.assertTrue('post/lorem-ipsum' in rv.data)
         self.assertTrue('post/example-post' in rv.data)
-        with codecs.open(os.path.join(self.repo_path, 'content', 'about.rst'),
+        with codecs.open(os.path.join(self.repo_path,
+                                      self.app.config['CONTENT_DIR'],
+                                      'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS A TEST!\n')
         rv = client.get('/about/')
         self.assertTrue('THIS IS A TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message='foo')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS A TEST!' in rv.data)
+        with codecs.open(os.path.join(self.repo_path,
+                                      self.app.config['CONTENT_DIR'],
+                                      'about.rst'),
+                         'a', encoding='utf-8') as fp:
+            fp.write('\n\nTHIS IS another TEST!\n')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS another TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message='foo')
+        rv = client.get('/about/')
+        self.assertTrue('THIS IS another TEST!' in rv.data)

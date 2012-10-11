@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.hgapi.templates
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    blohg.tests.templating
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Module with tests for blohg integration with jinja2.
 
@@ -11,72 +11,107 @@
 
 import codecs
 import os
+import unittest
 from jinja2.exceptions import TemplateNotFound
-from mercurial import commands
+from mercurial import commands, ui, hg
+from shutil import rmtree
+from tempfile import mkdtemp
 
-from blohg.tests.utils import TestCaseWithNewRepo, walk
+from blohg import create_app
+from blohg.utils import create_repo
 
 
-class MercurialLoaderTestCase(TestCaseWithNewRepo):
+class MercurialLoaderTestCase(unittest.TestCase):
 
-    def test_get_source(self):
+    def setUp(self):
+        self.repo_path = mkdtemp()
+        self.ui = ui.ui()
+        self.ui.setconfig('ui', 'quiet', True)
+        create_repo(self.repo_path, self.ui)
+        self.app = create_app(self.repo_path, self.ui)
+        self.repo = hg.repository(self.ui, self.repo_path)
+
+    def tearDown(self):
+        try:
+            rmtree(self.repo_path)
+        except:
+            pass
+
+    def test_up2date_changectx_default(self):
+        self.app.config['REVISION'] = 'default'
         with self.app.test_request_context():
+            self.app.preprocess_request()
             self.assertRaises(TemplateNotFound,
                               self.app.jinja_loader.get_source,
                               self.app.jinja_env, 'test.html')
-
         new_file = os.path.join(self.repo_path,
                                 self.app.config['TEMPLATES_DIR'], 'test.html')
-
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
-        commands.add(self.ui, self.repo)
-
-        self.app.hg.reload()
         with self.app.test_request_context():
+            self.app.preprocess_request()
             self.assertRaises(TemplateNotFound,
                               self.app.jinja_loader.get_source,
                               self.app.jinja_env, 'test.html')
-
-        self.app.debug = True
-        self.app.hg.reload()
+        commands.commit(self.ui, self.repo, message='foo', addremove=True)
         with self.app.test_request_context():
+            self.app.preprocess_request()
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
-            self.assertTrue('foo' in contents, 'Invalid template!')
-            # TODO: fix and test filename
-            self.assertFalse(up2date(), 'up2date failed. It should always ' \
-                             'return False when debug is enabled')
-
-        self.app.debug = False
-        self.app.hg.reload()
-        with self.app.test_request_context():
-            contents, filename, up2date = self.app.jinja_loader.get_source(
-                self.app.jinja_env, 'test.html')
-            self.assertFalse(up2date(), 'up2date failed. Debug disabled. ' \
-                             'Before commit.')
-            self.commit(message='foo', addremove=True)
-            self.app.hg.reload()
-            contents, filename, up2date = self.app.jinja_loader.get_source(
-                self.app.jinja_env, 'test.html')
-            self.assertTrue(up2date(), 'up2date failed. Debug disabled. ' \
-                            'After commit.')
+            self.assertEquals('foo', contents)
+            self.assertEquals(filename,
+                              os.path.join(self.app.config['TEMPLATES_DIR'],
+                                           'test.html'))
+            self.assertTrue(up2date())
             with codecs.open(new_file, 'a', encoding='utf-8') as fp:
                 fp.write('bar')
-            self.commit(message='bar', addremove=True)
-            self.app.hg.reload()
-            self.assertFalse(up2date(), 'up2date failed. Debug disabled. ' \
-                             'After 2nd commit')
+            self.assertTrue(up2date())
+            commands.commit(self.ui, self.repo, message='foo', addremove=True)
+            self.assertFalse(up2date())
+            contents, filename, up2date = self.app.jinja_loader.get_source(
+                self.app.jinja_env, 'test.html')
+            self.assertEquals('foobar', contents)
+            self.assertEquals(filename,
+                              os.path.join(self.app.config['TEMPLATES_DIR'],
+                                           'test.html'))
+            self.assertTrue(up2date())
+
+    def test_up2date_changectx_working_dir(self):
+        self.app.config['REVISION'] = 'working_dir'
+        with self.app.test_request_context():
+            self.app.preprocess_request()
+            self.assertRaises(TemplateNotFound,
+                              self.app.jinja_loader.get_source,
+                              self.app.jinja_env, 'test.html')
+        new_file = os.path.join(self.repo_path,
+                                self.app.config['TEMPLATES_DIR'], 'test.html')
+        with codecs.open(new_file, 'w', encoding='utf-8') as fp:
+            fp.write('foo')
+        with self.app.test_request_context():
+            self.app.preprocess_request()
+            contents, filename, up2date = self.app.jinja_loader.get_source(
+                self.app.jinja_env, 'test.html')
+            self.assertEquals('foo', contents)
+            self.assertEquals(filename,
+                              os.path.join(self.app.config['TEMPLATES_DIR'],
+                                           'test.html'))
+            self.assertFalse(up2date())
+            commands.commit(self.ui, self.repo, message='foo', addremove=True)
+            contents, filename, up2date = self.app.jinja_loader.get_source(
+                self.app.jinja_env, 'test.html')
+            self.assertEquals('foo', contents)
+            self.assertFalse(up2date())
 
     def test_list_templates(self):
+        self.app.config['REVISION'] = 'working_dir'
         default_templates_dir = os.path.join(os.path.dirname(
-            os.path.abspath(__file__)), '..', '..', 'templates')
+            os.path.abspath(__file__)), '..', 'templates')
         templates_dir = os.path.join(self.repo_path,
                                      self.app.config['TEMPLATES_DIR'])
-        e = walk(default_templates_dir) + walk(templates_dir)
+        real_files = os.listdir(default_templates_dir) + \
+            os.listdir(templates_dir)
         with self.app.test_request_context():
-            for f in self.app.jinja_loader.list_templates():
-                full_f1 = os.path.join(default_templates_dir, f)
-                full_f2 = os.path.join(templates_dir, f)
-                self.assertTrue(full_f1 in e or full_f2 in e,
-                                'File not found: %s' % f)
+            self.app.preprocess_request()
+            self.assertEquals(sorted(real_files),
+                              sorted(self.app.jinja_loader.list_templates()))
+

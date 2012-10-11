@@ -239,7 +239,7 @@ class Hg(object):
 
         # the state comes from the Flask configuration, but NOT from the yaml
         # file in the repository.
-        revision_name = self.app.config.get('REVISION', 'default').lower()
+        revision_name = self.app.config['REVISION'].lower()
         if revision_name == 'default':
             self.revision_id = REVISION_DEFAULT
         elif revision_name == 'working_dir':

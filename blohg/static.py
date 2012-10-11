@@ -9,7 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from flask import current_app, request, abort
+from flask import request, abort
 from time import time
 from zlib import adler32
 
@@ -22,21 +22,22 @@ class MercurialStaticFile(object):
     the current Mercurial repository.
     """
 
-    def __init__(self, config_key):
-        self._config_key = config_key
+    def __init__(self, app, config_key):
+        self.app = app
+        self.config_key = config_key
 
     def __call__(self, filename):
-        directory = current_app.config[self._config_key]
+        directory = self.app.config[self.config_key]
         filename = posixpath.join(directory, filename)
         mimetype = mimetypes.guess_type(filename)[0]
         if mimetype is None:
             mimetype = 'application/octet-stream'
         try:
-            filectx = current_app.hg.ctx.get_filectx(filename)
+            filectx = self.app.hg.ctx.get_filectx(filename)
         except Exception:
             abort(404)
-        rv = current_app.response_class(filectx.data, mimetype=mimetype,
-            direct_passthrough=True)
+        rv = self.app.response_class(filectx.data, mimetype=mimetype,
+                                     direct_passthrough=True)
         rv.cache_control.public = True
         cache_timeout = 60 * 60 * 12
         rv.cache_control.max_age = cache_timeout
