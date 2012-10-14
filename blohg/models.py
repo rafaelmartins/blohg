@@ -87,13 +87,11 @@ class Page(object):
 
     @locked_cached_property
     def author_name(self):
-        if 'name' in self.author:
-            return self.author['name']
+        return self.author.get('name')
 
     @locked_cached_property
     def author_email(self):
-        if 'email' in self.author:
-            return self.author['email']
+        return self.author.get('email')
 
     @locked_cached_property
     def path(self):
