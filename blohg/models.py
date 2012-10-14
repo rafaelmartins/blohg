@@ -39,40 +39,9 @@ class Page(object):
         self._vars = {}
         self._title = None
 
-        # get metadata variables from rst source
+        # get metadata variables from rst source.
         for i in re_metadata.finditer(self._filectx.content):
-            self._vars[i.group(1)] = i.group(2)
-
-        # handle aliases
-        if 'aliases' in self._vars:
-            self._vars['aliases'] = [i.strip() for i in \
-                                     self._vars['aliases'].split(',')]
-
-        # get the creation date, from the time of the first changeset with this
-        # content or from the 'date' variable.
-        if 'date' in self._vars:
-            self._vars['date'] = parse_date(self._vars['date'])
-        else:
-            self._vars['date'] = parse_date(self._filectx.date)
-        self._vars['datetime'] = datetime.utcfromtimestamp(self._vars['date'])
-
-        # get the modification date, from the time of the last changeset with
-        # changes for this content, from the creation date, if this content was
-        # never changed, or from the 'mdate' variable.
-        if 'mdate' in self._vars:
-            self._vars['mdate'] = parse_date(self._vars['mdate'])
-        else:
-            mdate = self._filectx.mdate
-            if mdate is not None:
-                self._vars['mdate'] = parse_date(mdate)
-        if 'mdate' in self._vars:
-            self._vars['mdatetime'] = \
-                datetime.utcfromtimestamp(self._vars['mdate'])
-
-        # get the author name/email from the 'author' variable or from the
-        # commiter of this content to the repository.
-        if 'author' not in self._vars:
-            self._vars['author'] = self._filectx.author
+            self._vars[i.group(1).strip()] = i.group(2).strip()
 
     @locked_cached_property
     def parsed_source(self):
@@ -85,13 +54,19 @@ class Page(object):
         return parser(self.abstract, self._rst_header_level)
 
     @locked_cached_property
-    def parsed_author(self):
-        if 'author' not in self._vars:
-            return {}
-        rv = re_author.match(self._vars['author'])
+    def author(self):
+        # get the author name/email from the 'author' variable or from the
+        # commiter of this content to the repository.
+        author_dict = {'name': None, 'email': None}
+        author = self._vars.get('author', self._filectx.author)
+        if not author:
+            return author_dict
+        rv = re_author.match(author)
         if rv is None:
-            return {'name': self._vars['author']}
-        return rv.groupdict()
+            author_dict['name'] = author
+            return author_dict
+        author_dict.update(rv.groupdict())
+        return author_dict
 
     @locked_cached_property
     def title(self):
@@ -112,13 +87,13 @@ class Page(object):
 
     @locked_cached_property
     def author_name(self):
-        if 'name' in self.parsed_author:
-            return self.parsed_author['name']
+        if 'name' in self.author:
+            return self.author['name']
 
     @locked_cached_property
     def author_email(self):
-        if 'email' in self.parsed_author:
-            return self.parsed_author['email']
+        if 'email' in self.author:
+            return self.author['email']
 
     @locked_cached_property
     def path(self):
@@ -133,8 +108,39 @@ class Page(object):
             return rv.group(1)
 
     @locked_cached_property
+    def date(self):
+        # get the creation date, from the time of the first changeset with this
+        # content or from the 'date' variable.
+        if 'date' in self._vars:
+            return parse_date(self._vars['date'])
+        return parse_date(self._filectx.date)
+
+    @locked_cached_property
+    def datetime(self):
+        return datetime.utcfromtimestamp(self.date)
+
+    @locked_cached_property
+    def mdate(self):
+        # get the modification date, from the time of the last changeset with
+        # changes for this content, from the creation date, if this content was
+        # never changed, or from the 'mdate' variable.
+        if 'mdate' in self._vars:
+            return parse_date(self._vars['mdate'])
+        mdate = self._filectx.mdate
+        if mdate is not None:
+            return parse_date(mdate)
+
+    @locked_cached_property
+    def mdatetime(self):
+        if self.mdate is not None:
+            return datetime.utcfromtimestamp(self.mdate)
+
+    @locked_cached_property
     def aliases(self):
-        return self._vars.get('aliases', [])
+        # handle aliases
+        if 'aliases' not in self._vars:
+            return []
+        return [i.strip() for i in self._vars['aliases'].split(',')]
 
     @locked_cached_property
     def abstract(self):
@@ -180,17 +186,12 @@ class Page(object):
 class Post(Page):
     """Posts are like pages, but with tags support."""
 
-    def __init__(self, filectx, content_dir, post_ext, rst_header_level):
-        Page.__init__(self, filectx, content_dir, post_ext, rst_header_level)
-
-        # handle tags
-        if 'tags' in self._vars:
-            self._vars['tags'] = [i.strip() for i in \
-                                  self._vars['tags'].split(',')]
-
     @locked_cached_property
     def tags(self):
-        return self._vars.get('tags', [])
+        # handle tags
+        if 'tags' not in self._vars:
+            return []
+        return [i.strip() for i in self._vars['tags'].split(',')]
 
 
 class Hg(object):
