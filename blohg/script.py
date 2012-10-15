@@ -33,9 +33,9 @@ class Server(_Server):
         return options
 
     def handle(self, app, *args, **kwargs):
-        app.config['REVISION'] = 'working_dir'
+        app.config['CHANGECTX'] = 'working_dir'
         if 'working_dir' in kwargs:
-            app.config['REVISION'] = kwargs['working_dir'] and 'working_dir' \
+            app.config['CHANGECTX'] = kwargs['working_dir'] and 'working_dir' \
                 or 'default'
             del kwargs['working_dir']
         _Server.handle(self, app, *args, **kwargs)
@@ -108,7 +108,7 @@ class Freeze(Command):
         app.root_path = app.config.get('REPO_PATH')
 
         # should use the 'default revision' changectx
-        app.config['REVISION'] = 'default'
+        app.config['CHANGECTX'] = 'default'
 
         freezer = Freezer(app)
 

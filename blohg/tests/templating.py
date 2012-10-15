@@ -38,7 +38,7 @@ class MercurialLoaderTestCase(unittest.TestCase):
             pass
 
     def test_up2date_changectx_default(self):
-        self.app.config['REVISION'] = 'default'
+        self.app.config['CHANGECTX'] = 'default'
         with self.app.test_request_context():
             self.app.preprocess_request()
             self.assertRaises(TemplateNotFound,
@@ -77,7 +77,7 @@ class MercurialLoaderTestCase(unittest.TestCase):
             self.assertTrue(up2date())
 
     def test_up2date_changectx_working_dir(self):
-        self.app.config['REVISION'] = 'working_dir'
+        self.app.config['CHANGECTX'] = 'working_dir'
         with self.app.test_request_context():
             self.app.preprocess_request()
             self.assertRaises(TemplateNotFound,
@@ -103,7 +103,7 @@ class MercurialLoaderTestCase(unittest.TestCase):
             self.assertFalse(up2date())
 
     def test_list_templates(self):
-        self.app.config['REVISION'] = 'working_dir'
+        self.app.config['CHANGECTX'] = 'working_dir'
         default_templates_dir = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), '..', 'templates')
         templates_dir = os.path.join(self.repo_path,

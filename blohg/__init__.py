@@ -37,8 +37,8 @@ class Blohg(object):
         config = yaml.load(self.changectx.get_filectx('config.yaml').content)
 
         # revision can't be defined by the config.yaml file. filter it.
-        if 'REVISION' in config:
-            del config['REVISION']
+        if 'CHANGECTX' in config:
+            del config['CHANGECTX']
 
         # monkey-patch configs when running from built-in server
         if self.app.config.get('RUNNING_FROM_CLI', False):
@@ -51,7 +51,7 @@ class Blohg(object):
     def reload(self):
         # the state comes from the Flask configuration, but NOT from the yaml
         # file in the repository.
-        revision_name = self.app.config['REVISION'].lower()
+        revision_name = self.app.config['CHANGECTX'].lower()
         if revision_name == 'default':
             self.revision_id = REVISION_DEFAULT
         elif revision_name == 'working_dir':
@@ -130,7 +130,7 @@ def create_app(repo_path=None, ui=None):
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
     app.config.setdefault('RST_HEADER_LEVEL', 3)
-    app.config.setdefault('REVISION', 'default')
+    app.config.setdefault('CHANGECTX', 'default')
 
     app.config['REPO_PATH'] = repo_path
 

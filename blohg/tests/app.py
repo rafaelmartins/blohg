@@ -46,7 +46,7 @@ class AppTestCase(unittest.TestCase):
                         'Invalid Jinja2 loader.')
 
     def test_reload_changectx_default(self):
-        self.app.config['REVISION'] = 'default'
+        self.app.config['CHANGECTX'] = 'default'
         commands.add(self.ui, self.repo)
         commands.forget(self.ui, self.repo,
                         os.path.join(self.repo_path,
@@ -88,7 +88,7 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue('THIS IS another TEST!' in rv.data)
 
     def test_reload_changectx_working_dir(self):
-        self.app.config['REVISION'] = 'working_dir'
+        self.app.config['CHANGECTX'] = 'working_dir'
         client = self.app.test_client()
         rv = client.get('/')
         self.assertTrue('post/lorem-ipsum' in rv.data)
