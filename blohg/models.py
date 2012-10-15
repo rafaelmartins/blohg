@@ -9,16 +9,12 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import os
 import re
-import time
-import yaml
 
 from datetime import datetime
 from flask.helpers import locked_cached_property
 from jinja2 import Markup
 
-from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.rst import parser
 from blohg.utils import parse_date
 
