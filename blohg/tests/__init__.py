@@ -16,7 +16,7 @@ from blohg.tests.hg import HgRepositoryTestCase
 from blohg.tests.hg.changectx import ChangeCtxDefaultTestCase, \
      ChangeCtxWorkingDirTestCase
 from blohg.tests.hg.filectx import FileCtxTestCase
-from blohg.tests.models import HgTestCase, PageTestCase, PostTestCase
+from blohg.tests.models import BlogTestCase, PageTestCase, PostTestCase
 from blohg.tests.templating import BlohgLoaderTestCase
 from blohg.tests.utils import UtilsTestCase
 
@@ -28,7 +28,7 @@ def suite():
     suite.addTest(unittest.makeSuite(ChangeCtxDefaultTestCase))
     suite.addTest(unittest.makeSuite(ChangeCtxWorkingDirTestCase))
     suite.addTest(unittest.makeSuite(FileCtxTestCase))
-    suite.addTest(unittest.makeSuite(HgTestCase))
+    suite.addTest(unittest.makeSuite(BlogTestCase))
     suite.addTest(unittest.makeSuite(PageTestCase))
     suite.addTest(unittest.makeSuite(PostTestCase))
     suite.addTest(unittest.makeSuite(BlohgLoaderTestCase))

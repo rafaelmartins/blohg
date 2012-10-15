@@ -201,8 +201,7 @@ class Post(Page):
 class Blog(list):
     """A blog is a list of posts and pages."""
 
-    def __init__(self, changectx, content_dir, post_ext, rst_header_level,
-                 ui=None):
+    def __init__(self, changectx, content_dir, post_ext, rst_header_level):
         self._changectx = changectx
         self._content_dir = content_dir
         self._post_ext = post_ext

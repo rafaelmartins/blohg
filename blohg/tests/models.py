@@ -19,8 +19,9 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
+from blohg.hg.changectx import ChangeCtxDefault
 from blohg.hg.filectx import FileCtx
-from blohg.models import Page, Post
+from blohg.models import Blog, Page, Post
 from blohg.utils import create_repo
 
 
@@ -199,21 +200,85 @@ class PostTestCase(PageTestCase):
         self.assertEqual(obj.tags, ['xd', 'lol', 'hehe'])
 
 
-class HgTestCase(unittest.TestCase):
+class BlogTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
         self.ui.setconfig('ui', 'username', 'foo <foo@bar.com>')
-        create_repo(self.repo_path, self.ui)
-        self.app = create_app(self.repo_path, self.ui)
-        self.app.config['REPO_PATH'] = self.repo_path
+        self.ui.setconfig('ui', 'quiet', True)
+        commands.init(self.ui, self.repo_path)
         self.repo = hg.repository(self.ui, self.repo_path)
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        file_dir = os.path.join(self.repo_path, 'content')
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+        for i in range(3):
+            file_path = os.path.join(file_dir, 'page-%i.rst' % i)
+            with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+                fp.write(SAMPLE_PAGE)
+            commands.add(self.ui, self.repo, file_path)
+        file_path = os.path.join(file_dir, 'about.rst')
+        with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+            fp.write(SAMPLE_PAGE + """
+.. aliases: 301:/my-old-post-location/,/another-old-location/""")
+        commands.add(self.ui, self.repo, file_path)
+        file_dir = os.path.join(self.repo_path, 'content', 'post')
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+        for i in range(3):
+            file_path = os.path.join(file_dir, 'post-%i.rst' % i)
+            with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+                fp.write(SAMPLE_POST)
+            commands.add(self.ui, self.repo, file_path)
+        file_path = os.path.join(file_dir, 'foo.rst')
+        with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+            # using the page template, because we want to set tags manually
+            fp.write(SAMPLE_PAGE + """
+.. tags: foo, bar, lol""")
+        commands.add(self.ui, self.repo, file_path)
+        commands.commit(self.ui, self.repo, message='foo')
+        ctx = ChangeCtxDefault(self.repo, self.ui)
+        self.model = Blog(ctx, 'content', '.rst', 3)
 
     def tearDown(self):
         try:
             rmtree(self.repo_path)
         except:
             pass
+
+    def test_tags(self):
+        self.assertEqual(sorted(self.model.tags),
+                         sorted(['bar', 'foo', 'hehe', 'lol', 'xd']))
+
+    def test_aliases(self):
+        self.assertEqual(self.model.aliases,
+                         {'/my-old-post-location/': (301, u'about'),
+                          '/another-old-location/': (302, u'about')})
+
+    def test_get(self):
+        self.assertEqual(self.model.get('about').slug, 'about')
+
+    def test_get_all(self):
+        self.assertEqual(sorted([i.slug for i in self.model.get_all()]),
+                         sorted(['page-%i' % i for i in range(3)] + \
+                                ['post/post-%i' % i for i in range(3)] + \
+                                ['about', 'post/foo']))
+
+    def test_get_all_only_posts(self):
+        self.assertEqual(sorted([i.slug for i in self.model.get_all(True)]),
+                         sorted(['post/post-%i' % i for i in range(3)] + \
+                                ['post/foo']))
+
+    def test_get_by_tag(self):
+        self.assertEqual(sorted([i.slug for i in \
+                                 self.model.get_by_tag('lol')]),
+                         sorted(['post/post-%i' % i for i in range(3)] + \
+                                ['post/foo']))
+        self.assertEqual(sorted([i.slug for i in \
+                                 self.model.get_by_tag('foo')]), ['post/foo'])
+
+    def test_self(self):
+        self.assertEqual(sorted([i.slug for i in self.model]),
+                         sorted(['page-%i' % i for i in range(3)] + \
+                                ['post/post-%i' % i for i in range(3)] + \
+                                ['about', 'post/foo']))
