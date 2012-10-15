@@ -79,31 +79,6 @@ class Blohg(object):
                             rst_header_level)
 
 
-def setup_mercurial(app, ui=None):
-    """This function adds a :class:`Hg` instance to an application object, as a
-    ``hg`` attribute, and reloads it as needed.
-
-    :param app: the application object, must have a 'REPO_PATH' configuration
-                parameter.
-    :param ui: a Mercurial ui object.
-    """
-
-    Blohg(app, ui)
-
-    # setup our jinja2 custom loader and static file handlers
-    old_loader = app.jinja_loader
-    app.jinja_loader = ChoiceLoader([MercurialLoader(app), old_loader])
-    app.add_url_rule(app.static_url_path + '/<path:filename>',
-                     endpoint='static',
-                     view_func=MercurialStaticFile(app, 'STATIC_DIR'))
-    app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
-                     view_func=MercurialStaticFile(app, 'ATTACHMENT_DIR'))
-
-    @app.before_request
-    def before_request():
-        app.blohg.reload()
-
-
 def create_app(repo_path=None, ui=None):
     """Application factory.
 
