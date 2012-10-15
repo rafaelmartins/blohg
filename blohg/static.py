@@ -33,7 +33,7 @@ class MercurialStaticFile(object):
         if mimetype is None:
             mimetype = 'application/octet-stream'
         try:
-            filectx = self.app.hg.ctx.get_filectx(filename)
+            filectx = self.app.blohg.changectx.get_filectx(filename)
         except Exception:
             abort(404)
         rv = self.app.response_class(filectx.data, mimetype=mimetype,

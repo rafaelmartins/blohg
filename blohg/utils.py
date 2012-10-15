@@ -15,7 +15,7 @@ import shutil
 
 from calendar import timegm
 from flask import current_app
-from mercurial import commands, encoding, error, ui as _ui
+from mercurial import commands, error, ui as _ui
 from pkg_resources import resource_filename, resource_listdir
 from time import strptime, time
 

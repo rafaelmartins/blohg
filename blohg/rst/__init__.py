@@ -13,7 +13,6 @@
 from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
 from docutils.parsers.rst.roles import register_local_role
-from flask import current_app
 
 from blohg.rst.directives import index as directives_index
 from blohg.rst.roles import index as roles_index

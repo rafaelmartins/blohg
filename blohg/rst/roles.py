@@ -28,7 +28,7 @@ def attachment_role(name, rawtext, text, lineno, inliner, options={},
     if '|' in text:
         text, label = text.split('|')
     full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'], text)
-    if full_path not in current_app.hg.ctx.files:
+    if full_path not in current_app.blohg.changectx.files:
         msg = inliner.reporter.error('Error in "%s" role: File not found: %s.' \
                                      % (name, full_path), line=lineno)
         prb = inliner.problematic(rawtext, rawtext, msg)
@@ -53,7 +53,7 @@ def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
     match = explicit_title_re.match(text)
     if match:
         title, target = match.group(1), match.group(2)
-    metadata = current_app.hg.get(target)
+    metadata = current_app.blohg.content.get(target)
     if metadata is None:
         if title is not None:
             target = title

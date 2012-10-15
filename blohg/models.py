@@ -138,7 +138,15 @@ class Page(object):
         # handle aliases
         if 'aliases' not in self._vars:
             return []
-        return [i.strip() for i in self._vars['aliases'].split(',')]
+        rv = []
+        for alias in self._vars['aliases'].split(','):
+            code = 302
+            alias = alias.strip().encode('utf-8')
+            if alias[:4] in ('301:', '302:'):
+                code = int(alias[:3])
+                alias = alias[4:]
+            rv.append((code, alias))
+        return rv
 
     @locked_cached_property
     def abstract(self):
@@ -172,7 +180,9 @@ class Page(object):
         return self._vars.get(key, default)
 
     def __getattr__(self, attr):
-        return self.get(attr)
+        if attr not in self._vars:
+            raise AttributeError(attr)
+        return self._vars[attr]
 
     def __str__(self):
         return self.full
@@ -192,111 +202,38 @@ class Post(Page):
         return [i.strip() for i in self._vars['tags'].split(',')]
 
 
-class Hg(object):
-    """Main class of the Mercurial layer."""
+class Blog(list):
+    """A blog is a list of posts and pages."""
 
-    def __init__(self, app, ui=None):
-        self.app = app
-        self.repo = HgRepository(self.app.config.get('REPO_PATH', '.'), ui)
-        self.ctx = None
-        self.content_dir = None
-        self.post_ext = None
-        self.rst_header_level = None
-        self.pages = []
-        self.posts = []
-        self.tags = set()
+    def __init__(self, changectx, content_dir, post_ext, rst_header_level,
+                 ui=None):
+        self._changectx = changectx
+        self._content_dir = content_dir
+        self._post_ext = post_ext
+        self._rst_header_level = rst_header_level
+        re_content = re.compile(r'^' + self._content_dir + r'[\\/](post)?.+' \
+                                + '\\' + self._post_ext + '$')
+        list.__init__(self)
+        self.tags = set()  # it will be a list at the end of this method.
         self.aliases = {}
-
-    def _parse_aliases(self, post_or_page):
-        for alias in post_or_page.aliases:
-            code = 302
-            alias = alias.encode('utf-8')
-            if alias[:4] in ('301:', '302:'):
-                code = int(alias[:3])
-                alias = alias[4:]
-            self.aliases[alias.encode('utf-8')] = (code, post_or_page.slug)
-
-    def _load_config(self):
-        config = yaml.load(self.ctx.get_filectx('config.yaml').content)
-
-        # revision can't be defined by the config.yaml file. filter it.
-        if 'REVISION' in config:
-            del config['REVISION']
-
-        # monkey-patch configs when running from built-in server
-        if self.app.config.get('RUNNING_FROM_CLI', False):
-            if 'GOOGLE_ANALYTICS' in config:
-                del config['GOOGLE_ANALYTICS']
-            config['DISQUS_DEVELOPER'] = True
-
-        self.app.config.update(config)
-
-    def reload(self):
-        """Method to reload stuff from the Mercurial repository. It is able to
-        reload as needed, to save resources.
-        """
-
-        # the state comes from the Flask configuration, but NOT from the yaml
-        # file in the repository.
-        revision_name = self.app.config['REVISION'].lower()
-        if revision_name == 'default':
-            self.revision_id = REVISION_DEFAULT
-        elif revision_name == 'working_dir':
-            self.revision_id = REVISION_WORKING_DIR
-        else:
-            raise RuntimeError('Invalid revision: %s' % revision_name)
-
-        # if called from the initrepo script command the repository will not
-        # exists, then it shouldn't be loaded
-        if not os.path.exists(self.repo.path):
-            return
-
-        if self.ctx is not None and not self.ctx.needs_reload():
-            return
-
-        self.ctx = self.repo.get_changectx(self.revision_id)
-        self._load_config()
-
-        # build a regular expression for search posts/pages.
-        self.content_dir = self.app.config.get('CONTENT_DIR', 'content')
-        self.post_ext = self.app.config.get('POST_EXT', '.rst')
-        re_content = re.compile(r'^' + self.content_dir + \
-                                r'[\\/](post)?.+' + '\\' + self.post_ext + '$')
-
-        self.rst_header_level = self.app.config['RST_HEADER_LEVEL']
-
-        # get all the content
-        self.pages = []
-        self.posts = []
-        self.tags = set()
-        self.aliases = {}
-        now = int(time.time())
-        for fname in self.ctx.files:
+        for fname in self._changectx.files:
             rv = re_content.match(fname)
             if rv is not None:
-                if rv.group(1) is None:  # page
-                    page = Page(self.ctx.get_filectx(fname),
-                                self.content_dir, self.post_ext,
-                                self.rst_header_level)
-                    if not self.app.debug and page.date > now:
-                        continue
-                    self._parse_aliases(page)
-                    self.pages.append(page)
-                else:  # post
-                    post = Post(self.ctx.get_filectx(fname),
-                                self.content_dir, self.post_ext,
-                                self.rst_header_level)
-                    if not self.app.debug and post.date > now:
-                        continue
-                    self._parse_aliases(post)
-                    self.posts.append(post)
-                    self.tags = self.tags.union(set(post.tags))
+                cls = (rv.group(1) is None) and Page or Post
+                obj = cls(self._changectx.get_filectx(fname),
+                          self._content_dir, self._post_ext,
+                          self._rst_header_level)
+                for code, alias in obj.aliases:
+                    self.aliases[alias] = (code, obj.slug)
+                self.append(obj)
+                if hasattr(obj, 'tags'):
+                    self.tags = self.tags.union(set(obj.tags))
 
         # sort tags by "name" and convert them back to a list
         self.tags = sorted(self.tags)
 
-        # sort posts reverse by date. sort pages is useless :P
-        self.posts = sorted(self.posts, lambda a, b: b.date - a.date)
+        # sort self, reverse by date
+        self.sort(lambda a, b: b.date - a.date)
 
     def get(self, slug):
         """Method that returns a :class:`Page` or a :class:`Post` object for
@@ -305,7 +242,7 @@ class Hg(object):
         :param slug: the slug string.
         :return: a :class:`Page` or a :class:`Post`
         """
-        for entry in self.posts + self.pages:
+        for entry in self:
             if entry.slug == slug:
                 return entry
 
@@ -319,8 +256,8 @@ class Hg(object):
         :return: a list of :class:`Page` or :class:`Post` objects.
         """
         if only_posts:
-            return self.posts
-        return self.posts + self.pages
+            return [i for i in self if isinstance(i, Post)]
+        return list(self)
 
     def get_by_tag(self, tag):
         """Method that returns a list of :class:`Post` objects for a
@@ -329,15 +266,16 @@ class Hg(object):
         :param tag: a list of tag identifier strings.
         :return: a list of :class:`Post` objects.
         """
-        posts = []
-        for post in self.posts:
+        if not isinstance(tag, list):
+            tag = [tag]
+        rv = []
+        for obj in self:
+            if not hasattr(obj, 'tags'):
+                continue
             found = True
             for _tag in tag:
-                if _tag not in post.tags:
+                if _tag not in obj.tags:
                     found = False
             if found:
-                posts.append(post)
-        return posts
-
-    def __repr__(self):
-        return '<%s %r>' % (self.__class__.__name__, self.repo.path)
+                rv.append(obj)
+        return rv

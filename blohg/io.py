@@ -26,7 +26,7 @@ class MercurialFile(object):
 
     def __init__(self, path):
         try:
-            self._filectx = current_app.hg.ctx.get_filectx(path)
+            self._filectx = current_app.blohg.changectx.get_filectx(path)
         except:
             # IncludeHg catches IOError
             raise IOError('Failed to read file from repository: %s' % path)

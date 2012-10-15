@@ -40,8 +40,8 @@ class AppTestCase(unittest.TestCase):
         except:
             pass
 
-    def test_setup_mercurial(self):
-        self.assertTrue(hasattr(self.app, 'hg'), 'mercurial not setup.')
+    def test_setup_app(self):
+        self.assertTrue(hasattr(self.app, 'blohg'))
         self.assertTrue(isinstance(self.app.jinja_loader, ChoiceLoader),
                         'Invalid Jinja2 loader.')
 

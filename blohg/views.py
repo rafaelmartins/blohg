@@ -33,12 +33,12 @@ def atom(tag=None):
     if tag is not None:
         tags = tag.split('/')
         for _tag in tags:
-            if _tag not in current_app.hg.tags:
+            if _tag not in current_app.blohg.content.tags:
                 abort(404)
         title += u' » %s' % ' + '.join(tags)
-        posts = current_app.hg.get_by_tag(tags)
+        posts = current_app.blohg.content.get_by_tag(tags)
     else:
-        posts = current_app.hg.get_all(True)
+        posts = current_app.blohg.content.get_all(True)
     feed = AtomFeed(title=title, subtitle=current_app.config['TAGLINE'],
                     url=url_for('views.home', _external=True),
                     id=url_for('views.atom', tag=tag),
@@ -60,11 +60,11 @@ def atom(tag=None):
 @views.route('/<path:slug>/')
 def content(slug):
     """Posts and static pages."""
-    page = current_app.hg.get(slug)
+    page = current_app.blohg.content.get(slug)
     if page is None:
         url = "/%s/" % slug
-        if url in current_app.hg.aliases:
-            code, slug = current_app.hg.aliases[url]
+        if url in current_app.blohg.content.aliases:
+            code, slug = current_app.blohg.content.aliases[url]
             return redirect(url_for('views.content', slug=slug), code=code)
         abort(404)
     title = page.title
@@ -84,7 +84,7 @@ def home(page=None):
         except NotFound:
             page = 1
     current = int(page)
-    pages = current_app.hg.get_all(True)
+    pages = current_app.blohg.content.get_all(True)
     ppp = int(current_app.config['POSTS_PER_PAGE'])
     num_pages = int(math.ceil(float(len(pages)) / ppp))
     init = int((current - 1) * ppp)
@@ -108,7 +108,7 @@ def post_list():
     """Page with a simple list of posts (link + creation date)."""
     try:
         return render_template('post_list.html', title=u'Posts',
-                               posts=current_app.hg.get_all(True))
+                               posts=current_app.blohg.content.get_all(True))
     except TemplateNotFound:
         if 'FREEZER_BASE_URL' in current_app.config:  # freezing the blog
             return ""
@@ -122,9 +122,9 @@ def tag(tag):
     """
     tags = tag.split('/')
     for _tag in tags:
-        if _tag not in current_app.hg.tags:
+        if _tag not in current_app.blohg.content.tags:
             abort(404)
-    posts = current_app.hg.get_by_tag(tags)
+    posts = current_app.blohg.content.get_by_tag(tags)
     return render_template('_posts.html', title=u'Tag: %s' % ' + '.join(tags),
                            tag=tags, posts=posts, full_content=False)
 
@@ -139,7 +139,7 @@ def source(slug=None):
         return ''
     if not current_app.config['SHOW_RST_SOURCE'] or slug is None:
         abort(404)
-    source = current_app.hg.get(slug)
+    source = current_app.blohg.content.get(slug)
     if source is None:
         abort(404)
     response = make_response(source.full)

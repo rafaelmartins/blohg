@@ -114,4 +114,3 @@ class MercurialLoaderTestCase(unittest.TestCase):
             self.app.preprocess_request()
             self.assertEquals(sorted(real_files),
                               sorted(self.app.jinja_loader.list_templates()))
-

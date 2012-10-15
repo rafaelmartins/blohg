@@ -26,15 +26,17 @@ class MercurialLoader(BaseLoader):
         pieces = split_template_path(template)
         templates_dir = self.app.config['TEMPLATES_DIR']
         filename = posixpath.join(templates_dir, *pieces)
-        if filename in self.app.hg.ctx.files:
-            filectx = self.app.hg.ctx.get_filectx(filename)
+        if filename in self.app.blohg.changectx.files:
+            filectx = self.app.blohg.changectx.get_filectx(filename)
+
             def up2date():
-                if self.app.hg.ctx is None:
+                if self.app.blohg.changectx is None:
                     return False
-                needs_reload = self.app.hg.ctx.needs_reload()
+                needs_reload = self.app.blohg.changectx.needs_reload()
                 if needs_reload:  # if a reload is required, let's do it!
-                    self.app.hg.reload()
+                    self.app.blohg.reload()
                 return not needs_reload
+
             return filectx.content, os.path.join(templates_dir, *pieces), \
                    up2date
         raise TemplateNotFound(template)
@@ -42,5 +44,5 @@ class MercurialLoader(BaseLoader):
     def list_templates(self):
         templates_dir = self.app.config['TEMPLATES_DIR'].strip(os.linesep)
         return sorted([i[len(templates_dir) + 1:] for i in \
-                       self.app.hg.ctx.files \
+                       self.app.blohg.changectx.files \
                        if i.startswith(templates_dir + '/')])

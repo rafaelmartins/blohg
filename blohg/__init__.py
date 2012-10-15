@@ -9,16 +9,74 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import os
+import yaml
 from flask import Flask, render_template, request
 from flask.ext.babel import Babel
 from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
-from blohg.models import Hg
+from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.models import Blog
 from blohg.static import MercurialStaticFile
 from blohg.templating import MercurialLoader
 from blohg.version import version as __version__
 from blohg.views import views
+
+
+class Blohg(object):
+
+    def __init__(self, app, ui=None):
+        self.app = app
+        self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
+        self.changectx = None
+        self.content = []
+        app.blohg = self
+
+    def _load_config(self):
+        config = yaml.load(self.changectx.get_filectx('config.yaml').content)
+
+        # revision can't be defined by the config.yaml file. filter it.
+        if 'REVISION' in config:
+            del config['REVISION']
+
+        # monkey-patch configs when running from built-in server
+        if self.app.config.get('RUNNING_FROM_CLI', False):
+            if 'GOOGLE_ANALYTICS' in config:
+                del config['GOOGLE_ANALYTICS']
+            config['DISQUS_DEVELOPER'] = True
+
+        self.app.config.update(config)
+
+    def reload(self):
+        # the state comes from the Flask configuration, but NOT from the yaml
+        # file in the repository.
+        revision_name = self.app.config['REVISION'].lower()
+        if revision_name == 'default':
+            self.revision_id = REVISION_DEFAULT
+        elif revision_name == 'working_dir':
+            self.revision_id = REVISION_WORKING_DIR
+        else:
+            raise RuntimeError('Invalid revision: %s' % revision_name)
+
+        # if called from the initrepo script command the repository will not
+        # exists, then it shouldn't be loaded
+        if not os.path.exists(self.repo.path):
+            return
+
+        if self.changectx is not None and not self.changectx.needs_reload():
+            return
+
+        self.changectx = self.repo.get_changectx(self.revision_id)
+        self._load_config()
+
+        # build a regular expression for search posts/pages.
+        content_dir = self.app.config.get('CONTENT_DIR', 'content')
+        post_ext = self.app.config.get('POST_EXT', '.rst')
+        rst_header_level = self.app.config['RST_HEADER_LEVEL']
+
+        self.content = Blog(self.changectx, content_dir, post_ext,
+                            rst_header_level)
 
 
 def setup_mercurial(app, ui=None):
@@ -30,8 +88,7 @@ def setup_mercurial(app, ui=None):
     :param ui: a Mercurial ui object.
     """
 
-    # create an ui object and attach the Hg object to app
-    app.hg = Hg(app, ui)
+    Blohg(app, ui)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader
@@ -44,7 +101,7 @@ def setup_mercurial(app, ui=None):
 
     @app.before_request
     def before_request():
-        app.hg.reload()
+        app.blohg.reload()
 
 
 def create_app(repo_path=None, ui=None):
@@ -77,11 +134,23 @@ def create_app(repo_path=None, ui=None):
 
     app.config['REPO_PATH'] = repo_path
 
-    # init mercurial stuff
-    setup_mercurial(app, ui)
+    Blohg(app, ui)
+
+    # setup our jinja2 custom loader and static file handlers
+    old_loader = app.jinja_loader
+    app.jinja_loader = ChoiceLoader([MercurialLoader(app), old_loader])
+    app.add_url_rule(app.static_url_path + '/<path:filename>',
+                     endpoint='static',
+                     view_func=MercurialStaticFile(app, 'STATIC_DIR'))
+    app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
+                     view_func=MercurialStaticFile(app, 'ATTACHMENT_DIR'))
 
     # setup extensions
     babel = Babel(app)
+
+    @app.before_request
+    def before_request():
+        app.blohg.reload()
 
     @app.context_processor
     def setup_jinja2():
@@ -90,7 +159,7 @@ def create_app(repo_path=None, ui=None):
             is_post=lambda x: x.startswith('post/'),
             current_path=request.path.strip('/'),
             active_page=request.path.strip('/').split('/')[0],
-            tags=app.hg.tags,
+            tags=app.blohg.content.tags,
             config=app.config,
         )
 

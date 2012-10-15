@@ -231,7 +231,7 @@ class AttachmentImage(Image):
         my_file = directives.uri(self.arguments[0])
         full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
                                    my_file)
-        if full_path not in current_app.hg.ctx.files:
+        if full_path not in current_app.blohg.changectx.files:
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path
@@ -248,7 +248,7 @@ class AttachmentFigure(Figure):
         my_file = directives.uri(self.arguments[0])
         full_path = posixpath.join(current_app.config['ATTACHMENT_DIR'],
                                    my_file)
-        if full_path not in current_app.hg.ctx.files:
+        if full_path not in current_app.blohg.changectx.files:
             raise self.error(
                 'Error in "%s" directive: File not found: %s.' % (
                     self.name, full_path
@@ -306,7 +306,7 @@ class SubPages(Directive):
         final_metadata = []
         # not sure if this works on windows
         splited_dir = self.arguments[0].split('/')
-        for metadata in current_app.hg.get_all():
+        for metadata in current_app.blohg.content.get_all():
             # not sure if this works on windows
             splited_slug = metadata.slug.split('/')
             if metadata.slug.startswith(self.arguments[0]) and \

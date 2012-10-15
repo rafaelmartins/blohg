@@ -107,10 +107,13 @@ class Freeze(Command):
         # freezer
         app.root_path = app.config.get('REPO_PATH')
 
+        # should use the 'default revision' changectx
+        app.config['REVISION'] = 'default'
+
         freezer = Freezer(app)
 
         def static_generator(static_dir):
-            for f in app.hg.revision.manifest():
+            for f in app.blohg.changectx.files:
                 if f.startswith(static_dir):
                     yield dict(filename=f[len(static_dir):] \
                                .strip(posixpath.sep))

@@ -20,7 +20,7 @@ from tempfile import mkdtemp
 
 from blohg import create_app
 from blohg.hg.filectx import FileCtx
-from blohg.models import Hg, Page, Post
+from blohg.models import Page, Post
 from blohg.utils import create_repo
 
 
@@ -185,8 +185,8 @@ class PageTestCase(unittest.TestCase):
 .. aliases: 301:/my-old-post-location/,/another-old-location/
 """
         obj = self._get_model(content)
-        self.assertEqual(obj.aliases, ['301:/my-old-post-location/',
-                                       '/another-old-location/'])
+        self.assertEqual(obj.aliases, [(301, '/my-old-post-location/'),
+                                       (302, '/another-old-location/')])
 
 
 class PostTestCase(PageTestCase):
