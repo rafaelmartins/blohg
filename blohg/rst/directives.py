@@ -21,7 +21,7 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
-from blohg.io import MercurialFile
+from blohg.io import BlohgFile
 from blohg.rst.nodes import iframe_flash_video
 
 import posixpath
@@ -341,7 +341,7 @@ class IncludeHg(Include):
         try:
             self.state.document.settings.record_dependencies.add(path)
             include_file = FileInput(
-                source=MercurialFile(path), encoding=encoding,
+                source=BlohgFile(path), encoding=encoding,
                 error_handler=(self.state.document.settings.\
                                input_encoding_error_handler),
                 handle_io_errors=None)

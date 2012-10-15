@@ -17,7 +17,7 @@ except ImportError:
     from StringIO import StringIO
 
 
-class MercurialFile(object):
+class BlohgFile(object):
     """A file-like read-only object for mercurial file-context objects.
 
     Based in {c,}StringIO. Poorly implemented, because we can't inherit classes

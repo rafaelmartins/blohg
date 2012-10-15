@@ -16,7 +16,7 @@ import posixpath
 from jinja2.loaders import BaseLoader, TemplateNotFound, split_template_path
 
 
-class MercurialLoader(BaseLoader):
+class BlohgLoader(BaseLoader):
     """A Jinja2 loader that loads templates from a Mercurial repository"""
 
     def __init__(self, app):

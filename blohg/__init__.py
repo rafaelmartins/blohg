@@ -18,8 +18,8 @@ from jinja2.loaders import ChoiceLoader
 # import blohg stuff
 from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.models import Blog
-from blohg.static import MercurialStaticFile
-from blohg.templating import MercurialLoader
+from blohg.static import BlohgStaticFile
+from blohg.templating import BlohgLoader
 from blohg.version import version as __version__
 from blohg.views import views
 
@@ -113,12 +113,12 @@ def create_app(repo_path=None, ui=None):
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader
-    app.jinja_loader = ChoiceLoader([MercurialLoader(app), old_loader])
+    app.jinja_loader = ChoiceLoader([BlohgLoader(app), old_loader])
     app.add_url_rule(app.static_url_path + '/<path:filename>',
                      endpoint='static',
-                     view_func=MercurialStaticFile(app, 'STATIC_DIR'))
+                     view_func=BlohgStaticFile(app, 'STATIC_DIR'))
     app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
-                     view_func=MercurialStaticFile(app, 'ATTACHMENT_DIR'))
+                     view_func=BlohgStaticFile(app, 'ATTACHMENT_DIR'))
 
     # setup extensions
     babel = Babel(app)

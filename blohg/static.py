@@ -17,7 +17,7 @@ import posixpath
 import mimetypes
 
 
-class MercurialStaticFile(object):
+class BlohgStaticFile(object):
     """Callable to create a Response object for static files loaded from
     the current Mercurial repository.
     """

@@ -21,7 +21,7 @@ from blohg import create_app
 from blohg.utils import create_repo
 
 
-class MercurialLoaderTestCase(unittest.TestCase):
+class BlohgLoaderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
