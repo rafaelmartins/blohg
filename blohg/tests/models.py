@@ -64,7 +64,6 @@ class PageTestCase(unittest.TestCase):
     def setUp(self):
         self.repo_path = mkdtemp()
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'username', 'foo <foo@bar.com>')
         self.ui.setconfig('ui', 'quiet', True)
         commands.init(self.ui, self.repo_path)
         self.repo = hg.repository(self.ui, self.repo_path)
@@ -83,7 +82,7 @@ class PageTestCase(unittest.TestCase):
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(content)
         commands.commit(self.ui, self.repo, file_path, message='foo',
-                        addremove=True)
+                        user='foo <foo@bar.com>', addremove=True)
         ctx = FileCtx(self.repo, self.repo[None], 'content/stub.rst')
         return self.model(ctx, 'content', '.rst', 2)
 
@@ -236,7 +235,7 @@ class BlogTestCase(unittest.TestCase):
             fp.write(SAMPLE_PAGE + """
 .. tags: foo, bar, lol""")
         commands.add(self.ui, self.repo, file_path)
-        commands.commit(self.ui, self.repo, message='foo')
+        commands.commit(self.ui, self.repo, message='foo', user='foo')
         ctx = ChangeCtxDefault(self.repo, self.ui)
         self.model = Blog(ctx, 'content', '.rst', 3)
 

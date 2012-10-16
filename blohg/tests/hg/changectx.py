@@ -36,7 +36,8 @@ class ChangeCtxBaseTestCase(unittest.TestCase):
                 fp.write('dumb file %s\n' % i)
 
         self.repo = hg.repository(self.ui, self.repo_path)
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
     def tearDown(self):
         try:
@@ -73,7 +74,8 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         self.assertFalse(new_file in ctx.files, 'stable state is '
                          'listing uncommited file.')
 
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # after commit files
         ctx = self.get_ctx()
@@ -93,7 +95,8 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # should still be false
         self.assertFalse(ctx.needs_reload())
 
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.needs_reload())
@@ -126,7 +129,8 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         self.assertTrue(new_file in ctx.files, 'variable state is not '
                         'listing uncommited file.')
 
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # after commit files
         ctx = self.get_ctx()
@@ -146,7 +150,8 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         # should always be true
         self.assertTrue(ctx.needs_reload())
 
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.needs_reload())

@@ -53,7 +53,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertRaises(TemplateNotFound,
                               self.app.jinja_loader.get_source,
                               self.app.jinja_env, 'test.html')
-        commands.commit(self.ui, self.repo, message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
         with self.app.test_request_context():
             self.app.preprocess_request()
             contents, filename, up2date = self.app.jinja_loader.get_source(
@@ -66,7 +67,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             with codecs.open(new_file, 'a', encoding='utf-8') as fp:
                 fp.write('bar')
             self.assertTrue(up2date())
-            commands.commit(self.ui, self.repo, message='foo', addremove=True)
+            commands.commit(self.ui, self.repo, message='foo', user='foo',
+                            addremove=True)
             self.assertFalse(up2date())
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
@@ -96,7 +98,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
                               os.path.join(self.app.config['TEMPLATES_DIR'],
                                            'test.html'))
             self.assertFalse(up2date())
-            commands.commit(self.ui, self.repo, message='foo', addremove=True)
+            commands.commit(self.ui, self.repo, message='foo', user='foo',
+                            addremove=True)
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
             self.assertEquals('foo', contents)
