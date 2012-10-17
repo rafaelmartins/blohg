@@ -59,8 +59,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.app.preprocess_request()
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
-            self.assertEquals('foo', contents)
-            self.assertEquals(filename,
+            self.assertEqual('foo', contents)
+            self.assertEqual(filename,
                               os.path.join(self.app.config['TEMPLATES_DIR'],
                                            'test.html'))
             self.assertTrue(up2date())
@@ -72,8 +72,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertFalse(up2date())
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
-            self.assertEquals('foobar', contents)
-            self.assertEquals(filename,
+            self.assertEqual('foobar', contents)
+            self.assertEqual(filename,
                               os.path.join(self.app.config['TEMPLATES_DIR'],
                                            'test.html'))
             self.assertTrue(up2date())
@@ -93,8 +93,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.app.preprocess_request()
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
-            self.assertEquals('foo', contents)
-            self.assertEquals(filename,
+            self.assertEqual('foo', contents)
+            self.assertEqual(filename,
                               os.path.join(self.app.config['TEMPLATES_DIR'],
                                            'test.html'))
             self.assertFalse(up2date())
@@ -102,7 +102,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                             addremove=True)
             contents, filename, up2date = self.app.jinja_loader.get_source(
                 self.app.jinja_env, 'test.html')
-            self.assertEquals('foo', contents)
+            self.assertEqual('foo', contents)
             self.assertFalse(up2date())
 
     def test_list_templates(self):
@@ -115,5 +115,5 @@ class BlohgLoaderTestCase(unittest.TestCase):
             os.listdir(templates_dir)
         with self.app.test_request_context():
             self.app.preprocess_request()
-            self.assertEquals(sorted(real_files),
+            self.assertEqual(sorted(real_files),
                               sorted(self.app.jinja_loader.list_templates()))
