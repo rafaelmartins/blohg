@@ -18,7 +18,6 @@ from tempfile import mkdtemp
 
 from blohg import create_app
 from blohg.utils import create_repo
-from blohg.views import atom
 
 
 class ViewsTestCase(unittest.TestCase):

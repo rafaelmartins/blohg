@@ -18,11 +18,9 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import create_app
 from blohg.hg.changectx import ChangeCtxDefault
 from blohg.hg.filectx import FileCtx
 from blohg.models import Blog, Page, Post
-from blohg.utils import create_repo
 
 
 SAMPLE_PAGE = """\
