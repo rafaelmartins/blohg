@@ -26,6 +26,7 @@ class ChangeCtxBaseTestCase(unittest.TestCase):
         self.repo_path = mkdtemp()
         self.ui = ui.ui()
         self.ui.setconfig('ui', 'quiet', True)
+        self.ui.setconfig('ui', 'username', 'foo')
         commands.init(self.ui, self.repo_path)
 
         # create files
