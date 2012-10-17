@@ -33,6 +33,7 @@ class Server(_Server):
         return options
 
     def handle(self, app, *args, **kwargs):
+        os.environ['RUNNING_FROM_CLI'] = '1'
         app.config['CHANGECTX'] = 'working_dir'
         if 'working_dir' in kwargs:
             app.config['CHANGECTX'] = kwargs['working_dir'] and 'working_dir' \

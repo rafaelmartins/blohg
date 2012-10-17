@@ -41,7 +41,7 @@ class Blohg(object):
             del config['CHANGECTX']
 
         # monkey-patch configs when running from built-in server
-        if self.app.config.get('RUNNING_FROM_CLI', False):
+        if 'RUNNING_FROM_CLI' in os.environ:
             if 'GOOGLE_ANALYTICS' in config:
                 del config['GOOGLE_ANALYTICS']
             config['DISQUS_DEVELOPER'] = True
