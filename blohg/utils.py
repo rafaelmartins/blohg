@@ -14,10 +14,9 @@ import os
 import shutil
 
 from calendar import timegm
-from flask import current_app
 from mercurial import commands, error, ui as _ui
 from pkg_resources import resource_filename, resource_listdir
-from time import strptime, time
+from time import strptime
 
 
 def create_repo(repo_path, ui=None):
@@ -74,12 +73,9 @@ def parse_date(date):
     """
     if isinstance(date, int):
         return date
-    if date.isdigit():
-        return int(date)
-    try:
+    if isinstance(date, basestring):
+        if date.isdigit():
+            return int(date)
         timetuple = strptime(date, '%Y-%m-%d %H:%M:%S')
-    except ValueError:
-        if current_app.debug:
-            raise
-        return int(time())
-    return timegm(timetuple)
+        return timegm(timetuple)
+    raise TypeError('Invalid type (%s): %r' % (date.__class__.__name__, date))
