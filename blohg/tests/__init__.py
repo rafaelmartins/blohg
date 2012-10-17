@@ -19,6 +19,7 @@ from blohg.tests.hg.filectx import FileCtxTestCase
 from blohg.tests.models import BlogTestCase, PageTestCase, PostTestCase
 from blohg.tests.templating import BlohgLoaderTestCase
 from blohg.tests.utils import UtilsTestCase
+from blohg.tests.views import ViewsTestCase
 
 
 def suite():
@@ -33,4 +34,5 @@ def suite():
     suite.addTest(unittest.makeSuite(PostTestCase))
     suite.addTest(unittest.makeSuite(BlohgLoaderTestCase))
     suite.addTest(unittest.makeSuite(UtilsTestCase))
+    suite.addTest(unittest.makeSuite(ViewsTestCase))
     return suite
