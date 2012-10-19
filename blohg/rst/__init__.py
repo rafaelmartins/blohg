@@ -29,7 +29,8 @@ for role in roles_index:
 
 def parser(content, rst_header_level):
     settings = {'input_encoding': 'utf-8', 'output_encoding': 'utf-8',
-                'initial_header_level': rst_header_level}
+                'initial_header_level': rst_header_level,
+                'docinfo_xform': 0, 'field_name_limit': None}
     parts = publish_parts(source=content, writer=BlohgWriter(),
                           settings_overrides=settings)
     return {'title': parts['title'], 'fragment': parts['fragment'],
