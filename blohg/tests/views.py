@@ -17,6 +17,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
+from blohg.hg import REVISION_DEFAULT
 from blohg.utils import create_repo
 
 
@@ -30,8 +31,7 @@ class ViewsTestCase(unittest.TestCase):
         self.repo = hg.repository(self.ui, self.repo_path)
         commands.commit(self.ui, self.repo, message='foo', user='foo',
                         addremove=True)
-        self.app = create_app(self.repo_path, self.ui)
-        self.app.config['CHANGECTX'] = 'default'
+        self.app = create_app(self.repo_path, self.ui, REVISION_DEFAULT)
 
     def tearDown(self):
         try:

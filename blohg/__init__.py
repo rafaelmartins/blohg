@@ -12,11 +12,12 @@
 import os
 import yaml
 from flask import Flask, render_template, request
+from flask.ctx import _app_ctx_stack
 from flask.ext.babel import Babel
 from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
-from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.hg import HgRepository, REVISION_DEFAULT
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
@@ -26,19 +27,18 @@ from blohg.views import views
 
 class Blohg(object):
 
-    def __init__(self, app, ui=None):
+    def __init__(self, app, ui=None, revision_id=None):
         self.app = app
+        self.revision_id = revision_id
         self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
         self.changectx = None
         self.content = []
+        self.reload()
+        self.load_extensions(self.app.config['EXTENSIONS'])
         app.blohg = self
 
     def _load_config(self):
         config = yaml.load(self.changectx.get_filectx('config.yaml').content)
-
-        # revision can't be defined by the config.yaml file. filter it.
-        if 'CHANGECTX' in config:
-            del config['CHANGECTX']
 
         # monkey-patch configs when running from built-in server
         if 'RUNNING_FROM_CLI' in os.environ:
@@ -49,15 +49,6 @@ class Blohg(object):
         self.app.config.update(config)
 
     def reload(self):
-        # the state comes from the Flask configuration, but NOT from the yaml
-        # file in the repository.
-        revision_name = self.app.config['CHANGECTX'].lower()
-        if revision_name == 'default':
-            self.revision_id = REVISION_DEFAULT
-        elif revision_name == 'working_dir':
-            self.revision_id = REVISION_WORKING_DIR
-        else:
-            raise RuntimeError('Invalid revision: %s' % revision_name)
 
         # if called from the initrepo script command the repository will not
         # exists, then it shouldn't be loaded
@@ -78,8 +69,17 @@ class Blohg(object):
         self.content = Blog(self.changectx, content_dir, post_ext,
                             rst_header_level)
 
+    def load_extensions(self, extensions):
+        with self.app.app_context():
+            for ext in extensions:
+                __import__('blohg_%s' % ext)
+            ctx = _app_ctx_stack.top
+            if hasattr(ctx, 'extension_registry'):
+                for ext in ctx.extension_registry:
+                    ext._load_extension(self.app)
 
-def create_app(repo_path=None, ui=None):
+
+def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -105,11 +105,11 @@ def create_app(repo_path=None, ui=None):
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
     app.config.setdefault('RST_HEADER_LEVEL', 3)
-    app.config.setdefault('CHANGECTX', 'default')
+    app.config.setdefault('EXTENSIONS', [])
 
     app.config['REPO_PATH'] = repo_path
 
-    Blohg(app, ui)
+    Blohg(app, ui, revision_id)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader

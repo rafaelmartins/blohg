@@ -18,6 +18,7 @@ from warnings import filterwarnings
 from werkzeug.routing import Map
 
 from blohg import create_app
+from blohg.hg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.utils import create_repo
 
 # filter MissingURLGeneratorWarning warnings.
@@ -26,19 +27,8 @@ filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 class Server(_Server):
 
-    def get_options(self):
-        options = _Server.get_options(self)
-        options += (Option('--no-working-dir', '-n', dest='working_dir',
-                           default=True, action='store_false'),)
-        return options
-
     def handle(self, app, *args, **kwargs):
         os.environ['RUNNING_FROM_CLI'] = '1'
-        app.config['CHANGECTX'] = 'working_dir'
-        if 'working_dir' in kwargs:
-            app.config['CHANGECTX'] = kwargs['working_dir'] and 'working_dir' \
-                or 'default'
-            del kwargs['working_dir']
         _Server.handle(self, app, *args, **kwargs)
 
 
@@ -109,7 +99,7 @@ class Freeze(Command):
         app.root_path = app.config.get('REPO_PATH')
 
         # should use the 'default revision' changectx
-        app.config['CHANGECTX'] = 'default'
+        app.blohg.revision_id = REVISION_DEFAULT
 
         freezer = Freezer(app)
 
@@ -143,7 +133,13 @@ def create_script():
 
     script = Manager(create_app, with_default_commands=False)
     script.add_option('-r', '--repo-path', dest='repo_path',
-                      default=os.getcwd(), required=False)
+                      default=os.getcwd(), required=False,
+                      help='Repository path')
+    script.add_option('-n', '--revision-default', action='store_const',
+                      dest='revision_id', const=REVISION_DEFAULT,
+                      default=REVISION_WORKING_DIR,
+                      help='use files from the default branch, instead of the '
+                      'working directory')
     server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
     script.add_command('runserver', server)

@@ -21,6 +21,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
+from blohg.hg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.utils import create_repo
 
 
@@ -31,7 +32,6 @@ class AppTestCase(unittest.TestCase):
         self.ui = ui.ui()
         self.ui.setconfig('ui', 'quiet', True)
         create_repo(self.repo_path, self.ui)
-        self.app = create_app(self.repo_path, self.ui)
         self.repo = hg.repository(self.ui, self.repo_path)
 
     def tearDown(self):
@@ -41,18 +41,19 @@ class AppTestCase(unittest.TestCase):
             pass
 
     def test_setup_app(self):
-        self.assertTrue(hasattr(self.app, 'blohg'))
-        self.assertTrue(isinstance(self.app.jinja_loader, ChoiceLoader),
+        app = create_app(self.repo_path, self.ui)
+        self.assertTrue(hasattr(app, 'blohg'))
+        self.assertTrue(isinstance(app.jinja_loader, ChoiceLoader),
                         'Invalid Jinja2 loader.')
 
     def test_reload_changectx_default(self):
-        self.app.config['CHANGECTX'] = 'default'
+        app = create_app(self.repo_path, self.ui, REVISION_DEFAULT)
         commands.add(self.ui, self.repo)
         commands.forget(self.ui, self.repo,
                         os.path.join(self.repo_path,
-                                     self.app.config['CONTENT_DIR']))
+                                     app.config['CONTENT_DIR']))
         commands.commit(self.ui, self.repo, message='foo', user='foo')
-        client = self.app.test_client()
+        client = app.test_client()
         rv = client.get('/')
         self.assertFalse('post/lorem-ipsum' in rv.data)
         self.assertFalse('post/example-post' in rv.data)
@@ -65,7 +66,7 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue('post/lorem-ipsum' in rv.data)
         self.assertTrue('post/example-post' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
-                                      self.app.config['CONTENT_DIR'],
+                                      app.config['CONTENT_DIR'],
                                       'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS A TEST!\n')
@@ -75,7 +76,7 @@ class AppTestCase(unittest.TestCase):
         rv = client.get('/about/')
         self.assertTrue('THIS IS A TEST!' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
-                                      self.app.config['CONTENT_DIR'],
+                                      app.config['CONTENT_DIR'],
                                       'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS another TEST!\n')
@@ -88,8 +89,8 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue('THIS IS another TEST!' in rv.data)
 
     def test_reload_changectx_working_dir(self):
-        self.app.config['CHANGECTX'] = 'working_dir'
-        client = self.app.test_client()
+        app = create_app(self.repo_path, self.ui, REVISION_WORKING_DIR)
+        client = app.test_client()
         rv = client.get('/')
         self.assertTrue('post/lorem-ipsum' in rv.data)
         self.assertTrue('post/example-post' in rv.data)
@@ -102,8 +103,7 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue('post/lorem-ipsum' in rv.data)
         self.assertTrue('post/example-post' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
-                                      self.app.config['CONTENT_DIR'],
-                                      'about.rst'),
+                                      app.config['CONTENT_DIR'], 'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS A TEST!\n')
         rv = client.get('/about/')
@@ -112,8 +112,7 @@ class AppTestCase(unittest.TestCase):
         rv = client.get('/about/')
         self.assertTrue('THIS IS A TEST!' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
-                                      self.app.config['CONTENT_DIR'],
-                                      'about.rst'),
+                                      app.config['CONTENT_DIR'], 'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS another TEST!\n')
         rv = client.get('/about/')
