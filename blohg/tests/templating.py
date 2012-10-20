@@ -38,7 +38,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             pass
 
     def test_up2date_changectx_default(self):
-        app = create_app(self.repo_path, self.ui, REVISION_DEFAULT)
+        app = create_app(repo_path=self.repo_path, ui=self.ui,
+                         revision_id=REVISION_DEFAULT)
         with app.test_request_context():
             app.preprocess_request()
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
@@ -77,7 +78,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertTrue(up2date())
 
     def test_up2date_changectx_working_dir(self):
-        app = create_app(self.repo_path, self.ui, REVISION_WORKING_DIR)
+        app = create_app(repo_path=self.repo_path, ui=self.ui,
+                         revision_id=REVISION_WORKING_DIR)
         with app.test_request_context():
             app.preprocess_request()
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
@@ -103,7 +105,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertFalse(up2date())
 
     def test_list_templates(self):
-        app = create_app(self.repo_path, self.ui, REVISION_WORKING_DIR)
+        app = create_app(repo_path=self.repo_path, ui=self.ui,
+                         revision_id=REVISION_WORKING_DIR)
         default_templates_dir = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), '..', 'templates')
         templates_dir = os.path.join(self.repo_path,
