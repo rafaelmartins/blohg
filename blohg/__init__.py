@@ -27,15 +27,17 @@ from blohg.views import views
 
 class Blohg(object):
 
-    def __init__(self, app, ui=None, revision_id=None):
+    def __init__(self, app, ui=None):
         self.app = app
-        self.revision_id = revision_id
         self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
         self.changectx = None
         self.content = []
+        app.blohg = self
+
+    def init_repo(self, revision_id):
+        self.revision_id = revision_id
         self.reload()
         self.load_extensions(self.app.config['EXTENSIONS'])
-        app.blohg = self
 
     def _load_config(self):
         config = yaml.load(self.changectx.get_filectx('config.yaml').content)
@@ -79,7 +81,8 @@ class Blohg(object):
                     ext._load_extension(self.app)
 
 
-def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT):
+def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
+               autoinit=True):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -109,7 +112,7 @@ def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT):
 
     app.config['REPO_PATH'] = repo_path
 
-    Blohg(app, ui, revision_id)
+    blohg = Blohg(app, ui)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader
@@ -147,5 +150,8 @@ def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT):
         return render_template('404.html'), 404
 
     app.register_blueprint(views)
+
+    if autoinit:
+        blohg.init_repo(revision_id)
 
     return app

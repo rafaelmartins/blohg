@@ -17,7 +17,7 @@ from flask_frozen import Freezer, MissingURLGeneratorWarning
 from warnings import filterwarnings
 from werkzeug.routing import Map
 
-from blohg import create_app
+from blohg import create_app as _create_app
 from blohg.hg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.utils import create_repo
 
@@ -25,10 +25,25 @@ from blohg.utils import create_repo
 filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 
+def create_app(*args, **kwargs):
+    kwargs['autoinit'] = False
+    return _create_app(*args, **kwargs)
+
+
 class Server(_Server):
+
+    def get_options(self):
+        options = _Server.get_options(self)
+        options += (Option('-n', '--revision-default', action='store_const',
+                           dest='revision_id', const=REVISION_DEFAULT,
+                           default=REVISION_WORKING_DIR,
+                           help='use files from the default branch, instead '
+                           'of the working directory'),)
+        return options
 
     def handle(self, app, *args, **kwargs):
         os.environ['RUNNING_FROM_CLI'] = '1'
+        app.blohg.init_repo(kwargs.pop('revision_id'))
         _Server.handle(self, app, *args, **kwargs)
 
 
@@ -36,6 +51,7 @@ class InitRepo(Command):
     """initialize a blohg repo, using the default template."""
 
     def handle(self, app):
+        app.blohg.init_repo(REVISION_DEFAULT)
         try:
             create_repo(app.config['REPO_PATH'])
         except RuntimeError, err:
@@ -91,15 +107,13 @@ class Freeze(Command):
         return Map(rules)
 
     def handle(self, app, serve, no_index):
+        app.blohg.init_repo(REVISION_DEFAULT)
 
         app.url_map = self.remap_rules(app.url_map, no_index)
 
         # That's a risky one, it woud be better to give a parameter to the
         # freezer
         app.root_path = app.config.get('REPO_PATH')
-
-        # should use the 'default revision' changectx
-        app.blohg.revision_id = REVISION_DEFAULT
 
         freezer = Freezer(app)
 
@@ -135,11 +149,6 @@ def create_script():
     script.add_option('-r', '--repo-path', dest='repo_path',
                       default=os.getcwd(), required=False,
                       help='Repository path')
-    script.add_option('-n', '--revision-default', action='store_const',
-                      dest='revision_id', const=REVISION_DEFAULT,
-                      default=REVISION_WORKING_DIR,
-                      help='use files from the default branch, instead of the '
-                      'working directory')
     server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
     script.add_command('runserver', server)
