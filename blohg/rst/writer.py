@@ -9,6 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from docutils import nodes
 from docutils.writers.html4css1 import HTMLTranslator, Writer
 
 import re
@@ -83,3 +84,7 @@ class BlohgHTMLTranslator(HTMLTranslator):
         # http://ogp.me/#array
         self.images.append(node['uri'])
         HTMLTranslator.visit_image(self, node)
+
+    def visit_opengraph_image(self, node):
+        self.images.append(node['uri'])
+        raise nodes.SkipNode
