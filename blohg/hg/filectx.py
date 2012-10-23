@@ -80,11 +80,3 @@ class FileCtx(object):
             except:
                 pass
         return author
-
-    @locked_cached_property
-    def last_revision(self):
-        filelog = self._ctx.filelog()
-        changesets = list(filelog)
-        if len(changesets) >= 1:
-            return filelog.linkrev(len(changesets) - 1)
-        return 0

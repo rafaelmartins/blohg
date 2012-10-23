@@ -44,6 +44,9 @@ class ChangeCtxBase(object):
     def needs_reload(self):
         raise NotImplementedError
 
+    def filectx_needs_reload(self, filectx):
+        raise NotImplementedError
+
     def get_filectx(self, path):
         return FileCtx(self._repo, self._ctx, path)
 
@@ -72,6 +75,14 @@ class ChangeCtxDefault(ChangeCtxBase):
         revision = repo[revision_id]
         return revision.rev() > self.revno
 
+    def filectx_needs_reload(self, filectx):
+        filelog = filectx._ctx.filelog()
+        changesets = list(filelog)
+        new_filectx = self.get_filectx(filectx._path)
+        new_filelog = new_filectx._ctx.filelog()
+        new_changesets = list(new_filelog)
+        return len(changesets) != len(new_changesets)
+
 
 class ChangeCtxWorkingDir(ChangeCtxBase):
     """Class with the specific implementation details for the change context
@@ -90,4 +101,7 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
         didn't provides any reliable way to evaluate its "freshness". Always
         reload.
         """
+        return True
+
+    def filectx_needs_reload(self, filectx):
         return True

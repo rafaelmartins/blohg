@@ -32,10 +32,8 @@ class BlohgLoader(BaseLoader):
             def up2date():
                 if self.app.blohg.changectx is None:
                     return False
-                needs_reload = self.app.blohg.changectx.needs_reload()
-                if needs_reload:  # if a reload is required, let's do it!
-                    self.app.blohg.reload()
-                return not needs_reload
+                return not \
+                       self.app.blohg.changectx.filectx_needs_reload(filectx)
 
             return filectx.content, os.path.join(templates_dir, *pieces), \
                    up2date

@@ -62,12 +62,15 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertEqual(filename,
                              os.path.join(app.config['TEMPLATES_DIR'],
                                           'test.html'))
+            app.preprocess_request()
             self.assertTrue(up2date())
             with codecs.open(new_file, 'a', encoding='utf-8') as fp:
                 fp.write('bar')
+            app.preprocess_request()
             self.assertTrue(up2date())
             commands.commit(self.ui, self.repo, message='foo', user='foo',
                             addremove=True)
+            app.preprocess_request()
             self.assertFalse(up2date())
             contents, filename, up2date = app.jinja_loader.get_source(
                 app.jinja_env, 'test.html')
@@ -75,6 +78,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertEqual(filename,
                               os.path.join(app.config['TEMPLATES_DIR'],
                                            'test.html'))
+            app.preprocess_request()
             self.assertTrue(up2date())
 
     def test_up2date_changectx_working_dir(self):
@@ -96,12 +100,14 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertEqual(filename,
                               os.path.join(app.config['TEMPLATES_DIR'],
                                            'test.html'))
+            app.preprocess_request()
             self.assertFalse(up2date())
             commands.commit(self.ui, self.repo, message='foo', user='foo',
                             addremove=True)
             contents, filename, up2date = app.jinja_loader.get_source(
                 app.jinja_env, 'test.html')
             self.assertEqual('foo', contents)
+            app.preprocess_request()
             self.assertFalse(up2date())
 
     def test_list_templates(self):

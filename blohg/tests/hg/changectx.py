@@ -108,6 +108,40 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # shouldn't need a reload again
         self.assertFalse(ctx.needs_reload())
 
+    def test_filectx_needs_reload(self):
+
+        # add a file to repo
+        with codecs.open(os.path.join(self.repo_path, 'a.rst'), 'w',
+                         encoding='utf-8') as fp:
+            fp.write('testing\n')
+
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
+
+        ctx = self.get_ctx()
+        filectx = ctx.get_filectx('a.rst')
+
+        self.assertFalse(ctx.filectx_needs_reload(filectx))
+
+        with codecs.open(os.path.join(self.repo_path, 'a.rst'), 'a',
+                         encoding='utf-8') as fp:
+            fp.write('lol\n')
+
+        # should still be false
+        self.assertFalse(ctx.filectx_needs_reload(filectx))
+
+        commands.commit(self.ui, self.repo, message='foo', user='foo')
+
+        # should need a reload now, after the commit
+        self.assertTrue(ctx.filectx_needs_reload(filectx))
+
+        # reload
+        ctx = self.get_ctx()
+        filectx = ctx.get_filectx('a.rst')
+
+        # shouldn't need a reload again
+        self.assertFalse(ctx.filectx_needs_reload(filectx))
+
 
 class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
 
@@ -162,3 +196,35 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
 
         # should still need a reload, right after the reload
         self.assertTrue(ctx.needs_reload())
+
+    def test_filectx_needs_reload(self):
+
+        # add a file to repo
+        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
+                         encoding='utf-8') as fp:
+            fp.write('testing\n')
+
+        ctx = self.get_ctx()
+        filectx = ctx.get_filectx('a.rst')
+
+        self.assertTrue(ctx.filectx_needs_reload(filectx))
+
+        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
+                         encoding='utf-8') as fp:
+            fp.write('testing\n')
+
+        # should always be true
+        self.assertTrue(ctx.filectx_needs_reload(filectx))
+
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
+
+        # should need a reload now, after the commit
+        self.assertTrue(ctx.filectx_needs_reload(filectx))
+
+        # reload
+        ctx = self.get_ctx()
+        filectx = ctx.get_filectx('a.rst')
+
+        # should still need a reload, right after the reload
+        self.assertTrue(ctx.filectx_needs_reload(filectx))
