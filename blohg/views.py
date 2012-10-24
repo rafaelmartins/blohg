@@ -89,10 +89,12 @@ def home(page=None):
     num_pages = int(math.ceil(float(len(pages)) / ppp))
     init = int((current - 1) * ppp)
     end = int(current * ppp)
+    url_gen = lambda x: url_for('views.home', page=x)
     return render_template('_posts.html', posts=pages[init:end],
                            full_content=False,
                            pagination={'num_pages': num_pages,
-                                       'current': page})
+                                       'current': page,
+                                       'url_gen': url_gen})
 
 
 @views.route('/posts/')
@@ -116,17 +118,30 @@ def post_list():
 
 
 @views.route('/tag/<path:tag>/')
-def tag(tag):
+@views.route('/tag/<path:tag>/<int:page>/')
+def tag(tag, page=None):
     """Page that lists the abstract of all available posts for the given
-    tag.
+    tag. It uses pagination, like the home.
     """
     tags = tag.split('/')
     for _tag in tags:
         if _tag not in current_app.blohg.content.tags:
             abort(404)
-    posts = current_app.blohg.content.get_by_tag(tags)
+    if page is None:
+        page = 1
+    current = int(page)
+    pages = current_app.blohg.content.get_by_tag(tags)
+    ppp = int(current_app.config['POSTS_PER_PAGE'])
+    num_pages = int(math.ceil(float(len(pages)) / ppp))
+    init = int((current - 1) * ppp)
+    end = int(current * ppp)
+    url_gen = lambda x: url_for('views.tag', tag=tag, page=x)
     return render_template('_posts.html', title=u'Tag: %s' % ' + '.join(tags),
-                           tag=tags, posts=posts, full_content=False)
+                           tag=tags, posts=pages[init:end],
+                           full_content=False,
+                           pagination={'num_pages': num_pages,
+                                       'current': page,
+                                       'url_gen': url_gen})
 
 
 @views.route('/source/')  # just to make robots.txt's url_for happy :)

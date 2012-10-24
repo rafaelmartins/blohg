@@ -89,20 +89,21 @@
 
 {%- block pagination %}
 {%- if pagination %}
+
 <div class="pagination">
     {%- if pagination.current != 1 %}
-    <a href="{{ url_for('views.home', page=1) }}">&lt;&lt;</a>
+    <a href="{{ pagination.url_gen(1) }}">&lt;&lt;</a>
     {%- else %}
     &lt;&lt;
     {%- endif %} |
     {%- if pagination.current > 1 %}
-    <a href="{{ url_for('views.home', page=pagination.current-1) }}">&lt;</a>
+    <a href="{{ pagination.url_gen(pagination.current-1) }}">&lt;</a>
     {%- else %}
     &lt;
     {%- endif %} |
     {%- for i in range(1, pagination.num_pages + 1) %}
     {%- if pagination.current != i %}
-    <a href="{{ url_for('views.home', page=i) }}">
+    <a href="{{ pagination.url_gen(i) }}">
         {{ i }}
     </a> |
     {%- else %}
@@ -110,12 +111,12 @@
     {%- endif %}
     {%- endfor %}
     {%- if pagination.current < pagination.num_pages %}
-    <a href="{{ url_for('views.home', page=pagination.current+1) }}">&gt;</a>
+    <a href="{{ pagination.url_gen(pagination.current+1) }}">&gt;</a>
     {%- else %}
     &gt;
     {%- endif %} |
     {%- if pagination.current != pagination.num_pages %}
-    <a href="{{ url_for('views.home', page=pagination.num_pages) }}">&gt;&gt;</a>
+    <a href="{{ pagination.url_gen(pagination.num_pages) }}">&gt;&gt;</a>
     {%- else %}
     &gt;&gt;
     {%- endif %}
