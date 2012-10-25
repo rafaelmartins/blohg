@@ -48,7 +48,7 @@ class ChangeCtxBase(object):
     def filectx_needs_reload(self, filectx):
         raise NotImplementedError
 
-    def published(self, obj):
+    def published(self, date, now):
         raise NotImplementedError
 
     def get_filectx(self, path):
@@ -87,8 +87,8 @@ class ChangeCtxDefault(ChangeCtxBase):
         new_changesets = list(new_filelog)
         return len(changesets) != len(new_changesets)
 
-    def published(self, obj):
-        return obj.date < time()
+    def published(self, date, now):
+        return date <= now
 
 
 class ChangeCtxWorkingDir(ChangeCtxBase):
@@ -113,5 +113,5 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
     def filectx_needs_reload(self, filectx):
         return True
 
-    def published(self, obj):
+    def published(self, date, now):
         return True

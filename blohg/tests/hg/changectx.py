@@ -16,6 +16,7 @@ import unittest
 from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
+from time import sleep, time
 
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
 
@@ -142,6 +143,13 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # shouldn't need a reload again
         self.assertFalse(ctx.filectx_needs_reload(filectx))
 
+    def test_published(self):
+        ctx = self.get_ctx()
+        date = int(time() + 1)
+        self.assertFalse(ctx.published(date, time()))
+        sleep(1)
+        self.assertTrue(ctx.published(date, time()))
+
 
 class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
 
@@ -228,3 +236,10 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
 
         # should still need a reload, right after the reload
         self.assertTrue(ctx.filectx_needs_reload(filectx))
+
+    def test_published(self):
+        ctx = self.get_ctx()
+        date = int(time() + 1)
+        self.assertTrue(ctx.published(date, time()))
+        sleep(1)
+        self.assertTrue(ctx.published(date, time()))

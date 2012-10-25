@@ -13,6 +13,7 @@ import re
 
 from datetime import datetime
 from flask.helpers import locked_cached_property
+from time import time
 from jinja2 import Markup
 
 from blohg.rst import parser
@@ -232,8 +233,9 @@ class Blog(object):
 
     @property
     def published(self):
+        now = int(time())
         for obj in self._all:
-            if self._changectx.published(obj):
+            if self._changectx.published(obj.date, now):
                 yield obj
 
     def get(self, slug):

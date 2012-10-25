@@ -290,10 +290,10 @@ class BlogTestCase(unittest.TestCase):
         file_path = os.path.join(file_dir, 'scheduled.rst')
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(SAMPLE_POST + """
-.. date: """ + str(int(time.time()) + 3))
+.. date: """ + str(int(time.time()) + 2))
         commands.commit(self.ui, self.repo, file_path, user='foo',
                         message='foo', addremove=True)
         model = self.get_model()
         self.assertEqual(model.get('post/scheduled'), None)
-        time.sleep(3)
+        time.sleep(2)
         self.assertEqual(model.get('post/scheduled').slug, 'post/scheduled')
