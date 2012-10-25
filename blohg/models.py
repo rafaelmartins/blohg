@@ -14,6 +14,7 @@ import re
 from datetime import datetime
 from flask.helpers import locked_cached_property
 from jinja2 import Markup
+from time import time
 
 from blohg.rst import parser
 from blohg.utils import parse_date
@@ -198,7 +199,7 @@ class Post(Page):
         return [i.strip() for i in self._vars['tags'].split(',')]
 
 
-class Blog(list):
+class Blog(object):
     """A blog is a list of posts and pages."""
 
     def __init__(self, changectx, content_dir, post_ext, rst_header_level):
@@ -208,7 +209,7 @@ class Blog(list):
         self._rst_header_level = rst_header_level
         re_content = re.compile(r'^' + self._content_dir + r'[\\/](post)?.+' \
                                 + '\\' + self._post_ext + '$')
-        list.__init__(self)
+        self._all = []
         self.tags = set()  # it will be a list at the end of this method.
         self.aliases = {}
         for fname in self._changectx.files:
@@ -220,7 +221,7 @@ class Blog(list):
                           self._rst_header_level)
                 for code, alias in obj.aliases:
                     self.aliases[alias] = (code, obj.slug)
-                self.append(obj)
+                self._all.append(obj)
                 if hasattr(obj, 'tags'):
                     self.tags = self.tags.union(set(obj.tags))
 
@@ -228,7 +229,13 @@ class Blog(list):
         self.tags = sorted(self.tags)
 
         # sort self, reverse by date
-        self.sort(lambda a, b: b.date - a.date)
+        self._all.sort(lambda a, b: b.date - a.date)
+
+    @property
+    def published(self):
+        for obj in self._all:
+            if obj.date < time():
+                yield obj
 
     def get(self, slug):
         """Method that returns a :class:`Page` or a :class:`Post` object for
@@ -237,7 +244,7 @@ class Blog(list):
         :param slug: the slug string.
         :return: a :class:`Page` or a :class:`Post`
         """
-        for entry in self:
+        for entry in self.published:
             if entry.slug == slug:
                 return entry
 
@@ -251,8 +258,8 @@ class Blog(list):
         :return: a list of :class:`Page` or :class:`Post` objects.
         """
         if only_posts:
-            return [i for i in self if isinstance(i, Post)]
-        return list(self)
+            return [i for i in self.published if isinstance(i, Post)]
+        return list(self.published)
 
     def get_by_tag(self, tag):
         """Method that returns a list of :class:`Post` objects for a
@@ -264,7 +271,7 @@ class Blog(list):
         if not isinstance(tag, list):
             tag = [tag]
         rv = []
-        for obj in self:
+        for obj in self.published:
             if not hasattr(obj, 'tags'):
                 continue
             found = True

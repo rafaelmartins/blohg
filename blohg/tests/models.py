@@ -234,8 +234,10 @@ class BlogTestCase(unittest.TestCase):
 .. tags: foo, bar, lol""")
         commands.add(self.ui, self.repo, file_path)
         commands.commit(self.ui, self.repo, message='foo', user='foo')
+
+    def get_model(self):
         ctx = ChangeCtxDefault(self.repo, self.ui)
-        self.model = Blog(ctx, 'content', '.rst', 3)
+        return Blog(ctx, 'content', '.rst', 3)
 
     def tearDown(self):
         try:
@@ -244,38 +246,54 @@ class BlogTestCase(unittest.TestCase):
             pass
 
     def test_tags(self):
-        self.assertEqual(sorted(self.model.tags),
+        self.assertEqual(sorted(self.get_model().tags),
                          sorted(['bar', 'foo', 'hehe', 'lol', 'xd']))
 
     def test_aliases(self):
-        self.assertEqual(self.model.aliases,
+        self.assertEqual(self.get_model().aliases,
                          {'/my-old-post-location/': (301, u'about'),
                           '/another-old-location/': (302, u'about')})
 
     def test_get(self):
-        self.assertEqual(self.model.get('about').slug, 'about')
+        self.assertEqual(self.get_model().get('about').slug, 'about')
 
     def test_get_all(self):
-        self.assertEqual(sorted([i.slug for i in self.model.get_all()]),
+        self.assertEqual(sorted([i.slug for i in self.get_model().get_all()]),
                          sorted(['page-%i' % i for i in range(3)] + \
                                 ['post/post-%i' % i for i in range(3)] + \
                                 ['about', 'post/foo']))
 
     def test_get_all_only_posts(self):
-        self.assertEqual(sorted([i.slug for i in self.model.get_all(True)]),
+        self.assertEqual(sorted([i.slug for i in \
+                                 self.get_model().get_all(True)]),
                          sorted(['post/post-%i' % i for i in range(3)] + \
                                 ['post/foo']))
 
     def test_get_by_tag(self):
-        self.assertEqual(sorted([i.slug for i in \
-                                 self.model.get_by_tag('lol')]),
+        model = self.get_model()
+        self.assertEqual(sorted([i.slug for i in model.get_by_tag('lol')]),
                          sorted(['post/post-%i' % i for i in range(3)] + \
                                 ['post/foo']))
         self.assertEqual(sorted([i.slug for i in \
-                                 self.model.get_by_tag('foo')]), ['post/foo'])
+                                 model.get_by_tag('foo')]), ['post/foo'])
 
     def test_self(self):
-        self.assertEqual(sorted([i.slug for i in self.model]),
+        self.assertEqual(sorted([i.slug for i in self.get_model().published]),
                          sorted(['page-%i' % i for i in range(3)] + \
                                 ['post/post-%i' % i for i in range(3)] + \
                                 ['about', 'post/foo']))
+
+    def test_scheduled(self):
+        file_dir = os.path.join(self.repo_path, 'content', 'post')
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+        file_path = os.path.join(file_dir, 'scheduled.rst')
+        with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+            fp.write(SAMPLE_POST + """
+.. date: """ + str(int(time.time()) + 3))
+        commands.commit(self.ui, self.repo, file_path, user='foo',
+                        message='foo', addremove=True)
+        model = self.get_model()
+        self.assertEqual(model.get('post/scheduled'), None)
+        time.sleep(3)
+        self.assertEqual(model.get('post/scheduled').slug, 'post/scheduled')
