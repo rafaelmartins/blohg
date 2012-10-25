@@ -14,7 +14,6 @@ import re
 from datetime import datetime
 from flask.helpers import locked_cached_property
 from jinja2 import Markup
-from time import time
 
 from blohg.rst import parser
 from blohg.utils import parse_date
@@ -233,9 +232,8 @@ class Blog(object):
 
     @property
     def published(self):
-        now = time()
         for obj in self._all:
-            if obj.date < now:
+            if self._changectx.published(obj):
                 yield obj
 
     def get(self, slug):

@@ -10,6 +10,7 @@
 """
 
 from flask.helpers import locked_cached_property
+from time import time
 from mercurial import hg
 
 from blohg.hg.filectx import FileCtx
@@ -45,6 +46,9 @@ class ChangeCtxBase(object):
         raise NotImplementedError
 
     def filectx_needs_reload(self, filectx):
+        raise NotImplementedError
+
+    def published(self, obj):
         raise NotImplementedError
 
     def get_filectx(self, path):
@@ -83,6 +87,9 @@ class ChangeCtxDefault(ChangeCtxBase):
         new_changesets = list(new_filelog)
         return len(changesets) != len(new_changesets)
 
+    def published(self, obj):
+        return obj.date < time()
+
 
 class ChangeCtxWorkingDir(ChangeCtxBase):
     """Class with the specific implementation details for the change context
@@ -104,4 +111,7 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
         return True
 
     def filectx_needs_reload(self, filectx):
+        return True
+
+    def published(self, obj):
         return True
