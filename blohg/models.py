@@ -233,8 +233,9 @@ class Blog(object):
 
     @property
     def published(self):
+        now = time()
         for obj in self._all:
-            if obj.date < time():
+            if obj.date < now:
                 yield obj
 
     def get(self, slug):
