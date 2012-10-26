@@ -17,4 +17,7 @@ os.environ['HGENCODING'] = 'utf-8'
 #site.addsitedir('/path/to/your/virtualenv/lib/pythonX.Y/site-packages')
 
 from blohg import create_app
-application = create_app('/path/to/your/repo')
+application = create_app('/path/to/your/repo',
+    ## Uncomment the line below to enable embedded extensions
+    #embedded_extensions=True
+)
