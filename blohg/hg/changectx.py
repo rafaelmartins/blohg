@@ -10,7 +10,6 @@
 """
 
 from flask.helpers import locked_cached_property
-from time import time
 from mercurial import hg
 
 from blohg.hg.filectx import FileCtx
