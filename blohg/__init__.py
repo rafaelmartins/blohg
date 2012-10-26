@@ -28,7 +28,7 @@ from blohg.views import views
 
 class Blohg(object):
 
-    def __init__(self, app, ui=None, embedded_extensions=True):
+    def __init__(self, app, ui=None, embedded_extensions=False):
         self.app = app
         self.embedded_extensions = embedded_extensions
         self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
@@ -87,7 +87,7 @@ class Blohg(object):
 
 
 def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
-               autoinit=True, embedded_extensions=True):
+               autoinit=True, embedded_extensions=False):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
