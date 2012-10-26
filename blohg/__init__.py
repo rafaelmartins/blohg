@@ -17,6 +17,7 @@ from flask.ext.babel import Babel
 from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
+from blohg.ext import ExtensionImporter
 from blohg.hg import HgRepository, REVISION_DEFAULT
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
@@ -27,8 +28,9 @@ from blohg.views import views
 
 class Blohg(object):
 
-    def __init__(self, app, ui=None):
+    def __init__(self, app, ui=None, embedded_extensions=True):
         self.app = app
+        self.embedded_extensions = embedded_extensions
         self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
         self.changectx = None
         self.content = []
@@ -37,7 +39,7 @@ class Blohg(object):
     def init_repo(self, revision_id):
         self.revision_id = revision_id
         self.reload()
-        self.load_extensions(self.app.config['EXTENSIONS'])
+        self.load_extensions()
 
     def _load_config(self):
         config = yaml.load(self.changectx.get_filectx('config.yaml').content)
@@ -64,16 +66,19 @@ class Blohg(object):
         self._load_config()
 
         # build a regular expression for search posts/pages.
-        content_dir = self.app.config.get('CONTENT_DIR', 'content')
-        post_ext = self.app.config.get('POST_EXT', '.rst')
+        content_dir = self.app.config['CONTENT_DIR']
+        post_ext = self.app.config['POST_EXT']
         rst_header_level = self.app.config['RST_HEADER_LEVEL']
 
         self.content = Blog(self.changectx, content_dir, post_ext,
                             rst_header_level)
 
-    def load_extensions(self, extensions):
+    def load_extensions(self):
+        if self.embedded_extensions:
+            ExtensionImporter.new(self.changectx,
+                                  self.app.config['EXTENSIONS_DIR'])
         with self.app.app_context():
-            for ext in extensions:
+            for ext in self.app.config['EXTENSIONS']:
                 __import__('blohg_%s' % ext)
             ctx = _app_ctx_stack.top
             if hasattr(ctx, 'extension_registry'):
@@ -82,7 +87,7 @@ class Blohg(object):
 
 
 def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
-               autoinit=True):
+               autoinit=True, embedded_extensions=True):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -109,10 +114,11 @@ def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
     app.config.setdefault('TIMEZONE', 'UTC')
     app.config.setdefault('RST_HEADER_LEVEL', 3)
     app.config.setdefault('EXTENSIONS', [])
+    app.config.setdefault('EXTENSIONS_DIR', 'ext')
 
     app.config['REPO_PATH'] = repo_path
 
-    blohg = Blohg(app, ui)
+    blohg = Blohg(app, ui, embedded_extensions)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader

@@ -10,6 +10,10 @@
 """
 
 from flask.ctx import _RequestGlobals, _app_ctx_stack
+from imp import new_module
+
+import posixpath
+import sys
 
 
 class BlohgExtension(object):
@@ -48,3 +52,77 @@ class BlohgExtension(object):
         for callback in self._callbacks:
             if callable(callback):
                 callback(app)
+
+
+class ExtensionImporter(object):
+    """Loader and Finder to import Python plugins from the Mercurial
+    repository. Mostly based on:
+    https://github.com/mitsuhiko/flask/blob/master/flask/exthook.py
+
+    See PEP 302 for details.
+    """
+
+    def __init__(self, changectx, ext_dir):
+        self.changectx = changectx
+        self.ext_dir = ext_dir
+
+    def __eq__(self, other):
+        return self.__class__.__module__ == other.__class__.__module__ and \
+               self.__class__.__name__ == other.__class__.__name__
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    @classmethod
+    def new(cls, *args, **kwargs):
+        obj = cls(*args, **kwargs)
+        sys.meta_path[:] = [x for x in sys.meta_path if obj != x] + [obj]
+        return obj
+
+    def module_file(self, fullname):
+        fullname = fullname.replace('.', posixpath.sep)
+        for path in [posixpath.join(self.ext_dir, fullname + i) \
+                     for i in [posixpath.sep + '__init__.py', '.py']]:
+            if path in self.changectx.files:
+                return path
+
+    def find_module(self, fullname, path=None):
+        if not fullname.startswith('blohg_'):  # ...starting with blohg_
+            return
+        if self.module_file(fullname) is not None:
+            return self
+
+    def load_module(self, fullname):
+        mod = sys.modules.setdefault(fullname, new_module(fullname))
+        mod.__file__ = self.get_filename(fullname)
+        mod.__loader__ = self
+        if self.is_package(fullname):
+            mod.__path__ = [mod.__file__.rsplit(posixpath.sep, 1)[0]]
+            mod.__package__ = fullname
+        else:
+            mod.__package__ = fullname.rpartition('.')[0]
+        exec(self.get_code(fullname), mod.__dict__)
+        return mod
+
+    def get_fctx(self, fullname):
+        filename = self.module_file(fullname)
+        if filename is None:
+            raise ImportError('Module not found: %s' % fullname)
+        return self.changectx.get_filectx(filename)
+
+    def is_package(self, fullname):
+        filename = self.get_filename(fullname)
+        return filename.endswith(posixpath.sep + '__init__.py')
+
+    def get_code(self, fullname):
+        return compile(self.get_source(fullname), self.get_filename(fullname),
+                       'exec')
+
+    def get_source(self, fullname):
+        return self.get_fctx(fullname).data
+
+    def get_filename(self, fullname):
+        filename = self.module_file(fullname)
+        if filename is None:
+            raise ImportError('Module not found: %s' % fullname)
+        return 'repo:%s' % filename

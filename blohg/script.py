@@ -44,6 +44,29 @@ class Server(_Server):
     def handle(self, app, *args, **kwargs):
         os.environ['RUNNING_FROM_CLI'] = '1'
         app.blohg.init_repo(kwargs.pop('revision_id'))
+
+        # find extension files
+        def _listfiles(directory, files):
+            if not os.path.exists(directory):
+                return
+            for f in os.listdir(directory):
+                fname = os.path.join(directory, f)
+                if os.path.isdir(fname):
+                    _listfiles(fname, files)
+                else:
+                    files.append(os.path.abspath(fname))
+
+        extra_files = []
+        _listfiles(os.path.join(app.config['REPO_PATH'],
+                                app.config['EXTENSIONS_DIR']), extra_files)
+
+        if 'extra_files' in self.server_options \
+           and self.server_options['extra_files'] is not None:
+            self.server_options['extra_files'] = \
+                list(self.server_options['extra_files']) + extra_files
+        else:
+            self.server_options['extra_files'] = extra_files
+
         _Server.handle(self, app, *args, **kwargs)
 
 
@@ -149,6 +172,10 @@ def create_script():
     script.add_option('-r', '--repo-path', dest='repo_path',
                       default=os.getcwd(), required=False,
                       help='Repository path')
+    script.add_option('-e', '--disable-embedded-extensions',
+                      action='store_false', dest='embedded_extensions',
+                      default=True, help='disable the loading of extensions '
+                      'from the mercurial repository')
     server = Server(use_debugger=True, use_reloader=True)
     server.description = 'runs the blohg local server.'
     script.add_command('runserver', server)
