@@ -10,7 +10,6 @@
 """
 
 import os
-import sys
 import yaml
 from flask import Flask, render_template, request
 from flask.ctx import _app_ctx_stack
@@ -40,6 +39,7 @@ class Blohg(object):
     def init_repo(self, revision_id):
         self.revision_id = revision_id
         self.reload()
+        self.load_extensions()
 
     def _load_config(self):
         config = yaml.load(self.changectx.get_filectx('config.yaml').content)
@@ -73,19 +73,13 @@ class Blohg(object):
         self.content = Blog(self.changectx, content_dir, post_ext,
                             rst_header_level)
 
-        self.load_extensions()
-
     def load_extensions(self):
         if self.embedded_extensions:
             ExtensionImporter.new(self.changectx,
                                   self.app.config['EXTENSIONS_DIR'])
         with self.app.app_context():
             for ext in self.app.config['EXTENSIONS']:
-                fullext = 'blohg_%s' % ext
-                if fullext in sys.modules:
-                    reload(sys.modules[fullext])
-                else:
-                    __import__(fullext)
+                __import__('blohg_%s' % ext)
             ctx = _app_ctx_stack.top
             if hasattr(ctx, 'extension_registry'):
                 for ext in ctx.extension_registry:
