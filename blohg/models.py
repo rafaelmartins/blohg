@@ -211,6 +211,7 @@ class Blog(object):
                                 + '\\' + self._post_ext + '$')
         self._all = []
         self.tags = set()  # it will be a list at the end of this method.
+        self.archives = set()  # it will be a list at the end of this method.
         self.aliases = {}
         for fname in self._changectx.files:
             rv = re_content.match(fname)
@@ -224,9 +225,13 @@ class Blog(object):
                 self._all.append(obj)
                 if hasattr(obj, 'tags'):
                     self.tags = self.tags.union(set(obj.tags))
+                    self.archives.add((obj.datetime.year, obj.datetime.month))
 
         # sort tags by "name" and convert them back to a list
         self.tags = sorted(self.tags)
+
+        # sort archives, reverse by year/month
+        self.archives = sorted(self.archives, reverse=True)
 
         # sort self, reverse by date
         self._all.sort(lambda a, b: b.date - a.date)
@@ -280,5 +285,21 @@ class Blog(object):
                 if _tag not in obj.tags:
                     found = False
             if found:
+                rv.append(obj)
+        return rv
+
+    def get_from_archive(self, year, month):
+        """Method that returns a list of :class:`Post` objects for a
+        given year and month.
+
+        :param year: the required year.
+        :param month: the required month.
+        :return: a list of :class:`Post` objects.
+        """
+        if (year, month) not in self.archives:
+            return []
+        rv = []
+        for obj in self.published:
+            if obj.datetime.year == year and obj.datetime.month == month:
                 rv.append(obj)
         return rv

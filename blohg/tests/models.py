@@ -277,6 +277,30 @@ class BlogTestCase(unittest.TestCase):
         self.assertEqual(sorted([i.slug for i in \
                                  model.get_by_tag('foo')]), ['post/foo'])
 
+    def test_get_from_archive(self):
+        file_dir = os.path.join(self.repo_path, 'content', 'post')
+        if not os.path.isdir(file_dir):
+            os.makedirs(file_dir)
+        for i in range(1, 4):
+            file_path = os.path.join(file_dir, 'archive-%i.rst' % i)
+            with codecs.open(file_path, 'w', encoding='utf-8') as fp:
+                fp.write(SAMPLE_POST + """
+.. date: 2010-%02i-01 12:00:00""" % i)
+        commands.commit(self.ui, self.repo, user='foo', message='foo',
+                        addremove=True)
+        model = self.get_model()
+        now = datetime.now()
+        self.assertEqual(model.archives, [(now.year, now.month), (2010, 3),
+                                          (2010, 2), (2010, 1)])
+        jan_2010 = model.get_from_archive(2010, 1)
+        self.assertEqual(jan_2010[0].slug, 'post/archive-1')
+        feb_2010 = model.get_from_archive(2010, 2)
+        self.assertEqual(feb_2010[0].slug, 'post/archive-2')
+        mar_2010 = model.get_from_archive(2010, 3)
+        self.assertEqual(mar_2010[0].slug, 'post/archive-3')
+        apr_2010 = model.get_from_archive(2010, 4)
+        self.assertEqual(len(apr_2010), 0)
+
     def test_self(self):
         self.assertEqual(sorted([i.slug for i in self.get_model().published]),
                          sorted(['page-%i' % i for i in range(3)] + \
