@@ -41,19 +41,19 @@ class AppTestCase(unittest.TestCase):
             pass
 
     def test_setup_app(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui)
+        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
         self.assertTrue(hasattr(app, 'blohg'))
         self.assertTrue(isinstance(app.jinja_loader, ChoiceLoader),
                         'Invalid Jinja2 loader.')
 
     def test_reload_changectx_default(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui,
-                         revision_id=REVISION_DEFAULT)
+        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
         commands.add(self.ui, self.repo)
         commands.forget(self.ui, self.repo,
                         os.path.join(self.repo_path,
                                      app.config['CONTENT_DIR']))
         commands.commit(self.ui, self.repo, message='foo', user='foo')
+        app.blohg.init_repo(REVISION_DEFAULT)
         client = app.test_client()
         rv = client.get('/')
         self.assertFalse('post/lorem-ipsum' in rv.data)

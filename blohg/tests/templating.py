@@ -38,8 +38,13 @@ class BlohgLoaderTestCase(unittest.TestCase):
             pass
 
     def test_up2date_changectx_default(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui,
-                         revision_id=REVISION_DEFAULT)
+        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
+        new_file = os.path.join(self.repo_path, 'foo')
+        with codecs.open(new_file, 'w', encoding='utf-8') as fp:
+            fp.write('foo')
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
+        app.blohg.init_repo(REVISION_DEFAULT)
         with app.test_request_context():
             app.preprocess_request()
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,

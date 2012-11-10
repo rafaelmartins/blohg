@@ -9,8 +9,10 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import codecs
+import os
 import unittest
-from mercurial import commands, ui
+from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
@@ -25,6 +27,7 @@ class HgRepositoryTestCase(unittest.TestCase):
         self.ui = ui.ui()
         self.ui.setconfig('ui', 'quiet', True)
         commands.init(self.ui, self.repo_path)
+        self.repo = hg.repository(self.ui, self.repo_path)
 
     def tearDown(self):
         try:
@@ -34,6 +37,11 @@ class HgRepositoryTestCase(unittest.TestCase):
 
     def test_get_changectx_rev_default(self):
         hg_repo = HgRepository(self.repo_path, self.ui)
+        with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',
+                         encoding='utf-8') as fp:
+            fp.write('foo')
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
         self.assertTrue(isinstance(hg_repo.get_changectx(REVISION_DEFAULT),
                                    ChangeCtxDefault),
                         'changectx object is not an instance of '

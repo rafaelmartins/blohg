@@ -60,6 +60,11 @@ class ChangeCtxDefault(ChangeCtxBase):
     implementation from the class :class:`ChangeCtxBase`.
     """
 
+    def __init__(self, repo, ui):
+        ChangeCtxBase.__init__(self, repo, ui)
+        if self.revno is None:
+            raise RuntimeError('No commits found in the repository!')
+
     @property
     def revision_id(self):
         try:
