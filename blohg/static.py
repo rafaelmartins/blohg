@@ -11,7 +11,6 @@
 
 from flask import request, abort
 from time import time
-from zlib import adler32
 
 import posixpath
 import mimetypes
@@ -42,7 +41,5 @@ class BlohgStaticFile(object):
         cache_timeout = 60 * 60 * 12
         rv.cache_control.max_age = cache_timeout
         rv.expires = int(time() + cache_timeout)
-        rv.set_etag('blohg-%s-%s-%s' % (filectx.mdate or filectx.date,
-                                        len(filectx.data), adler32(filename)
-                                        & 0xffffffff))
+        rv.set_etag(self.app.blohg.changectx.etag(filectx))
         return rv.make_conditional(request)

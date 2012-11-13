@@ -9,8 +9,10 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import time
 from flask.helpers import locked_cached_property
 from mercurial import hg
+from zlib import adler32
 
 from blohg.hg.filectx import FileCtx
 
@@ -94,6 +96,11 @@ class ChangeCtxDefault(ChangeCtxBase):
     def published(self, date, now):
         return date <= now
 
+    def etag(self, filectx):
+        return 'blohg-%i-%i-%s' % (filectx.mdate or filectx.date,
+                                   len(filectx.data), adler32(filectx.path)
+                                   & 0xffffffff)
+
 
 class ChangeCtxWorkingDir(ChangeCtxBase):
     """Class with the specific implementation details for the change context
@@ -119,3 +126,7 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
 
     def published(self, date, now):
         return True
+
+    def etag(self, filectx):
+        return 'blohg-%i-%i-%s' % (time.time(), len(filectx.data),
+                                   adler32(filectx.path)& 0xffffffff)
