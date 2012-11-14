@@ -33,10 +33,10 @@ class BlohgStaticFile(object):
             mimetype = 'application/octet-stream'
         try:
             filectx = self.app.blohg.changectx.get_filectx(filename)
+            rv = self.app.response_class(filectx.data, mimetype=mimetype,
+                                         direct_passthrough=True)
         except Exception:
             abort(404)
-        rv = self.app.response_class(filectx.data, mimetype=mimetype,
-                                     direct_passthrough=True)
         rv.cache_control.public = True
         cache_timeout = 60 * 60 * 12
         rv.cache_control.max_age = cache_timeout
