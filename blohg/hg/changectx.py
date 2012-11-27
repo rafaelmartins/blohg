@@ -104,8 +104,8 @@ class ChangeCtxDefault(ChangeCtxBase):
 
 class ChangeCtxWorkingDir(ChangeCtxBase):
     """Class with the specific implementation details for the change context
-    of the working dir revision state of the repository. It inherits the common
-    implementation from the class :class:`ChangeCtxBase`.
+    of the working dir of the repository. It inherits the common implementation
+    from the class :class:`ChangeCtxBase`.
     """
 
     revision_id = None
