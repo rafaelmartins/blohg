@@ -45,7 +45,10 @@ def atom(tag=None):
                     feed_url=url_for('views.atom', tag=tag, _external=True),
                     author=current_app.config['AUTHOR'],
                     generator=('blohg', None, None))
-    for post in posts[:int(current_app.config['POSTS_PER_PAGE'])]:
+    posts_per_atom_feed = \
+        current_app.config.get('POSTS_PER_ATOM_FEED',
+                               current_app.config.get('POSTS_PER_PAGE'))
+    for post in posts[:int(posts_per_atom_feed)]:
         feed.add(FeedEntry(title=post.title, content=post.full_raw_html,
                            summary=post.abstract_raw_html,
                            id=url_for('views.content', slug=post.slug),
