@@ -166,7 +166,7 @@ class SourceCode(Directive):
 
     ::
 
-        $ pygmentyze -S friendly -f html > static/pygments.css
+        $ pygmentize -S friendly -f html > static/pygments.css
 
     Where ``friendly`` will be your Pygments style of choice.
 
