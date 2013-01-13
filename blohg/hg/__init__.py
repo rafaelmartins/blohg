@@ -16,8 +16,6 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from mercurial import hg
-
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
 
 REVISION_WORKING_DIR = 1
