@@ -10,7 +10,7 @@
 """
 
 from docutils import nodes, statemachine
-from docutils.error_reporting import ErrorString
+from docutils.utils.error_reporting import ErrorString
 from docutils.io import FileInput
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
