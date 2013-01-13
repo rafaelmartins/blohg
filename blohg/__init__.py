@@ -28,10 +28,10 @@ from blohg.views import views
 
 class Blohg(object):
 
-    def __init__(self, app, ui=None, embedded_extensions=False):
+    def __init__(self, app, embedded_extensions=False):
         self.app = app
         self.embedded_extensions = embedded_extensions
-        self.repo = HgRepository(self.app.config['REPO_PATH'], ui)
+        self.repo = HgRepository(self.app.config['REPO_PATH'])
         self.changectx = None
         self.content = []
         app.blohg = self
@@ -86,7 +86,7 @@ class Blohg(object):
                     ext._load_extension(self.app)
 
 
-def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
+def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
                autoinit=True, embedded_extensions=False):
     """Application factory.
 
@@ -118,7 +118,7 @@ def create_app(repo_path=None, ui=None, revision_id=REVISION_DEFAULT,
 
     app.config['REPO_PATH'] = repo_path
 
-    blohg = Blohg(app, ui, embedded_extensions)
+    blohg = Blohg(app, embedded_extensions)
 
     # setup our jinja2 custom loader and static file handlers
     old_loader = app.jinja_loader

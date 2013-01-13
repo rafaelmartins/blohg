@@ -38,7 +38,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             pass
 
     def test_up2date_changectx_default(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
+        app = create_app(repo_path=self.repo_path, autoinit=False)
         new_file = os.path.join(self.repo_path, 'foo')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
@@ -87,7 +87,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertTrue(up2date())
 
     def test_up2date_changectx_working_dir(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui,
+        app = create_app(repo_path=self.repo_path,
                          revision_id=REVISION_WORKING_DIR)
         with app.test_request_context():
             app.preprocess_request()
@@ -116,7 +116,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertFalse(up2date())
 
     def test_list_templates(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui,
+        app = create_app(repo_path=self.repo_path,
                          revision_id=REVISION_WORKING_DIR)
         default_templates_dir = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), '..', 'templates')

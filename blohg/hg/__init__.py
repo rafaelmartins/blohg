@@ -16,7 +16,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-from mercurial import hg, ui as _ui
+from mercurial import hg
 
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
 
@@ -29,9 +29,8 @@ class HgRepository(object):
     access to everything needed by blohg from the low-level API.
     """
 
-    def __init__(self, path, ui=None):
+    def __init__(self, path):
         self.path = path
-        self._ui = ui or _ui.ui()
 
     def get_changectx(self, revision=REVISION_DEFAULT):
         """Method that returns a change context for a given Revision state.
@@ -51,9 +50,8 @@ class HgRepository(object):
         repository state object will be used later by the parsers to generate
         content suitable for publishing.
         """
-        repo = hg.repository(self._ui, self.path)
         if revision == REVISION_DEFAULT:
-            return ChangeCtxDefault(repo, self._ui)
+            return ChangeCtxDefault(self.path)
         elif revision == REVISION_WORKING_DIR:
-            return ChangeCtxWorkingDir(repo, self._ui)
+            return ChangeCtxWorkingDir(self.path)
         raise RuntimeError('Invalid repository revision: %r' % revision)

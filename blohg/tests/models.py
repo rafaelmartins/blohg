@@ -236,7 +236,7 @@ class BlogTestCase(unittest.TestCase):
         commands.commit(self.ui, self.repo, message='foo', user='foo')
 
     def get_model(self):
-        ctx = ChangeCtxDefault(self.repo, self.ui)
+        ctx = ChangeCtxDefault(self.repo_path)
         return Blog(ctx, 'content', '.rst', 3)
 
     def tearDown(self):

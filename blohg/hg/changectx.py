@@ -11,7 +11,7 @@
 
 import time
 from flask.helpers import locked_cached_property
-from mercurial import hg
+from mercurial import hg, ui
 from zlib import adler32
 
 from blohg.hg.filectx import FileCtx
@@ -20,9 +20,10 @@ from blohg.hg.filectx import FileCtx
 class ChangeCtxBase(object):
     """Base class that represents a change context."""
 
-    def __init__(self, repo, ui):
-        self._repo = repo
-        self._ui = ui
+    def __init__(self, repo_path):
+        self._repo_path = repo_path
+        self._ui = ui.ui()
+        self._repo = hg.repository(self._ui, self._repo_path)
         self._ctx = self._repo[self.revision_id]
         self.revno = self._ctx.rev()
 
@@ -62,8 +63,8 @@ class ChangeCtxDefault(ChangeCtxBase):
     implementation from the class :class:`ChangeCtxBase`.
     """
 
-    def __init__(self, repo, ui):
-        ChangeCtxBase.__init__(self, repo, ui)
+    def __init__(self, repo_path):
+        ChangeCtxBase.__init__(self, repo_path)
         if self.revno is None:
             raise RuntimeError('No commits found in the repository!')
 
@@ -77,7 +78,7 @@ class ChangeCtxDefault(ChangeCtxBase):
     def needs_reload(self):
         if self.revno is None:
             return True
-        repo = hg.repository(self._ui, self._repo.root)
+        repo = hg.repository(self._ui, self._repo_path)
         try:
             revision_id = repo.branchtags()['default']
         except Exception:

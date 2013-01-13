@@ -52,7 +52,7 @@ class ChangeCtxBaseTestCase(unittest.TestCase):
         raise NotImplementedError
 
     def get_ctx(self):
-        return self.ctx_class(self.repo, self.ui)
+        return self.ctx_class(self.repo_path)
 
 
 class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):

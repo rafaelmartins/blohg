@@ -36,7 +36,7 @@ class HgRepositoryTestCase(unittest.TestCase):
             pass
 
     def test_get_changectx_rev_default(self):
-        hg_repo = HgRepository(self.repo_path, self.ui)
+        hg_repo = HgRepository(self.repo_path)
         with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('foo')
@@ -48,7 +48,7 @@ class HgRepositoryTestCase(unittest.TestCase):
                         'ChangeCtxDefault')
 
     def test_get_changectx_rev_working_dir(self):
-        hg_repo = HgRepository(self.repo_path, self.ui)
+        hg_repo = HgRepository(self.repo_path)
         self.assertTrue(isinstance(hg_repo.get_changectx(REVISION_WORKING_DIR),
                                    ChangeCtxWorkingDir),
                         'changectx object is not an instance of '

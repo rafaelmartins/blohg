@@ -31,7 +31,7 @@ class ViewsTestCase(unittest.TestCase):
         self.repo = hg.repository(self.ui, self.repo_path)
         commands.commit(self.ui, self.repo, message='foo', user='foo',
                         addremove=True)
-        self.app = create_app(repo_path=self.repo_path, ui=self.ui,
+        self.app = create_app(repo_path=self.repo_path,
                               revision_id=REVISION_DEFAULT)
 
     def tearDown(self):

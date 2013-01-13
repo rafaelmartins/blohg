@@ -41,13 +41,13 @@ class AppTestCase(unittest.TestCase):
             pass
 
     def test_setup_app(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
+        app = create_app(repo_path=self.repo_path, autoinit=False)
         self.assertTrue(hasattr(app, 'blohg'))
         self.assertTrue(isinstance(app.jinja_loader, ChoiceLoader),
                         'Invalid Jinja2 loader.')
 
     def test_reload_changectx_default(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui, autoinit=False)
+        app = create_app(repo_path=self.repo_path, autoinit=False)
         commands.add(self.ui, self.repo)
         commands.forget(self.ui, self.repo,
                         os.path.join(self.repo_path,
@@ -90,7 +90,7 @@ class AppTestCase(unittest.TestCase):
         self.assertTrue('THIS IS another TEST!' in rv.data)
 
     def test_reload_changectx_working_dir(self):
-        app = create_app(repo_path=self.repo_path, ui=self.ui,
+        app = create_app(repo_path=self.repo_path,
                          revision_id=REVISION_WORKING_DIR)
         client = app.test_client()
         rv = client.get('/')
