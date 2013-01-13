@@ -80,7 +80,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'docutils>=0.8',
+        'docutils==0.10',
         'Flask>=0.8',
         'Flask-Babel>=0.7',
         'Flask-Script>=0.3',
