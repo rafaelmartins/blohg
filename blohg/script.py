@@ -18,8 +18,7 @@ from warnings import filterwarnings
 from werkzeug.routing import Map
 
 from blohg import create_app as _create_app
-from blohg.hg import REVISION_DEFAULT, REVISION_WORKING_DIR
-from blohg.utils import create_repo
+from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 # filter MissingURLGeneratorWarning warnings.
 filterwarnings('ignore', category=MissingURLGeneratorWarning)
@@ -76,7 +75,7 @@ class InitRepo(Command):
     def handle(self, app):
         app.blohg.init_repo(REVISION_DEFAULT)
         try:
-            create_repo(app.config['REPO_PATH'])
+            HgRepository.create_repo(app.config['REPO_PATH'])
         except RuntimeError, err:
             print >> sys.stderr, str(err)
 

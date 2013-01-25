@@ -17,8 +17,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
-from blohg.hg import REVISION_DEFAULT
-from blohg.utils import create_repo
+from blohg.hg import HgRepository, REVISION_DEFAULT
 
 
 class ViewsTestCase(unittest.TestCase):
@@ -27,7 +26,7 @@ class ViewsTestCase(unittest.TestCase):
         self.repo_path = mkdtemp()
         self.ui = ui.ui()
         self.ui.setconfig('ui', 'quiet', True)
-        create_repo(self.repo_path, self.ui)
+        HgRepository.create_repo(self.repo_path)
         self.repo = hg.repository(self.ui, self.repo_path)
         commands.commit(self.ui, self.repo, message='foo', user='foo',
                         addremove=True)

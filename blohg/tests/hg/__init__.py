@@ -35,6 +35,24 @@ class HgRepositoryTestCase(unittest.TestCase):
         except:
             pass
 
+    def test_create_repo(self):
+        repo_path = mkdtemp()
+        try:
+            HgRepository.create_repo(repo_path)
+            for f in [os.path.join('content', 'attachments', 'mercurial.png'),
+                      os.path.join('content', 'post', 'example-post.rst'),
+                      os.path.join('content', 'post', 'lorem-ipsum.rst'),
+                      os.path.join('content', 'about.rst'),
+                      os.path.join('static', 'screen.css'),
+                      os.path.join('templates', 'base.html'),
+                      os.path.join('templates', 'posts.html'),
+                      os.path.join('templates', 'post_list.html'),
+                      'config.yaml', '.hgignore', '.hg']:
+                self.assertTrue(os.path.exists(os.path.join(repo_path, f)),
+                                'Not found: %s' % f)
+        finally:
+            rmtree(repo_path)    
+
     def test_get_changectx_rev_default(self):
         hg_repo = HgRepository(self.repo_path)
         with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',

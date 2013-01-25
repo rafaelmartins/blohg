@@ -21,8 +21,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
-from blohg.hg import REVISION_DEFAULT, REVISION_WORKING_DIR
-from blohg.utils import create_repo
+from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
 class AppTestCase(unittest.TestCase):
@@ -31,7 +30,7 @@ class AppTestCase(unittest.TestCase):
         self.repo_path = mkdtemp()
         self.ui = ui.ui()
         self.ui.setconfig('ui', 'quiet', True)
-        create_repo(self.repo_path, self.ui)
+        HgRepository.create_repo(self.repo_path)
         self.repo = hg.repository(self.ui, self.repo_path)
 
     def tearDown(self):
