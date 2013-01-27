@@ -21,10 +21,11 @@ from pygit2 import init_repository
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, create_app, load_repo
+from blohg import create_app, load_repo
 from blohg.git import GitRepository
 from blohg.git.changectx import ChangeCtxDefault
 from blohg.hg import HgRepository
+from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
 class AppTestCase(unittest.TestCase):

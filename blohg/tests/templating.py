@@ -17,8 +17,9 @@ from mercurial import commands, ui, hg
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, create_app
+from blohg import create_app
 from blohg.hg import HgRepository
+from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
 class BlohgLoaderTestCase(unittest.TestCase):

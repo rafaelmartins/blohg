@@ -16,9 +16,8 @@ import shutil
 
 from pygit2 import init_repository
 from pkg_resources import resource_filename, resource_listdir
-from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.git.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
-from blohg.vcs import Repository
+from blohg.vcs import Repository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
 class GitRepository(Repository):

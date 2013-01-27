@@ -16,9 +16,6 @@ from flask.ctx import _app_ctx_stack
 from flask.ext.babel import Babel
 from jinja2.loaders import ChoiceLoader
 
-# declare these constants here to avoid circular dependencies
-REVISION_WORKING_DIR, REVISION_DEFAULT = 1, 2
-
 # import blohg stuff
 from blohg.ext import ExtensionImporter
 from blohg.git import GitRepository
@@ -27,6 +24,7 @@ from blohg.hg import HgRepository
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
+from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.version import version as __version__
 from blohg.views import views
 

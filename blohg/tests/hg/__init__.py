@@ -16,9 +16,9 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.hg import HgRepository
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
+from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
 class HgRepositoryTestCase(unittest.TestCase):

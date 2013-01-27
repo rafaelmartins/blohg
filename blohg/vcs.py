@@ -11,6 +11,8 @@
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 
+REVISION_WORKING_DIR, REVISION_DEFAULT = 1, 2
+
 
 class Repository:
 
