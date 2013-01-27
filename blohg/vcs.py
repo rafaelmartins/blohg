@@ -29,6 +29,10 @@ class Repository:
     def create_repo(repo_path):
         pass
 
+    @abstractmethod
+    def supported(repo_path):
+        pass
+
 
 class ChangeCtx:
 
@@ -94,3 +98,9 @@ class FileCtx:
     @abstractproperty
     def author(self):
         pass
+
+
+def load_repo(repo_path):
+    for backend in Repository.__subclasses__():
+        if backend.supported(repo_path):
+            return backend(repo_path)

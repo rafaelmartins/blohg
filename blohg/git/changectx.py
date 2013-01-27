@@ -90,7 +90,14 @@ class ChangeCtxWorkingDir(ChangeCtxDefault):
 
     @locked_cached_property
     def revision_id(self):
-        return self._repo.head.oid
+        if self._repo.workdir is None:
+            raise RuntimeError('Bare repositories should be deployed with '
+                               'REVISION_DEFAULT change context')
+        try:
+            return self._repo.head.oid
+        except Exception:
+            raise RuntimeError('HEAD reference not found! Please do your '
+                               'first commit.')
 
     @locked_cached_property
     def files(self):

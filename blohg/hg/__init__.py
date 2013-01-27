@@ -98,3 +98,9 @@ class HgRepository(Repository):
             commands.init(ui, repo_path)
         except error, err:
             raise RuntimeError('an error was occurred: %s' % err)
+
+    @staticmethod
+    def supported(repo_path):
+        if not os.path.isdir(repo_path):
+            return False
+        return '.hg' in os.listdir(repo_path)

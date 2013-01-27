@@ -24,7 +24,7 @@ from blohg.hg import HgRepository
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
-from blohg.vcs import REVISION_DEFAULT
+from blohg.vcs import load_repo, REVISION_DEFAULT
 from blohg.version import version as __version__
 from blohg.views import views
 
@@ -90,34 +90,6 @@ class Blohg(object):
             if hasattr(ctx, 'extension_registry'):
                 for ext in ctx.extension_registry:
                     ext._load_extension(self.app)
-
-
-def load_repo(repo_path):
-    try:
-        repo_root_files = os.listdir(repo_path)
-    except:
-        repo_root_files = []
-
-    # try hg first, we are bloHG after all :)
-    if '.hg' in repo_root_files:
-        return HgRepository(repo_path)
-
-    # try git workdir
-    if '.git' in repo_root_files:
-        return GitRepository(repo_path)
-
-    # fallback to git bare repo, if available
-    for f in ['config', 'info', 'objects']:
-        if f not in repo_root_files:
-            return
-
-        # this is ugly, but we will force the default changectx here, because
-        # bare repositories don't have an usable index :P
-        class _GitRepository(GitRepository):
-            def get_changectx(self, revision):
-                return GitChangeCtxDefault(self.path)
-
-        return _GitRepository(repo_path)
 
 
 def create_app(repo_path=None, revision_id=REVISION_DEFAULT,

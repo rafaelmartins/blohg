@@ -89,3 +89,15 @@ class GitRepository(Repository):
             init_repository(repo_path, False)
         except Exception, err:
             raise RuntimeError('an error was occurred: %s' % err)
+
+    @staticmethod
+    def supported(repo_path):
+        if not os.path.isdir(repo_path):
+            return False
+        files = os.listdir(repo_path)
+        if '.git' in files:
+            return True
+        for git_file in ['config', 'info', 'objects']:
+            if git_file not in files:
+                return False
+        return True
