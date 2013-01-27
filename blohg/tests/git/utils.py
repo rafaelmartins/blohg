@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    blohg.tests.git.utils
+    ~~~~~~~~~~~~~~~~~~~~~
+
+    Module with the utilities for git support testing.
+
+    :copyright: (c) 2010-2013 by Rafael Goncalves Martins
+    :license: GPL-2, see LICENSE for more details.
+"""
+
 from pygit2 import Signature
 
 def git_commit(repo, tree, files, parents=[]):
