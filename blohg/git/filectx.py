@@ -13,8 +13,10 @@ import time
 from flask.helpers import locked_cached_property
 from pygit2 import GIT_OBJ_BLOB, GIT_SORT_REVERSE, GIT_SORT_TIME
 
+from blohg.vcs import FileCtx as _FileCtx
 
-class FileCtx(object):
+
+class FileCtx(_FileCtx):
     """Base class that represents a file context."""
 
     def __init__(self, repo, changectx, path, use_index=False):

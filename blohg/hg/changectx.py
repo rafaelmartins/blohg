@@ -15,9 +15,10 @@ from mercurial import hg, ui
 from zlib import adler32
 
 from blohg.hg.filectx import FileCtx
+from blohg.vcs import ChangeCtx
 
 
-class ChangeCtxBase(object):
+class ChangeCtxBase(ChangeCtx):
     """Base class that represents a change context."""
 
     def __init__(self, repo_path):

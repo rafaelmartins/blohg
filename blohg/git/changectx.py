@@ -15,9 +15,10 @@ from pygit2 import Repository, GIT_OBJ_BLOB, GIT_OBJ_TREE
 from zlib import adler32
 
 from blohg.git.filectx import FileCtx
+from blohg.vcs import ChangeCtx
 
 
-class ChangeCtxDefault(object):
+class ChangeCtxDefault(ChangeCtx):
     """Class with the specific implementation details for the change context
     of the default revision state of the repository. It inherits the common
     implementation from the class :class:`ChangeCtxBase`.

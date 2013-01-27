@@ -18,15 +18,13 @@ from pygit2 import init_repository
 from pkg_resources import resource_filename, resource_listdir
 from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.git.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
+from blohg.vcs import Repository
 
 
-class GitRepository(object):
+class GitRepository(Repository):
     """Main entrypoint for the Git API layer. This class offers abstract
     access to everything needed by blohg from the low-level API.
     """
-
-    def __init__(self, path):
-        self.path = path
 
     def get_changectx(self, revision=REVISION_DEFAULT):
         """Method that returns a change context for a given Revision state.
