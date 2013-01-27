@@ -42,6 +42,9 @@ class Blohg(object):
         app.blohg = self
 
     def init_repo(self, revision_id):
+        if not os.path.isdir(self.app.config['REPO_PATH']):
+            raise RuntimeError('Repository not found: %s' % \
+                               self.app.config['REPO_PATH'])
         self.revision_id = revision_id
         self.reload()
         self.load_extensions()
@@ -92,9 +95,10 @@ class Blohg(object):
 
 
 def load_repo(repo_path):
-    if not os.path.isdir(repo_path):
-        raise RuntimeError('Repository not found: %s' % repo_path)
-    repo_root_files = os.listdir(repo_path)
+    try:
+        repo_root_files = os.listdir(repo_path)
+    except:
+        repo_root_files = []
 
     # try hg first, we are bloHG after all :)
     if '.hg' in repo_root_files:

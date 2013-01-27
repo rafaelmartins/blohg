@@ -19,6 +19,7 @@ from werkzeug.routing import Map
 
 from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, \
      create_app as _create_app
+from blohg.git import GitRepository
 from blohg.hg import HgRepository
 
 # filter MissingURLGeneratorWarning warnings.
@@ -73,10 +74,14 @@ class Server(_Server):
 class InitRepo(Command):
     """initialize a blohg repo, using the default template."""
 
-    def handle(self, app):
-        app.blohg.init_repo(REVISION_DEFAULT)
+    def get_options(self):
+        return (Option('--git', action='store_true',
+                       dest='git', help='create a Git repository'),)
+
+    def handle(self, app, git):
+        repo = git and GitRepository or HgRepository
         try:
-            HgRepository.create_repo(app.config['REPO_PATH'])
+            repo.create_repo(app.config['REPO_PATH'])
         except RuntimeError, err:
             print >> sys.stderr, str(err)
 
