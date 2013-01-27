@@ -63,8 +63,11 @@ class ChangeCtxDefault(object):
         return self.revision_id != ref.oid
 
     def filectx_needs_reload(self, filectx):
-        new_filectx = self.get_filectx(filectx._path)
-        return filectx._changectx.oid != new_filectx._changectx.oid
+        try:
+            ref = self._repo.lookup_reference('refs/heads/master')
+        except Exception:
+            raise RuntimeError('Branch "master" not found!')
+        return filectx._changectx.oid != ref.oid
 
     def published(self, date, now):
         return date <= now

@@ -13,6 +13,10 @@ import unittest
 
 from blohg.tests.app import AppTestCase
 from blohg.tests.git import GitRepositoryTestCase
+from blohg.tests.git.changectx import ChangeCtxDefaultTestCase as \
+     GitChangeCtxDefaultTestCase, ChangeCtxWorkingDirTestCase as \
+     GitChangeCtxWorkingDirTestCase
+from blohg.tests.git.filectx import FileCtxTestCase as GitFileCtxTestCase
 from blohg.tests.hg import HgRepositoryTestCase
 from blohg.tests.hg.changectx import ChangeCtxDefaultTestCase, \
      ChangeCtxWorkingDirTestCase
@@ -27,6 +31,9 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(AppTestCase))
     suite.addTest(unittest.makeSuite(GitRepositoryTestCase))
+    suite.addTest(unittest.makeSuite(GitChangeCtxDefaultTestCase))
+    suite.addTest(unittest.makeSuite(GitChangeCtxWorkingDirTestCase))
+    suite.addTest(unittest.makeSuite(GitFileCtxTestCase))
     suite.addTest(unittest.makeSuite(HgRepositoryTestCase))
     suite.addTest(unittest.makeSuite(ChangeCtxDefaultTestCase))
     suite.addTest(unittest.makeSuite(ChangeCtxWorkingDirTestCase))

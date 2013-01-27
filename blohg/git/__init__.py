@@ -92,5 +92,5 @@ class GitRepository(object):
 
         try:
             init_repository(repo_path, False)
-        except error, err:
+        except Exception, err:
             raise RuntimeError('an error was occurred: %s' % err)

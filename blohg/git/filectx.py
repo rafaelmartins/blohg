@@ -10,7 +10,6 @@
 """
 
 import time
-from copy import copy
 from flask.helpers import locked_cached_property
 from pygit2 import GIT_OBJ_BLOB, GIT_SORT_REVERSE, GIT_SORT_TIME
 
@@ -45,14 +44,22 @@ class FileCtx(object):
 
     @locked_cached_property
     def _first_changeset(self):
-        for commit in self._repo.walk(self._changectx.oid, GIT_SORT_REVERSE):
+        try:
+            ref = self._repo.lookup_reference('refs/heads/master')
+        except Exception:
+            raise RuntimeError('Branch "master" not found!')
+        for commit in self._repo.walk(ref.oid, GIT_SORT_REVERSE):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit
 
     @locked_cached_property
     def _last_changeset(self):
-        for commit in self._repo.walk(self._changectx.oid, GIT_SORT_TIME):
+        try:
+            ref = self._repo.lookup_reference('refs/heads/master')
+        except Exception:
+            return
+        for commit in self._repo.walk(ref.oid, GIT_SORT_TIME):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit

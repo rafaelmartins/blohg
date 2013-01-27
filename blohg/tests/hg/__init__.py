@@ -51,7 +51,7 @@ class HgRepositoryTestCase(unittest.TestCase):
                 self.assertTrue(os.path.exists(os.path.join(repo_path, f)),
                                 'Not found: %s' % f)
         finally:
-            rmtree(repo_path)    
+            rmtree(repo_path)
 
     def test_get_changectx_rev_default(self):
         hg_repo = HgRepository(self.repo_path)
