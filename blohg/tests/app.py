@@ -17,10 +17,13 @@ import unittest
 
 from jinja2 import ChoiceLoader
 from mercurial import commands, hg, ui
+from pygit2 import init_repository
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, create_app
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, create_app, load_repo
+from blohg.git import GitRepository
+from blohg.git.changectx import ChangeCtxDefault
 from blohg.hg import HgRepository
 
 
@@ -121,3 +124,31 @@ class AppTestCase(unittest.TestCase):
         commands.commit(self.ui, self.repo, message='foo', user='foo')
         rv = client.get('/about/')
         self.assertTrue('THIS IS another TEST!' in rv.data)
+
+
+class RepoLoaderTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.repo_path = mkdtemp()
+
+    def tearDown(self):
+        try:
+            rmtree(self.repo_path)
+        except:
+            pass
+
+    def test_load_hg_repository(self):
+        HgRepository.create_repo(self.repo_path)
+        repo = load_repo(self.repo_path)
+        self.assertTrue(isinstance(repo, HgRepository))
+
+    def test_load_git_repository(self):
+        GitRepository.create_repo(self.repo_path)
+        repo = load_repo(self.repo_path)
+        self.assertTrue(isinstance(repo, GitRepository))
+
+    def test_load_git_bare_repository(self):
+        init_repository(self.repo_path, True)
+        repo = load_repo(self.repo_path)
+        self.assertTrue(isinstance(repo, GitRepository))
+        self.assertEqual(repo.__class__.__name__, '_GitRepository')
