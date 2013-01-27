@@ -16,9 +16,14 @@ from flask.ctx import _app_ctx_stack
 from flask.ext.babel import Babel
 from jinja2.loaders import ChoiceLoader
 
+# declare these constants here to avoid circular dependencies
+REVISION_WORKING_DIR, REVISION_DEFAULT = 1, 2
+
 # import blohg stuff
 from blohg.ext import ExtensionImporter
-from blohg.hg import HgRepository, REVISION_DEFAULT
+from blohg.git import GitRepository
+from blohg.git.changectx import ChangeCtxDefault as GitChangeCtxDefault
+from blohg.hg import HgRepository
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
@@ -31,7 +36,7 @@ class Blohg(object):
     def __init__(self, app, embedded_extensions=False):
         self.app = app
         self.embedded_extensions = embedded_extensions
-        self.repo = HgRepository(self.app.config['REPO_PATH'])
+        self.repo = load_repo(self.app.config['REPO_PATH'])
         self.changectx = None
         self.content = []
         app.blohg = self
@@ -56,7 +61,7 @@ class Blohg(object):
 
         # if called from the initrepo script command the repository will not
         # exists, then it shouldn't be loaded
-        if not os.path.exists(self.repo.path):
+        if not os.path.exists(self.app.config['REPO_PATH']):
             return
 
         if self.changectx is not None and not self.changectx.needs_reload():
@@ -84,6 +89,33 @@ class Blohg(object):
             if hasattr(ctx, 'extension_registry'):
                 for ext in ctx.extension_registry:
                     ext._load_extension(self.app)
+
+
+def load_repo(repo_path):
+    if not os.path.isdir(repo_path):
+        raise RuntimeError('Repository not found: %s' % repo_path)
+    repo_root_files = os.listdir(repo_path)
+
+    # try hg first, we are bloHG after all :)
+    if '.hg' in repo_root_files:
+        return HgRepository(repo_path)
+
+    # try git workdir
+    if '.git' in repo_root_files:
+        return GitRepository(repo_path)
+
+    # fallback to git bare repo, if available
+    for f in ['config', 'info', 'objects']:
+        if f not in repo_root_files:
+            return
+
+        # this is ugly, but we will force the default changectx here, because
+        # bare repositories don't have an usable index :P
+        class _GitRepository(GitRepository):
+            def get_changectx(self, revision):
+                return GitChangeCtxDefault(self.path)
+
+        return _GitRepository(repo_path)
 
 
 def create_app(repo_path=None, revision_id=REVISION_DEFAULT,

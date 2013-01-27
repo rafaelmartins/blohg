@@ -22,10 +22,8 @@ import shutil
 
 from mercurial import commands, error, ui as _ui
 from pkg_resources import resource_filename, resource_listdir
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
-
-REVISION_WORKING_DIR = 1
-REVISION_DEFAULT = 2
 
 
 class HgRepository(object):

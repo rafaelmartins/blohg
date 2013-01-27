@@ -20,8 +20,8 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import create_app
-from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, create_app
+from blohg.hg import HgRepository
 
 
 class AppTestCase(unittest.TestCase):

@@ -17,8 +17,9 @@ from flask_frozen import Freezer, MissingURLGeneratorWarning
 from warnings import filterwarnings
 from werkzeug.routing import Map
 
-from blohg import create_app as _create_app
-from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR, \
+     create_app as _create_app
+from blohg.hg import HgRepository
 
 # filter MissingURLGeneratorWarning warnings.
 filterwarnings('ignore', category=MissingURLGeneratorWarning)

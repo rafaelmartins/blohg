@@ -16,7 +16,8 @@ from pygit2 import init_repository, Repository, Signature
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.git import GitRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.git import GitRepository
 from blohg.git.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
 
 

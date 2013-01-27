@@ -16,7 +16,8 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.hg import HgRepository, REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg import REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.hg import HgRepository
 from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
 
 
