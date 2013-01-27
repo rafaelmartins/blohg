@@ -6,7 +6,7 @@
     Module with tests for blohg's flask application and the integration of the
     modules.
 
-    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2013 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 

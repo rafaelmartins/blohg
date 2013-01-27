@@ -12,7 +12,7 @@
         (http://mercurial.selenic.com/wiki/MercurialApi). This package needs to
         be well tested against new releases of Mercurial.
 
-    :copyright: (c) 2010-2012 by Rafael Goncalves Martins
+    :copyright: (c) 2010-2013 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
 """
 
