@@ -28,31 +28,14 @@ class ChangeCtxBase(ChangeCtx):
         self._ctx = self._repo[self.revision_id]
         self.revno = self._ctx.rev()
 
-    @property
-    def revision_id(self):
-        raise NotImplementedError
-
-    @property
-    def _extra_files(self):
-        raise NotImplementedError
-
     @locked_cached_property
     def files(self):
         files = set(self._ctx.manifest().keys())
         try:
             files = files.union(set(self._extra_files))
-        except NotImplementedError:
+        except:
             pass
         return sorted(files)
-
-    def needs_reload(self):
-        raise NotImplementedError
-
-    def filectx_needs_reload(self, filectx):
-        raise NotImplementedError
-
-    def published(self, date, now):
-        raise NotImplementedError
 
     def get_filectx(self, path):
         return FileCtx(self._repo, self._ctx, path)

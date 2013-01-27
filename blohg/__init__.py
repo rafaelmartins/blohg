@@ -24,7 +24,7 @@ from blohg.hg import HgRepository
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
-from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.vcs import REVISION_DEFAULT
 from blohg.version import version as __version__
 from blohg.views import views
 
