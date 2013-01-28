@@ -10,7 +10,6 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-
 import codecs
 import os
 import unittest
@@ -124,31 +123,3 @@ class AppTestCase(unittest.TestCase):
         commands.commit(self.ui, self.repo, message='foo', user='foo')
         rv = client.get('/about/')
         self.assertTrue('THIS IS another TEST!' in rv.data)
-
-
-class RepoLoaderTestCase(unittest.TestCase):
-
-    def setUp(self):
-        self.repo_path = mkdtemp()
-
-    def tearDown(self):
-        try:
-            rmtree(self.repo_path)
-        except:
-            pass
-
-    def test_load_hg_repository(self):
-        HgRepository.create_repo(self.repo_path)
-        repo = load_repo(self.repo_path)
-        self.assertTrue(isinstance(repo, HgRepository))
-
-    def test_load_git_repository(self):
-        GitRepository.create_repo(self.repo_path)
-        repo = load_repo(self.repo_path)
-        self.assertTrue(isinstance(repo, GitRepository))
-
-    def test_load_git_bare_repository(self):
-        init_repository(self.repo_path, True)
-        repo = load_repo(self.repo_path)
-        self.assertTrue(isinstance(repo, GitRepository))
-        self.assertEqual(repo.__class__.__name__, '_GitRepository')
