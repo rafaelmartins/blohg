@@ -289,7 +289,7 @@ class BlogTestCase(unittest.TestCase):
         commands.commit(self.ui, self.repo, user='foo', message='foo',
                         addremove=True)
         model = self.get_model()
-        now = datetime.now()
+        now = datetime.utcnow()
         self.assertEqual(model.archives, [(now.year, now.month), (2010, 3),
                                           (2010, 2), (2010, 1)])
         jan_2010 = model.get_from_archive(2010, 1)
