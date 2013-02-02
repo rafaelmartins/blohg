@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.hg.filectx
-    ~~~~~~~~~~~~~~~~
+    blohg.vcs_backends.hg.filectx
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Model with classes to represent Mercurial file context.
 

@@ -17,7 +17,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg import create_app
-from blohg.hg import HgRepository, REVISION_DEFAULT
+from blohg.vcs_backends.hg import HgRepository, REVISION_DEFAULT
 
 
 class ViewsTestCase(unittest.TestCase):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.git.changectx
-    ~~~~~~~~~~~~~~~~~~~
+    blohg.vcs_backends.git.changectx
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Model with classes to represent Git change context.
 
@@ -14,7 +14,7 @@ from flask.helpers import locked_cached_property
 from pygit2 import Repository, GIT_OBJ_BLOB, GIT_OBJ_TREE
 from zlib import adler32
 
-from blohg.git.filectx import FileCtx
+from blohg.vcs_backends.git.filectx import FileCtx
 from blohg.vcs import ChangeCtx
 
 

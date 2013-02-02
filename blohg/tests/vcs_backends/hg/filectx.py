@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.hg.filectx
+    blohg.tests.vcs_backends.hg.filectx
     ~~~~~~~~~~~~~~~~~~~~~~
 
     Module with tests for blohg integration with mercurial (file context).
@@ -17,7 +17,7 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.filectx import FileCtx
 
 
 class FileCtxTestCase(unittest.TestCase):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.hg.changectx
-    ~~~~~~~~~~~~~~~~~~
+    blohg.vcs_backends.hg.changectx
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Model with classes to represent Mercurial change context.
 
@@ -14,7 +14,7 @@ from flask.helpers import locked_cached_property
 from mercurial import hg, ui
 from zlib import adler32
 
-from blohg.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.filectx import FileCtx
 from blohg.vcs import ChangeCtx
 
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.git.utils
+    blohg.tests.vcs_backends.git.utils
     ~~~~~~~~~~~~~~~~~~~~~
 
     Module with the utilities for git support testing.

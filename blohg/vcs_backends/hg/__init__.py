@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.hg
-    ~~~~~~~~
+    blohg.vcs_backends.hg
+    ~~~~~~~~~~~~~~~~~~~~~
 
     Package with all the classes and functions needed to deal with Mercurial's
     low-level API.
@@ -22,7 +22,8 @@ import shutil
 
 from mercurial import commands, error, ui as _ui
 from pkg_resources import resource_filename, resource_listdir
-from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
+from blohg.vcs_backends.hg.changectx import ChangeCtxDefault, \
+     ChangeCtxWorkingDir
 from blohg.vcs import Repository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -30,6 +31,10 @@ class HgRepository(Repository):
     """Main entrypoint for the Mercurial API layer. This class offers abstract
     access to everything needed by blohg from the low-level API.
     """
+
+    identifier = 'hg'
+    name = 'Mercurial'
+    order = 0
 
     def get_changectx(self, revision=REVISION_DEFAULT):
         """Method that returns a change context for a given Revision state.
@@ -70,7 +75,8 @@ class HgRepository(Repository):
                 initialized = True
 
         if initialized:
-            raise RuntimeError('repository already initialized: %s' % repo_path)
+            raise RuntimeError('repository already initialized: %s' % \
+                               repo_path)
 
         if not os.path.exists(repo_path):
             os.makedirs(repo_path)
@@ -85,9 +91,9 @@ class HgRepository(Repository):
                 raise RuntimeError('unrecognized file: %s' % full_path)
 
         # create a .hgignore, to avoid people to acidentally push a build/ dir
-        # with stuff built with 'blohg freeze'. creating the file here because a
-        # .hgignore file in the repo may cause some weird behavior that we are not
-        # aware of.
+        # with stuff built with 'blohg freeze'. creating the file here because
+        # a .hgignore file in the repo may cause some weird behavior that we
+        # are not aware of.
         with codecs.open(os.path.join(repo_path, '.hgignore'), 'w',
                          encoding='utf-8') as fp:
             fp.write('^build/' + os.linesep)

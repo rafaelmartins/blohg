@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.git.changectx
-    ~~~~~~~~~~~~~~~~~~~~~~~~~
+    blohg.tests.vcs_backends.hg.changectx
+    ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Module with tests for blohg integration with git (change context).
+    Module with tests for blohg integration with mercurial (change context).
 
     :copyright: (c) 2010-2013 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
@@ -13,31 +13,34 @@ import codecs
 import os
 import unittest
 
-from pygit2 import init_repository, Repository, Signature
+from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 from time import sleep, time
 
-from blohg.git.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
-from blohg.tests.git.utils import git_commit
+from blohg.vcs_backends.hg.changectx import ChangeCtxDefault, \
+     ChangeCtxWorkingDir
 
 
 class ChangeCtxBaseTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
-        init_repository(self.repo_path, False)
-        self.repo = Repository(self.repo_path)
+        self.ui = ui.ui()
+        self.ui.setconfig('ui', 'quiet', True)
+        self.ui.setconfig('ui', 'username', 'foo')
+        commands.init(self.ui, self.repo_path)
 
-        # create files and commit
-        self.sign = Signature('foo', 'foo@example.com')
+        # create files
         self.repo_files = ['a%i.rst' % i for i in range(5)]
         for i in self.repo_files:
             with codecs.open(os.path.join(self.repo_path, i), 'w',
                              encoding='utf-8') as fp:
                 fp.write('dumb file %s\n' % i)
-        self.tree = self.repo.TreeBuilder()
-        self.old_commit = git_commit(self.repo, self.tree, self.repo_files)
+
+        self.repo = hg.repository(self.ui, self.repo_path)
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
     def tearDown(self):
         try:
@@ -74,7 +77,8 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         self.assertFalse(new_file in ctx.files, 'stable state is '
                          'listing uncommited file.')
 
-        git_commit(self.repo, self.tree, [new_file], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # after commit files
         ctx = self.get_ctx()
@@ -94,7 +98,8 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # should still be false
         self.assertFalse(ctx.needs_reload())
 
-        git_commit(self.repo, self.tree, ['a.rst'], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.needs_reload())
@@ -112,8 +117,8 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
-        self.old_commit = git_commit(self.repo, self.tree, ['a.rst'],
-                                     [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         ctx = self.get_ctx()
         filectx = ctx.get_filectx('a.rst')
@@ -127,7 +132,7 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # should still be false
         self.assertFalse(ctx.filectx_needs_reload(filectx))
 
-        git_commit(self.repo, self.tree, ['a.rst'], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo')
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.filectx_needs_reload(filectx))
@@ -159,8 +164,6 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         with codecs.open(os.path.join(self.repo_path, new_file), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
-        self.repo.index.add(new_file)
-        self.repo.index.write()
 
         # before commit files
         ctx = self.get_ctx()
@@ -170,7 +173,8 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         self.assertTrue(new_file in ctx.files, 'variable state is not '
                         'listing uncommited file.')
 
-        git_commit(self.repo, self.tree, [new_file], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # after commit files
         ctx = self.get_ctx()
@@ -183,14 +187,15 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         self.assertTrue(ctx.needs_reload())
 
         # add a file to repo
-        with codecs.open(os.path.join(self.repo_path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
         # should always be true
         self.assertTrue(ctx.needs_reload())
 
-        git_commit(self.repo, self.tree, ['a.rst'], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.needs_reload())
@@ -204,25 +209,24 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
     def test_filectx_needs_reload(self):
 
         # add a file to repo
-        with codecs.open(os.path.join(self.repo_path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
-        self.repo.index.add('a.rst')
-        self.repo.index.write()
 
         ctx = self.get_ctx()
         filectx = ctx.get_filectx('a.rst')
 
         self.assertTrue(ctx.filectx_needs_reload(filectx))
 
-        with codecs.open(os.path.join(self.repo_path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
         # should always be true
         self.assertTrue(ctx.filectx_needs_reload(filectx))
 
-        git_commit(self.repo, self.tree, ['a.rst'], [self.old_commit])
+        commands.commit(self.ui, self.repo, message='foo', user='foo',
+                        addremove=True)
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.filectx_needs_reload(filectx))

@@ -12,15 +12,16 @@
 import unittest
 
 from blohg.tests.app import AppTestCase
-from blohg.tests.git import GitRepositoryTestCase
-from blohg.tests.git.changectx import ChangeCtxDefaultTestCase as \
-     GitChangeCtxDefaultTestCase, ChangeCtxWorkingDirTestCase as \
+from blohg.tests.vcs_backends.git import GitRepositoryTestCase
+from blohg.tests.vcs_backends.git.changectx import ChangeCtxDefaultTestCase \
+     as GitChangeCtxDefaultTestCase, ChangeCtxWorkingDirTestCase as \
      GitChangeCtxWorkingDirTestCase
-from blohg.tests.git.filectx import FileCtxTestCase as GitFileCtxTestCase
-from blohg.tests.hg import HgRepositoryTestCase
-from blohg.tests.hg.changectx import ChangeCtxDefaultTestCase, \
+from blohg.tests.vcs_backends.git.filectx import FileCtxTestCase as \
+     GitFileCtxTestCase
+from blohg.tests.vcs_backends.hg import HgRepositoryTestCase
+from blohg.tests.vcs_backends.hg.changectx import ChangeCtxDefaultTestCase, \
      ChangeCtxWorkingDirTestCase
-from blohg.tests.hg.filectx import FileCtxTestCase
+from blohg.tests.vcs_backends.hg.filectx import FileCtxTestCase
 from blohg.tests.models import BlogTestCase, PageTestCase, PostTestCase
 from blohg.tests.templating import BlohgLoaderTestCase
 from blohg.tests.utils import UtilsTestCase

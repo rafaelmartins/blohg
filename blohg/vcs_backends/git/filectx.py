@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.git.filectx
-    ~~~~~~~~~~~~~~~~~
+    blohg.vcs_backends.git.filectx
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Model with classes to represent Git file context.
 

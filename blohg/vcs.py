@@ -9,6 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import os
 from abc import ABCMeta, abstractmethod, abstractproperty
 
 REVISION_WORKING_DIR, REVISION_DEFAULT = 1, 2
@@ -20,6 +21,18 @@ class Repository:
 
     def __init__(self, path):
         self.path = path
+
+    @abstractproperty
+    def order(self):
+        pass
+
+    @abstractproperty
+    def identifier(self):
+        pass
+
+    @abstractproperty
+    def name(self):
+        pass
 
     @abstractmethod
     def get_changectx(self, revision=None):
@@ -100,7 +113,28 @@ class FileCtx:
         pass
 
 
+def _get_backends():
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    packages = []
+    backends_dir = os.path.join(cwd, 'vcs_backends')
+    for d in os.listdir(backends_dir):
+        if not os.path.isdir(os.path.join(backends_dir, d)):
+            continue
+        try:
+            __import__('blohg.vcs_backends.%s' % d)
+        except ImportError:
+            pass
+    rv = sorted(Repository.__subclasses__(), key=lambda x: x.order)
+    if not len(rv):
+        raise RuntimeError('No backend found!')
+    return rv
+
+
+backends = _get_backends()
+del _get_backends
+
+
 def load_repo(repo_path):
-    for backend in Repository.__subclasses__():
+    for backend in backends:
         if backend.supported(repo_path):
             return backend(repo_path)

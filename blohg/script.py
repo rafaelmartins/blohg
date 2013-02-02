@@ -12,15 +12,13 @@
 import os
 import sys
 import posixpath
-from flask.ext.script import Command, Manager, Server as _Server, Option
+from flask.ext.script import Command, Group, Manager, Server as _Server, Option
 from flask_frozen import Freezer, MissingURLGeneratorWarning
 from warnings import filterwarnings
 from werkzeug.routing import Map
 
 from blohg import create_app as _create_app
-from blohg.git import GitRepository
-from blohg.hg import HgRepository
-from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
+from blohg.vcs import backends, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 # filter MissingURLGeneratorWarning warnings.
 filterwarnings('ignore', category=MissingURLGeneratorWarning)
@@ -75,11 +73,21 @@ class InitRepo(Command):
     """initialize a blohg repo, using the default template."""
 
     def get_options(self):
-        return (Option('--git', action='store_true',
-                       dest='git', help='create a Git repository'),)
+        rv = ()
+        for backend in backends:
+            rv += (Option('--%s' % backend.identifier, action='store_true',
+                          dest=backend.identifier,
+                          help='create a %s repository' % backend.name),)
+        return (Group(*rv, exclusive=True),)
 
-    def handle(self, app, git):
-        repo = git and GitRepository or HgRepository
+    def handle(self, app, **kwargs):
+        repo = None
+        for backend in backends:
+            if kwargs.get(backend.identifier, False):
+                repo = backend
+                break
+        if repo is None:
+            repo = backends[0]
         try:
             repo.create_repo(app.config['REPO_PATH'])
         except RuntimeError, err:

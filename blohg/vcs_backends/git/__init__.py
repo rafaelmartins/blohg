@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.git
-    ~~~~~~~~~
+    blohg.vcs_backends.git
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Package with all the classes and functions needed to deal with Git
     repositories. It uses pygit2 to access the repositories.
@@ -16,7 +16,8 @@ import shutil
 
 from pygit2 import init_repository
 from pkg_resources import resource_filename, resource_listdir
-from blohg.git.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
+from blohg.vcs_backends.git.changectx import ChangeCtxDefault, \
+     ChangeCtxWorkingDir
 from blohg.vcs import Repository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -24,6 +25,10 @@ class GitRepository(Repository):
     """Main entrypoint for the Git API layer. This class offers abstract
     access to everything needed by blohg from the low-level API.
     """
+
+    identifier = 'git'
+    name = 'Git'
+    order = 10
 
     def get_changectx(self, revision=REVISION_DEFAULT):
         """Method that returns a change context for a given Revision state.

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.git.filectx
+    blohg.tests.vcs_backends.git.filectx
     ~~~~~~~~~~~~~~~~~~~~~~~
 
     Module with tests for blohg integration with git (file context).
@@ -17,8 +17,8 @@ from pygit2 import init_repository, Repository
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.git.filectx import FileCtx
-from blohg.tests.git.utils import git_commit
+from blohg.vcs_backends.git.filectx import FileCtx
+from blohg.tests.vcs_backends.git.utils import git_commit
 
 
 class FileCtxTestCase(unittest.TestCase):

@@ -18,8 +18,8 @@ from mercurial import commands, hg, ui
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.hg.changectx import ChangeCtxDefault
-from blohg.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.changectx import ChangeCtxDefault
+from blohg.vcs_backends.hg.filectx import FileCtx
 from blohg.models import Blog, Page, Post
 
 

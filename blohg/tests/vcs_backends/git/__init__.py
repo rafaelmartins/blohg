@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.tests.hg
-    ~~~~~~~~~~~~~~
+    blohg.tests.vcs_backends.git
+    ~~~~~~~~~~~~~~~
 
-    Package with tests for blohg integration with mercurial.
+    Package with tests for blohg integration with git.
 
     :copyright: (c) 2010-2013 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
@@ -12,23 +12,22 @@
 import codecs
 import os
 import unittest
-from mercurial import commands, hg, ui
+from pygit2 import init_repository, Repository, Signature
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg.hg import HgRepository
-from blohg.hg.changectx import ChangeCtxDefault, ChangeCtxWorkingDir
+from blohg.vcs_backends.git import GitRepository
+from blohg.vcs_backends.git.changectx import ChangeCtxDefault, \
+     ChangeCtxWorkingDir
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
-class HgRepositoryTestCase(unittest.TestCase):
+class GitRepositoryTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
-        self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
-        commands.init(self.ui, self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        init_repository(self.repo_path, False)
+        self.repo = Repository(self.repo_path)
 
     def tearDown(self):
         try:
@@ -39,7 +38,7 @@ class HgRepositoryTestCase(unittest.TestCase):
     def test_create_repo(self):
         repo_path = mkdtemp()
         try:
-            HgRepository.create_repo(repo_path)
+            GitRepository.create_repo(repo_path)
             for f in [os.path.join('content', 'attachments', 'mercurial.png'),
                       os.path.join('content', 'post', 'example-post.rst'),
                       os.path.join('content', 'post', 'lorem-ipsum.rst'),
@@ -48,27 +47,38 @@ class HgRepositoryTestCase(unittest.TestCase):
                       os.path.join('templates', 'base.html'),
                       os.path.join('templates', 'posts.html'),
                       os.path.join('templates', 'post_list.html'),
-                      'config.yaml', '.hgignore', '.hg']:
+                      'config.yaml', '.gitignore', '.git']:
                 self.assertTrue(os.path.exists(os.path.join(repo_path, f)),
                                 'Not found: %s' % f)
         finally:
             rmtree(repo_path)
 
     def test_get_changectx_rev_default(self):
-        hg_repo = HgRepository(self.repo_path)
+        git_repo = GitRepository(self.repo_path)
         with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('foo')
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
-                        addremove=True)
-        self.assertTrue(isinstance(hg_repo.get_changectx(REVISION_DEFAULT),
+        sign = Signature('foo', 'foo@example.com')
+        tree = self.repo.TreeBuilder().write()
+        self.repo.index.add('foo.rst')
+        self.repo.create_commit('refs/heads/master', sign, sign, 'foo', tree,
+                                [])
+        self.assertTrue(isinstance(git_repo.get_changectx(REVISION_DEFAULT),
                                    ChangeCtxDefault),
                         'changectx object is not an instance of '
                         'ChangeCtxDefault')
 
     def test_get_changectx_rev_working_dir(self):
-        hg_repo = HgRepository(self.repo_path)
-        self.assertTrue(isinstance(hg_repo.get_changectx(REVISION_WORKING_DIR),
-                                   ChangeCtxWorkingDir),
-                        'changectx object is not an instance of '
-                        'ChangeCtxWorkingDir')
+        git_repo = GitRepository(self.repo_path)
+        with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',
+                         encoding='utf-8') as fp:
+            fp.write('foo')
+        sign = Signature('foo', 'foo@example.com')
+        tree = self.repo.TreeBuilder().write()
+        self.repo.index.add('foo.rst')
+        self.repo.create_commit('refs/heads/master', sign, sign, 'foo', tree,
+                                [])
+        self.assertTrue(
+            isinstance(git_repo.get_changectx(REVISION_WORKING_DIR),
+                       ChangeCtxWorkingDir),
+            'changectx object is not an instance of ChangeCtxWorkingDir')
