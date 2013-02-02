@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     blohg.tests.vcs_backends.git.filectx
-    ~~~~~~~~~~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Module with tests for blohg integration with git (file context).
 
