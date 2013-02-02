@@ -16,12 +16,10 @@ import unittest
 
 from jinja2 import ChoiceLoader
 from mercurial import commands, hg, ui
-from pygit2 import init_repository
 from shutil import rmtree
 from tempfile import mkdtemp
 
-from blohg import create_app, load_repo
-from blohg.git import GitRepository
+from blohg import create_app
 from blohg.hg import HgRepository
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 

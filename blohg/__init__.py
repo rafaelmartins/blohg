@@ -18,9 +18,6 @@ from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
 from blohg.ext import ExtensionImporter
-from blohg.git import GitRepository
-from blohg.git.changectx import ChangeCtxDefault as GitChangeCtxDefault
-from blohg.hg import HgRepository
 from blohg.models import Blog
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader

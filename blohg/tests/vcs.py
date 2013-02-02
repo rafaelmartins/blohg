@@ -11,11 +11,13 @@
 
 import unittest
 from pygit2 import init_repository
+from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg.hg import HgRepository
 from blohg.git import GitRepository
 from blohg.vcs import load_repo
+
 
 class LoadRepoTestCase(unittest.TestCase):
 
