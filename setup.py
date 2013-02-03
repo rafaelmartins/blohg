@@ -90,6 +90,9 @@ setup(
         'PyYAML',
         'Pygments',  # TODO: make this dependency optional
     ],
+    extras_require={
+        'git': ['pygit2==0.17.3'],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
