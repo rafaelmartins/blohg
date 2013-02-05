@@ -25,15 +25,11 @@ class FileCtx(_FileCtx):
         self._path = path
         self._ctx = self.get_fileobj_from_basetree(self._changectx.tree,
                                                    self._path)
-        if not self._ctx or self._ctx.type != GIT_OBJ_BLOB:
-            if use_index:
-                try:
-                    self._ctx = self._repo[self._repo.index[self._path].oid]
-                except:
-                    pass
-                else:
-                    return
-            raise RuntimeError('Invalid file: %s' % self._path)
+        if not self._ctx or self._ctx.type != GIT_OBJ_BLOB or use_index:
+            try:
+                self._ctx = self._repo[self._repo.index[self._path].oid]
+            except:
+                raise RuntimeError('Invalid file: %s' % self._path)
 
     def get_fileobj_from_basetree(self, basetree, path):
         tree = [basetree]
