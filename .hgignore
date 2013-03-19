@@ -3,3 +3,4 @@
 ^build/
 ^docs/_build/[^(.keep)]
 \.wpu$
+^\.coverage$
