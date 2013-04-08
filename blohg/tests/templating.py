@@ -49,8 +49,8 @@ class BlohgLoaderTestCase(unittest.TestCase):
             app.preprocess_request()
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
                               app.jinja_env, 'test.html')
-        new_file = os.path.join(self.repo_path,
-                                app.config['TEMPLATES_DIR'], 'test.html')
+        new_file = os.path.join(self.repo_path, app.template_folder,
+                                'test.html')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
         with app.test_request_context():
@@ -65,8 +65,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                 app.jinja_env, 'test.html')
             self.assertEqual('foo', contents)
             self.assertEqual(filename,
-                             os.path.join(app.config['TEMPLATES_DIR'],
-                                          'test.html'))
+                             os.path.join(app.template_folder, 'test.html'))
             app.preprocess_request()
             self.assertTrue(up2date())
             with codecs.open(new_file, 'a', encoding='utf-8') as fp:
@@ -81,8 +80,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                 app.jinja_env, 'test.html')
             self.assertEqual('foobar', contents)
             self.assertEqual(filename,
-                              os.path.join(app.config['TEMPLATES_DIR'],
-                                           'test.html'))
+                              os.path.join(app.template_folder, 'test.html'))
             app.preprocess_request()
             self.assertTrue(up2date())
 
@@ -94,7 +92,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
                               app.jinja_env, 'test.html')
         new_file = os.path.join(self.repo_path,
-                                app.config['TEMPLATES_DIR'], 'test.html')
+                                app.template_folder, 'test.html')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
         with app.test_request_context():
@@ -103,7 +101,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                 app.jinja_env, 'test.html')
             self.assertEqual('foo', contents)
             self.assertEqual(filename,
-                              os.path.join(app.config['TEMPLATES_DIR'],
+                              os.path.join(app.template_folder,
                                            'test.html'))
             app.preprocess_request()
             self.assertFalse(up2date())
@@ -120,8 +118,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                          revision_id=REVISION_WORKING_DIR)
         default_templates_dir = os.path.join(os.path.dirname(
             os.path.abspath(__file__)), '..', 'templates')
-        templates_dir = os.path.join(self.repo_path,
-                                     app.config['TEMPLATES_DIR'])
+        templates_dir = os.path.join(self.repo_path, app.template_folder)
         real_files = os.listdir(default_templates_dir) + \
             os.listdir(templates_dir)
         with app.test_request_context():

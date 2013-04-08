@@ -115,7 +115,6 @@ class FileCtx:
 
 def _get_backends():
     cwd = os.path.dirname(os.path.abspath(__file__))
-    packages = []
     backends_dir = os.path.join(cwd, 'vcs_backends')
     for d in os.listdir(backends_dir):
         if not os.path.isdir(os.path.join(backends_dir, d)):

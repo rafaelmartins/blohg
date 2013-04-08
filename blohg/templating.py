@@ -13,34 +13,34 @@
 import os
 import posixpath
 
+from flask import current_app
 from jinja2.loaders import BaseLoader, TemplateNotFound, split_template_path
 
 
 class BlohgLoader(BaseLoader):
     """A Jinja2 loader that loads templates from a Mercurial repository"""
 
-    def __init__(self, app):
-        self.app = app
+    def __init__(self, template_folder):
+        self.template_folder = template_folder
 
     def get_source(self, environment, template):
         pieces = split_template_path(template)
-        templates_dir = self.app.config['TEMPLATES_DIR']
-        filename = posixpath.join(templates_dir, *pieces)
-        if filename in self.app.blohg.changectx.files:
-            filectx = self.app.blohg.changectx.get_filectx(filename)
+        filename = posixpath.join(self.template_folder, *pieces)
+        if filename in current_app.blohg.changectx.files:
+            filectx = current_app.blohg.changectx.get_filectx(filename)
 
             def up2date():
-                if self.app.blohg.changectx is None:
+                if current_app.blohg.changectx is None:
                     return False
                 return not \
-                       self.app.blohg.changectx.filectx_needs_reload(filectx)
+                       current_app.blohg.changectx.filectx_needs_reload(filectx)
 
-            return filectx.content, os.path.join(templates_dir, *pieces), \
-                   up2date
+            return filectx.content, \
+                   os.path.join(self.template_folder, *pieces), up2date
         raise TemplateNotFound(template)
 
     def list_templates(self):
-        templates_dir = self.app.config['TEMPLATES_DIR'].strip(os.linesep)
+        templates_dir = current_app.template_folder.strip(os.linesep)
         return sorted([i[len(templates_dir) + 1:] for i in \
-                       self.app.blohg.changectx.files \
+                       current_app.blohg.changectx.files \
                        if i.startswith(templates_dir + '/')])

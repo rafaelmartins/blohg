@@ -125,4 +125,4 @@ class ExtensionImporter(object):
         filename = self.module_file(fullname)
         if filename is None:
             raise ImportError('Module not found: %s' % fullname)
-        return 'repo:%s' % filename
+        return ':repo:%s' % filename  # :repo: is a placeholder

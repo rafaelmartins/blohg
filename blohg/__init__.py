@@ -10,11 +10,13 @@
 """
 
 import os
+import posixpath
 import yaml
-from flask import Flask, render_template, request
+from flask import Flask as _Flask, Blueprint, render_template, request
 from flask.ctx import _app_ctx_stack
 from flask.ext.babel import Babel
-from jinja2.loaders import ChoiceLoader
+from flask.helpers import locked_cached_property
+from jinja2.loaders import ChoiceLoader, FileSystemLoader
 
 # import blohg stuff
 from blohg.ext import ExtensionImporter
@@ -24,6 +26,42 @@ from blohg.templating import BlohgLoader
 from blohg.vcs import load_repo, REVISION_DEFAULT
 from blohg.version import version as __version__
 from blohg.views import views
+
+
+class Flask(_Flask):
+
+    @locked_cached_property
+    def jinja_loader(self):
+        if self.template_folder is not None:
+            return ChoiceLoader([BlohgLoader(self.template_folder),
+                                 FileSystemLoader(
+                                     os.path.join(self.root_path,
+                                                  self.template_folder))])
+
+
+class BlohgBlueprint(Blueprint):
+
+    @locked_cached_property
+    def jinja_loader(self):
+        if self.template_folder is not None:
+            if ':repo:' in self.root_path:  # just load from repo
+                root_path = self.root_path[self.root_path.find(':repo:') + 6:]
+                return BlohgLoader(posixpath.join(root_path,
+                                                  self.template_folder))
+            return FileSystemLoader(os.path.join(self.root_path,
+                                                 self.template_folder))
+
+    def register(self, app, options, first_registration=False):
+        def register_static(state):
+            if self.has_static_folder:
+                if ':repo:' in self.root_path:  # just load from repo
+                    static_folder = self.static_folder[
+                        self.static_folder.find(':repo:') + 6:]
+                    state.add_url_rule(self.static_url_path + '/<path:filename>',
+                                       view_func=BlohgStaticFile(static_folder),
+                                       endpoint='static')
+        self.record(register_static)
+        return Blueprint.register(self, app, options, first_registration)
 
 
 class Blohg(object):
@@ -107,8 +145,6 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     app.config.setdefault('TITLE', u'Your title')
     app.config.setdefault('TITLE_HTML', u'Your HTML title')
     app.config.setdefault('CONTENT_DIR', u'content')
-    app.config.setdefault('TEMPLATES_DIR', u'templates')
-    app.config.setdefault('STATIC_DIR', u'static')
     app.config.setdefault('ATTACHMENT_DIR', u'content/attachments')
     app.config.setdefault('ROBOTS_TXT', True)
     app.config.setdefault('SHOW_RST_SOURCE', True)
@@ -123,14 +159,12 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
 
     blohg = Blohg(app, embedded_extensions)
 
-    # setup our jinja2 custom loader and static file handlers
-    old_loader = app.jinja_loader
-    app.jinja_loader = ChoiceLoader([BlohgLoader(app), old_loader])
-    app.add_url_rule(app.static_url_path + '/<path:filename>',
-                     endpoint='static',
-                     view_func=BlohgStaticFile(app, 'STATIC_DIR'))
+    if app.has_static_folder:
+        app.add_url_rule(app.static_url_path + '/<path:filename>',
+                         endpoint='static',
+                         view_func=BlohgStaticFile('static'))
     app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
-                     view_func=BlohgStaticFile(app, 'ATTACHMENT_DIR'))
+                     view_func=BlohgStaticFile(app.config['ATTACHMENT_DIR']))
 
     # setup extensions
     babel = Babel(app)
