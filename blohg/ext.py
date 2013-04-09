@@ -9,11 +9,43 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from flask import Blueprint
 from flask.ctx import _RequestGlobals, _app_ctx_stack
+from flask.helpers import locked_cached_property
 from imp import new_module
+from jinja2.loaders import FileSystemLoader
 
+from blohg.static import BlohgStaticFile
+from blohg.templating import BlohgLoader
+
+import os
 import posixpath
 import sys
+
+
+class BlohgBlueprint(Blueprint):
+
+    @locked_cached_property
+    def jinja_loader(self):
+        if self.template_folder is not None:
+            if ':repo:' in self.root_path:  # just load from repo
+                root_path = self.root_path[self.root_path.find(':repo:') + 6:]
+                return BlohgLoader(posixpath.join(root_path,
+                                                  self.template_folder))
+            return FileSystemLoader(os.path.join(self.root_path,
+                                                 self.template_folder))
+
+    def register(self, app, options, first_registration=False):
+        def register_static(state):
+            if self.has_static_folder:
+                if ':repo:' in self.root_path:  # just load from repo
+                    static_folder = self.static_folder[
+                        self.static_folder.find(':repo:') + 6:]
+                    state.add_url_rule(self.static_url_path + '/<path:filename>',
+                                       view_func=BlohgStaticFile(static_folder),
+                                       endpoint='static')
+        self.record(register_static)
+        return Blueprint.register(self, app, options, first_registration)
 
 
 class BlohgExtension(object):
