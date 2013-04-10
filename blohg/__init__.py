@@ -20,6 +20,7 @@ from jinja2.loaders import ChoiceLoader, FileSystemLoader
 # import blohg stuff
 from blohg.ext import ExtensionImporter
 from blohg.models import Blog
+from blohg.signals import reloaded
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
 from blohg.vcs import load_repo, REVISION_DEFAULT
@@ -87,6 +88,8 @@ class Blohg(object):
 
         self.content = Blog(self.changectx, content_dir, post_ext,
                             rst_header_level)
+
+        reloaded.send(self)
 
     def load_extensions(self):
         if self.embedded_extensions:

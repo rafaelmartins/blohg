@@ -37,6 +37,7 @@ class BlohgBlueprint(Blueprint):
 
     def register(self, app, options, first_registration=False):
         def register_static(state):
+            self.repo_static_folder = None
             if self.has_static_folder:
                 if ':repo:' in self.root_path:  # just load from repo
                     static_folder = self.static_folder[
@@ -44,6 +45,7 @@ class BlohgBlueprint(Blueprint):
                     state.add_url_rule(self.static_url_path + '/<path:filename>',
                                        view_func=BlohgStaticFile(static_folder),
                                        endpoint='static')
+                    self.repo_static_folder = static_folder
         self.record(register_static)
         return Blueprint.register(self, app, options, first_registration)
 
@@ -59,9 +61,9 @@ class BlohgExtension(object):
 
     @property
     def g(self):
-        ctx = _app_ctx_stack.top
+        ctx = _app_ctx_stack.top.app
         if ctx is not None:
-            key = self.ext_id + '_globals'
+            key = '_%s_globals' % self.ext_id
             if not hasattr(ctx, key):
                 setattr(ctx, key, _RequestGlobals())
             return getattr(ctx, key)

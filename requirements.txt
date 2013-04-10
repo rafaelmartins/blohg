@@ -7,3 +7,4 @@ Jinja2>=2.5.2
 Mercurial>=1.6
 PyYAML
 Pygments
+blinker>=1.1
