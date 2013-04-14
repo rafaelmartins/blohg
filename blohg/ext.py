@@ -10,7 +10,7 @@
 """
 
 from flask import Blueprint
-from flask.ctx import _RequestGlobals, _app_ctx_stack
+from flask.ctx import _app_ctx_stack
 from flask.helpers import locked_cached_property
 from imp import new_module
 from jinja2.loaders import FileSystemLoader
@@ -65,7 +65,7 @@ class BlohgExtension(object):
         if ctx is not None:
             key = '_%s_globals' % self.ext_id
             if not hasattr(ctx, key):
-                setattr(ctx, key, _RequestGlobals())
+                setattr(ctx, key, ctx.request_globals_class())
             return getattr(ctx, key)
         raise RuntimeError('Failed to initialize plugin globals.')
 
