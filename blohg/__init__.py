@@ -34,9 +34,7 @@ class Flask(_Flask):
     def jinja_loader(self):
         if self.template_folder is not None:
             return ChoiceLoader([BlohgLoader(self.template_folder),
-                                 FileSystemLoader(
-                                     os.path.join(self.root_path,
-                                                  self.template_folder))])
+                                 super(_Flask, self).jinja_loader])
 
 
 class Blohg(object):

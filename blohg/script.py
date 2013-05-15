@@ -143,6 +143,7 @@ class Freeze(Command):
         return Map(rules)
 
     def handle(self, app, serve, no_index):
+        app.jinja_loader  # ugly workaround
         app.blohg.init_repo(REVISION_DEFAULT)
 
         app.url_map = self.remap_rules(app.url_map, no_index)
@@ -162,7 +163,7 @@ class Freeze(Command):
         @freezer.register_generator
         def static():
             """Walk the static dir and freeze everything"""
-            return static_generator(app.config['STATIC_DIR'])
+            return static_generator('static')
 
         @freezer.register_generator
         def attachments():
