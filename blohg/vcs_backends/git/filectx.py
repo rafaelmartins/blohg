@@ -23,8 +23,8 @@ class FileCtx(_FileCtx):
         self._repo = repo
         self._changectx = changectx
         self._path = path
-        self._ctx = self.get_fileobj_from_basetree(self._changectx.tree,
-                                                   self._path)
+        self._ctx = self.get_fileobj_from_basetree(
+            self._repo[self._changectx.oid], self._path)
         if not self._ctx or self._ctx.type != GIT_OBJ_BLOB or use_index:
             try:
                 self._ctx = self._repo[self._repo.index[self._path].oid]
