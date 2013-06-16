@@ -97,12 +97,23 @@ class Page(object):
         return self._filectx.path
 
     @locked_cached_property
+    def _slug_offset_init(self):
+        return len(self._content_dir) + 1
+
+    @locked_cached_property
+    def _slug_offset_end(self):
+        return len(self._post_ext)
+
+    @locked_cached_property
     def slug(self):
-        rv = re.match(r'^' + self._content_dir + r'[\\/](.+)' +
-                      '\\' + self._post_ext + '$',
-                      self._filectx.path)
-        if rv is not None:
-            return rv.group(1)
+        if (self.path.startswith(self._content_dir + '/') or \
+            self.path.startswith(self._content_dir + '\\')) and \
+           self.path.endswith(self._post_ext):
+            slug = self.path[self._slug_offset_init:-self._slug_offset_end]
+            if slug.endswith('/index') or slug.endswith('\\index') or \
+               slug == 'index':
+                slug = slug[:-6]
+            return slug
 
     @locked_cached_property
     def date(self):

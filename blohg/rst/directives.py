@@ -301,13 +301,19 @@ class SubPages(Directive):
         self.options.setdefault('sort-by', 'slug')
         self.options.setdefault('sort-order', 'asc')
         if len(self.arguments) == 0:
-            self.arguments.append(request.path.strip('/'))
+            prefix = ':repo:%s' % current_app.config['CONTENT_DIR']
+            source = self.state.document.current_source or ''
+            if not source.startswith(prefix):
+                raise self.severe('Problem with "%s" directive path:\npath ' \
+                                  'isn\'t allowed: %s' % (self.name, source))
+            source = source[len(prefix)+1:]
+            source = source.rstrip('/index%s' % current_app.config['POST_EXT'])
+            source = source.rstrip(current_app.config['POST_EXT'])
+            self.arguments.append(source)
         tmp_metadata = []
         final_metadata = []
-        # not sure if this works on windows
         splited_dir = self.arguments[0].split('/')
         for metadata in current_app.blohg.content.get_all():
-            # not sure if this works on windows
             splited_slug = metadata.slug.split('/')
             if metadata.slug.startswith(self.arguments[0]) and \
                (len(splited_dir) + 1 == len(splited_slug)):

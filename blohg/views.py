@@ -83,7 +83,7 @@ def home(page=None):
     """Page with the abstract of the posts. Part of the pagination."""
     if page is None:
         try:
-            return content('index')
+            return content('')
         except NotFound:
             page = 1
     current = int(page)
