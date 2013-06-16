@@ -27,12 +27,12 @@ for role in roles_index:
     register_local_role(role, roles_index[role])
 
 
-def parser(content, rst_header_level):
+def parser(content, rst_header_level, source_path=None):
     settings = {'input_encoding': 'utf-8', 'output_encoding': 'utf-8',
                 'initial_header_level': rst_header_level,
                 'docinfo_xform': 0, 'field_name_limit': None}
-    parts = publish_parts(source=content, writer=BlohgWriter(),
-                          settings_overrides=settings)
+    parts = publish_parts(source=content, source_path=source_path,
+                          writer=BlohgWriter(), settings_overrides=settings)
     return {'title': parts['title'], 'fragment': parts['fragment'],
             'first_paragraph_as_text': parts['first_paragraph_as_text'],
             'images': parts['images']}

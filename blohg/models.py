@@ -42,13 +42,15 @@ class Page(object):
 
     @locked_cached_property
     def parsed_source(self):
-        return parser(self.full, self._rst_header_level)
+        return parser(self.full, self._rst_header_level,
+                      ':repo:%s' % self.path)
 
     @locked_cached_property
     def parsed_abstract(self):
         if not self.read_more:
             return self.parsed_source
-        return parser(self.abstract, self._rst_header_level)
+        return parser(self.abstract, self._rst_header_level,
+                      ':repo:%s' % self.path)
 
     @locked_cached_property
     def author(self):
