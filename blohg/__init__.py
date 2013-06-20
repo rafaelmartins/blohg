@@ -111,7 +111,7 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     """
 
     # create the app object
-    app = Flask(__name__)
+    app = Flask(__name__, static_folder=None)
 
     # register some sane default config values
     app.config.setdefault('AUTHOR', u'Your Name Here')
@@ -134,10 +134,8 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
 
     blohg = Blohg(app, embedded_extensions)
 
-    if app.has_static_folder:
-        app.add_url_rule(app.static_url_path + '/<path:filename>',
-                         endpoint='static',
-                         view_func=BlohgStaticFile('static'))
+    app.add_url_rule('/static/<path:filename>', endpoint='static',
+                     view_func=BlohgStaticFile('static'))
     app.add_url_rule('/attachments/<path:filename>', endpoint='attachments',
                      view_func=BlohgStaticFile(app.config['ATTACHMENT_DIR']))
 
