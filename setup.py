@@ -108,5 +108,4 @@ setup(
     ],
     scripts=['bin/blohg'],
     cmdclass={'install_lib': install_lib},
-    test_suite='blohg.tests.suite',
 )
