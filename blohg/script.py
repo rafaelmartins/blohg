@@ -183,7 +183,7 @@ def create_script():
     """
 
     script = Manager(create_app, with_default_commands=False)
-    script.add_option('-r', '--repo-path', dest='repo_path',
+    script.add_option('--repo-path', dest='repo_path',
                       default=os.getcwd(), required=False,
                       help='Repository path')
     script.add_option('-e', '--disable-embedded-extensions',
