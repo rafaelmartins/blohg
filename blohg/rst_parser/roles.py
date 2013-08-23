@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst.roles
-    ~~~~~~~~~~~~~~~
+    blohg.rst_parser.roles
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText roles.
 

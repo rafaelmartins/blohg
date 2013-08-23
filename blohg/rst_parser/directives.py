@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst.directives
-    ~~~~~~~~~~~~~~~~~~~~
+    blohg.rst_parser.directives
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText directives.
 
@@ -22,7 +22,7 @@ from pygments.lexers import get_lexer_by_name, TextLexer
 from urllib import pathname2url
 
 from blohg.io import BlohgFile
-from blohg.rst.nodes import iframe_flash_video
+from blohg.rst_parser.nodes import iframe_flash_video
 
 import posixpath
 

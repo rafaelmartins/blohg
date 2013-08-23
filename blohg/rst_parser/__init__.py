@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst
-    ~~~~~~~~~
+    blohg.rst_parser
+    ~~~~~~~~~~~~~~~~
 
     Package with reStructuredText-related stuff needed by blohg, like
     directives and roles.
@@ -14,9 +14,9 @@ from docutils.core import publish_parts
 from docutils.parsers.rst.directives import register_directive
 from docutils.parsers.rst.roles import register_local_role
 
-from blohg.rst.directives import index as directives_index
-from blohg.rst.roles import index as roles_index
-from blohg.rst.writer import BlohgWriter
+from blohg.rst_parser.directives import index as directives_index
+from blohg.rst_parser.roles import index as roles_index
+from blohg.rst_parser.writer import BlohgWriter
 
 # registering docutils' directives
 for directive in directives_index:

@@ -16,7 +16,7 @@ from flask.helpers import locked_cached_property
 from time import time
 from jinja2 import Markup
 
-from blohg.rst import parser
+from blohg.rst_parser import parser
 from blohg.utils import parse_date
 
 re_metadata = re.compile(r'\.\. +([a-z]+): *(.+)')

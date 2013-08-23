@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst.nodes
-    ~~~~~~~~~~~~~~~
+    blohg.rst_parser.nodes
+    ~~~~~~~~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText doctree nodes.
 

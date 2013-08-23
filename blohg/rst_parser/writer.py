@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    blohg.rst.writer
-    ~~~~~~~~~~~~~~~~
+    blohg.rst_parser.writer
+    ~~~~~~~~~~~~~~~~~~~~~~~
 
     Module with the custom blohg reStructuredText HTML writer.
 
