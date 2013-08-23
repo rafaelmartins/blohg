@@ -31,6 +31,7 @@ User's Guide
    new-blog
    write
    deploy
+   extend
    upgrade
 
 
