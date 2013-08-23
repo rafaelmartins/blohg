@@ -3,13 +3,14 @@
 About blohg
 ===========
 
-blohg_ is a Mercurial_-based blogging engine written in Python_, built on the
-top of the Flask_ micro-framework and some of its extensions. All the content of
-the blogs are stored inside Mercurial_ repositories, and the repository history
+blohg_ is a Mercurial_ (or alternatively Git_) based blogging engine written in
+Python_, built on the top of the Flask_ micro-framework and some of its extensions.
+All the content of the blogs are stored inside a repository, and its history
 is used to build the posts and pages.
 
 .. _blohg: http://blohg.org/
 .. _Mercurial: http://mercurial.selenic.com/
+.. _Git: http://git-scm.com/
 .. _Python: http://python.org/
 .. _Flask: http://flask.pocoo.org/
 

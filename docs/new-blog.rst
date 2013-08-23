@@ -16,8 +16,8 @@ Initializing the repository
 ---------------------------
 
 blohg will install a script called ``blohg`` for you. This script is able to
-create a new Mercurial repository, using the default template and/or run the
-development server. It will be your main tool to interact with blohg.
+create a new Mercurial (or Git) repository, using the default template and/or
+run the development server. It will be your main tool to interact with blohg.
 
 To create a new repository, type::
 
@@ -28,9 +28,18 @@ Where ``my_blohg`` is the directory where the new repository will be created.
 Make sure that the directory doesn't exist, or is empty, before try to
 initialize the repository.
 
+If you want to use Git instead of Mercurial, type::
+
+    $ blohg initrepo --repo-path my_blohg --git
+
 When the repository is created, do the initial commit::
 
     $ hg commit -Am 'initial commit'
+
+Or for Git::
+
+    $ git add .
+    $ git commit -m 'initial commit'
 
 
 Repository structure
@@ -92,6 +101,8 @@ These are the built-in configuration options for the ``config.yaml`` file:
 | POSTS_PER_PAGE       | Number of posts per page. Used by the posts       | ``10``                  |
 |                      | pagination and the Atom feeds.                    |                         |
 +----------------------+---------------------------------------------------+-------------------------+
+| POSTS_PER_ATOM_FEED  | Number of posts listed on the Atom feed           | POSTS_PER_PAGE          |
++----------------------+---------------------------------------------------+-------------------------+
 | AUTHOR               | The name of the main author of the blog. Used by  | ``'Your Name Here'``    |
 |                      | the Atom feeds.                                   |                         |
 +----------------------+---------------------------------------------------+-------------------------+
@@ -123,6 +134,13 @@ These are the built-in configuration options for the ``config.yaml`` file:
 | POST_EXT             | The extension of your post/page files.            | ``'.rst'``              |
 +----------------------+---------------------------------------------------+-------------------------+
 | OPENGRAPH            | Enable the `Open Graph`_ meta tags block.         | ``True``                |
++----------------------+---------------------------------------------------+-------------------------+
+| EXTENSIONS           | List of enabled extensions.                       | ``[]``                  |
++----------------------+---------------------------------------------------+-------------------------+
+| EXTENSIONS_DIR       | The directory of the repository where the         | ``ext``                 |
+|                      | extensions are stored.                            |                         |
++----------------------+---------------------------------------------------+-------------------------+
+| RST_HEADER_LEVEL     | reStructuredText header level                     | ``3``                   |
 +----------------------+---------------------------------------------------+-------------------------+
 
 The default values are used if the given configuration key is ommited (or
@@ -343,8 +361,8 @@ blohg generates an Atom_ feed for all the posts and/or tags.
 
 .. _Atom: http://en.wikipedia.org/wiki/Atom_%28standard%29
 
-To include all the posts (actually just the ``POSTS_PER_PAGE`` last posts), use
-the following URL:
+To include all the posts (actually just the ``POSTS_PER_ATOM_FEED`` last posts),
+use the following URL:
 
 http://example.org/atom/
 

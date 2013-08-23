@@ -3,6 +3,12 @@
 Deploying your blog
 ===================
 
+.. warning::
+
+   This guide does not cover the deploy using a Git repository, but there are no
+   big differences. Just use the equivalent ``git`` commands.
+
+
 Using a WSGI app
 ----------------
 

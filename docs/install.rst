@@ -5,8 +5,8 @@ Installing blohg
 
 This section will guide you through the alternatives for setting up blohg in
 your operating system. blohg is currently tested on Linux_ and Windows_,
-but should works in any operating system where Flask_ and Mercurial_
-run properly.
+but should works in any operating system where Flask_ and Mercurial_ (and/or
+Git_) run properly.
 
 blohg works on Python 2.6 and 2.7. 
 
@@ -18,7 +18,21 @@ http://pypi.python.org/pypi/blohg
 .. _Windows: http://windows.microsoft.com/
 .. _Flask: http://flask.pocoo.org/
 .. _Mercurial: http://mercurial.selenic.com/
+.. _Git: http://git-scm.com/
 .. _PyPI: http://pypi.python.org/
+
+.. warning::
+
+   Before installing blohg manually or using ``pip``, make sure that you have
+   a C compiler and the usual build tools (e.g the ``build-essential`` package
+   for Debian/Ubuntu) installed. You can work around these dependencies if you
+   need (e.g when running Windows), installing Mercurial with ``--pure``
+   argument, running the following command inside of a directory with the
+   Mercurial sources::
+
+       # python setup.py --pure install
+
+   There's no way to install Git bindings without a compiler, unfortunately.
 
 
 Manually
@@ -26,19 +40,24 @@ Manually
 
 Download the latest tarball from PyPI_, extract it and run::
 
-   # python setup.py install
+    # python setup.py install
 
 
-Using ``pip``/``easy_install``
-------------------------------
+Using ``pip``
+-------------
 
 To install blohg using ``pip``, type::
 
     # pip install blohg
 
-Or using ``easy_install``, type::
+If you want to use Git_ repositories, install a recent version of libgit2_
+(yeah, setuptools/distutils don't know how to handle non-python dependencies.
+see the official documentation for instructions about how to install it on
+your operating system), and type::
 
-    # easy_install blohg
+    # pip install blohg[git]
+
+.. _libgit2: http://libgit2.github.com/
 
 
 Gentoo Linux
@@ -49,19 +68,4 @@ There's a Gentoo_ ebuild available in the main tree. Install it using::
     # emerge -av www-apps/blohg
 
 .. _Gentoo: http://www.gentoo.org/
-
-
-Windows
--------
-
-.. _Mercurial: http://mercurial.selenic.com/
-
-You can install blohg easily on Windows using ``pip``/``easy_install``, but
-it will try to build the Mercurial C extensions by default, which will fail
-if you don't have a compiler installed. You may want to install a compiler,
-or just install the pure Python implementations of Mercurial extensions
-before install blohg, using something like this inside a directory with
-the latest Mercurial_ sources extracted::
-
-    # python setup.py --pure install
 

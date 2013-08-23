@@ -8,8 +8,8 @@ blohg, a Mercurial-based blogging engine
 :Version: |release|
 
 
-This is blohg, a full-featured blogging engine, that uses Mercurial as the 
-storage backend.
+This is blohg, a full-featured blogging engine, that uses Mercurial (or
+alternatively Git) as the storage backend.
 
 Here you will find a complete documentation about the usage and the concepts
 behind blohg.
