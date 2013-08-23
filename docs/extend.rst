@@ -30,6 +30,13 @@ be called ``blohg_foo.py``.
 Extensions can do almost anything, from adding a new view to adding a new
 reStructuredText directive to be used in the posts.
 
+Flask_, Werkzeug_ and docutils_ documentation should be quite useful here,
+please read them carefully.
+
+.. _Flask: http://flask.pocoo.org/
+.. _Werkzeug: http://werkzeug.pocoo.org/
+.. _docutils: http://docutils.sourceforge.net/
+
 
 Simple extension example
 ------------------------
