@@ -34,6 +34,11 @@ http://pypi.python.org/pypi/blohg
 
    There's no way to install Git bindings without a compiler, unfortunately.
 
+.. warning::
+
+   libgit2 is experimental and breaks the ABI every minor release. You may have
+   some trouble when trying to get pygit2 working.
+
 
 Manually
 --------
@@ -58,6 +63,15 @@ your operating system), and type::
     # pip install blohg[git]
 
 .. _libgit2: http://libgit2.github.com/
+
+For ubuntu users, I recommend installing ``libgit2-dev`` package from this PPA:
+
+https://launchpad.net/~xav0989/+archive/libgit2
+
+You should be careful about the version of libgit2 installed on your system.
+The major and minor versions of pygit2 should match the major and minor versions
+of libgit2, e.g. if the required version of pygit2 is 0.18.1, you need
+libgit2-0.18.*.
 
 
 Gentoo Linux
