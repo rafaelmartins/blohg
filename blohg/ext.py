@@ -42,9 +42,12 @@ class BlohgBlueprint(Blueprint):
                 if ':repo:' in self.root_path:  # just load from repo
                     static_folder = self.static_folder[
                         self.static_folder.find(':repo:') + 6:]
-                    state.add_url_rule(self.static_url_path + '/<path:filename>',
-                                       view_func=BlohgStaticFile(static_folder),
-                                       endpoint='static')
+                    endpoint = '%s.static' % state.blueprint.name
+                    if endpoint not in state.app.view_functions:
+                        raise RuntimeError('Static endpoint not registered yet '
+                                           ' for %s!' % state.blueprint.name)
+                    state.app.view_functions[endpoint] = \
+                        BlohgStaticFile(static_folder)
                     self.repo_static_folder = static_folder
         self.record(register_static)
         return Blueprint.register(self, app, options, first_registration)
