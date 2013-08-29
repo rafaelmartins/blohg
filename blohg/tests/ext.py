@@ -13,8 +13,9 @@ import mock
 import os
 import unittest
 from flask import Flask
+from flask.ctx import _app_ctx_stack
 
-from blohg.ext import BlohgBlueprint
+from blohg.ext import BlohgBlueprint, BlohgExtension
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
 
@@ -71,3 +72,26 @@ class BlohgBlueprintTestCase(unittest.TestCase):
         view_func = app.view_functions['foo.static']
         self.assertIsInstance(view_func, BlohgStaticFile)
         self.assertEquals(view_func.directory, 'ext/st')
+
+
+class BlohgExtensionTestCase(unittest.TestCase):
+
+    def test_g(self):
+        app = Flask(__name__)
+        with app.app_context():
+            ext = BlohgExtension('blohg_foo')
+            self.assertIsInstance(ext.g, app.app_ctx_globals_class)
+            self.assertIs(ext.g, _app_ctx_stack.top._blohg_foo_globals)
+
+    def test_setup_extension(self):
+        app = Flask(__name__)
+        with app.app_context():
+            ext = BlohgExtension('blohg_foo')
+
+            @ext.setup_extension
+            def foo(inner_app):
+                self.assertIs(inner_app, app)
+
+            self.assertIn(foo, ext._callbacks)
+            ext._load_extension(app)
+

@@ -81,7 +81,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'docutils==0.10',
-        'Flask>=0.8',
+        'Flask>=0.10.1',
         'Flask-Babel>=0.7',
         'Flask-Script>=0.5.3',
         'Frozen-Flask>=0.7',

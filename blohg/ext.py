@@ -64,11 +64,11 @@ class BlohgExtension(object):
 
     @property
     def g(self):
-        ctx = _app_ctx_stack.top.app
+        ctx = _app_ctx_stack.top
         if ctx is not None:
             key = '_%s_globals' % self.ext_id
             if not hasattr(ctx, key):
-                setattr(ctx, key, ctx.request_globals_class())
+                setattr(ctx, key, ctx.app.app_ctx_globals_class())
             return getattr(ctx, key)
         raise RuntimeError('Failed to initialize plugin globals.')
 
