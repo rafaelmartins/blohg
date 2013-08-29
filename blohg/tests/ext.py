@@ -11,11 +11,12 @@
 
 import mock
 import os
+import sys
 import unittest
 from flask import Flask
 from flask.ctx import _app_ctx_stack
 
-from blohg.ext import BlohgBlueprint, BlohgExtension
+from blohg.ext import BlohgBlueprint, BlohgExtension, ExtensionImporter
 from blohg.static import BlohgStaticFile
 from blohg.templating import BlohgLoader
 
@@ -95,3 +96,58 @@ class BlohgExtensionTestCase(unittest.TestCase):
             self.assertIn(foo, ext._callbacks)
             ext._load_extension(app)
 
+
+class ExtensionImporterTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self._meta_path = sys.meta_path[:]
+        filectx_foo = mock.Mock(data="ext_id = 'foo'")
+        filectx_bar = mock.Mock(data="ext_id = 'bar'")
+        filectx_baz = mock.Mock(data="""\
+
+
+raise RuntimeError('lol')
+""")
+
+        def get_filectx_side_effect(path):
+            if path == 'ext/blohg_foo.py':
+                return filectx_foo
+            elif path == 'ext/blohg_bar/__init__.py':
+                return filectx_bar
+            elif path == 'ext/blohg_baz.py':
+                return filectx_baz
+
+        changectx = mock.Mock(files=['ext/blohg_foo.py',
+                                     'ext/blohg_bar/__init__.py',
+                                     'ext/blohg_baz.py'])
+        changectx.get_filectx.side_effect = get_filectx_side_effect
+        sys.meta_path[:] = [ExtensionImporter(changectx, 'ext')]
+
+    def tearDown(self):
+        sys.meta_path[:] = self._meta_path
+
+    def test_import_module(self):
+        import blohg_foo
+        self.assertEquals(blohg_foo.ext_id, 'foo')
+        del sys.modules['blohg_foo']
+
+    def test_import_package(self):
+        import blohg_bar
+        self.assertEquals(blohg_bar.ext_id, 'bar')
+        del sys.modules['blohg_bar']
+
+    def test_import_broken_extension(self):
+        try:
+            import blohg_baz
+        except RuntimeError:
+            t, v, tb = sys.exc_info()
+            self.assertEquals(tb.tb_next.tb_next.tb_frame.f_code.co_filename,
+                              ':repo:ext/blohg_baz.py')
+            self.assertEquals(tb.tb_next.tb_next.tb_frame.f_lineno, 3)
+        else:
+            self.fail('Exception not raised!')
+        del sys.modules['blohg_baz']
+
+    def test_invalid_import(self):
+        with self.assertRaises(ImportError):
+            import blohg_lol
