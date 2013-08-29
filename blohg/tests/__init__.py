@@ -12,7 +12,8 @@
 import unittest
 
 from blohg.tests.app import AppTestCase
-from blohg.tests.ext import BlohgBlueprintTestCase, BlohgExtensionTestCase
+from blohg.tests.ext import BlohgBlueprintTestCase, BlohgExtensionTestCase, \
+     ExtensionImporterTestCase
 from blohg.tests.vcs_backends.git import GitRepositoryTestCase
 from blohg.tests.vcs_backends.git.changectx import ChangeCtxDefaultTestCase \
      as GitChangeCtxDefaultTestCase, ChangeCtxWorkingDirTestCase as \
@@ -35,6 +36,7 @@ def suite():
     suite.addTest(unittest.makeSuite(AppTestCase))
     suite.addTest(unittest.makeSuite(BlohgBlueprintTestCase))
     suite.addTest(unittest.makeSuite(BlohgExtensionTestCase))
+    suite.addTest(unittest.makeSuite(ExtensionImporterTestCase))
     suite.addTest(unittest.makeSuite(GitRepositoryTestCase))
     suite.addTest(unittest.makeSuite(GitChangeCtxDefaultTestCase))
     suite.addTest(unittest.makeSuite(GitChangeCtxWorkingDirTestCase))
