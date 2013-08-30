@@ -14,6 +14,8 @@ import unittest
 from blohg.tests.app import AppTestCase
 from blohg.tests.ext import BlohgBlueprintTestCase, BlohgExtensionTestCase, \
      ExtensionImporterTestCase
+from blohg.tests.rst_parser.directives import VimeoTestCase, YoutubeTestCase, \
+     SourceCodeTestCase, MathTestCase
 from blohg.tests.vcs_backends.git import GitRepositoryTestCase
 from blohg.tests.vcs_backends.git.changectx import ChangeCtxDefaultTestCase \
      as GitChangeCtxDefaultTestCase, ChangeCtxWorkingDirTestCase as \
@@ -37,6 +39,10 @@ def suite():
     suite.addTest(unittest.makeSuite(BlohgBlueprintTestCase))
     suite.addTest(unittest.makeSuite(BlohgExtensionTestCase))
     suite.addTest(unittest.makeSuite(ExtensionImporterTestCase))
+    suite.addTest(unittest.makeSuite(VimeoTestCase))
+    suite.addTest(unittest.makeSuite(YoutubeTestCase))
+    suite.addTest(unittest.makeSuite(SourceCodeTestCase))
+    suite.addTest(unittest.makeSuite(MathTestCase))
     suite.addTest(unittest.makeSuite(GitRepositoryTestCase))
     suite.addTest(unittest.makeSuite(GitChangeCtxDefaultTestCase))
     suite.addTest(unittest.makeSuite(GitChangeCtxWorkingDirTestCase))

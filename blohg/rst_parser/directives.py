@@ -209,7 +209,7 @@ class Math(Image):
 
         .. math::
 
-            \frac{x^2}{1+x}
+            \\frac{x^2}{1+x}
     """
 
     required_arguments = 0
@@ -223,6 +223,7 @@ class Math(Image):
             for i in self.content]))
         self.arguments.append('%s%s' % (GOOGLETEX_URL, tmp))
         return Image.run(self)
+
 
 
 class AttachmentImage(Image):

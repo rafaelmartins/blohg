@@ -71,27 +71,27 @@ the variables ``post.author_name`` and ``post.author_email``. To override
 this data, add a reStructuredText comment like this:
 
 .. code-block:: rest
-    
+
     .. author: John <john@example.com>
 
 
 Post aliases
 ------------
 
-When migrating from another blogging system or URL structure, you can have 
-blohg redirect your readers to the new URL's by providing your posts with URL 
+When migrating from another blogging system or URL structure, you can have
+blohg redirect your readers to the new URL's by providing your posts with URL
 aliases. If you need this, insert a reStructuredText comment with a comma
 separated list of the aliases for the post like this:
 
 .. code-block:: rest
-    
+
     .. aliases: /my-old-post-location/,/another-old-location/
 
 By default, blohg will issue a 302 (temporary) redirection. If you want, you
 can have blohg issue a 301 (permanent) redirection instead like this:
 
 .. code-block:: rest
-    
+
     .. aliases: 301:/my-old-post-location/,/another-old-location/
 
 The ``301:`` prefix is per URL and must be repeated for every URL you wish
@@ -257,7 +257,7 @@ Usage example:
 
     .. math::
 
-        \frac{x^2}{1+x}
+        \\frac{x^2}{1+x}
 
 
 Directive ``include``
