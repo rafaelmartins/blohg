@@ -3,7 +3,7 @@
     blohg.tests.rst_parser.directives
     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    Package with tests for the custom blohg reStructuredText directives.
+    Module with tests for the custom blohg reStructuredText directives.
 
     :copyright: (c) 2010-2013 by Rafael Goncalves Martins
     :license: GPL-2, see LICENSE for more details.
