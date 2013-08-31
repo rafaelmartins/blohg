@@ -9,11 +9,13 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import mock
 import unittest
 from docutils.parsers.rst.directives import _directives, register_directive
 
 from blohg.rst_parser import parser
-from blohg.rst_parser.directives import Vimeo, Youtube, SourceCode, Math
+from blohg.rst_parser.directives import Vimeo, Youtube, SourceCode, Math, \
+     AttachmentImage, AttachmentFigure, SubPages, IncludeHg
 
 
 class DirectiveTestCase(unittest.TestCase):
@@ -178,4 +180,105 @@ asd
                       '%5Cfrac%7Bx%5E2%7D%7B1%2Bx%7D', content['images'])
         self.assertIn('https://chart.googleapis.com/chart?cht=tx&amp;'
                       'chl=%5Cfrac%7Bx%5E2%7D%7B1%2Bx%7D', content['fragment'])
+        self.assertIn('align-left', content['fragment'])
+
+
+class AttachmentImageTestCase(DirectiveTestCase):
+
+    directive = AttachmentImage
+
+    def setUp(self):
+        DirectiveTestCase.setUp(self)
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self.current_app = self._current_app.start()
+        self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
+        self.current_app.blohg.changectx.files = ['content/att/foo.jpg']
+        self._url_for = mock.patch('blohg.rst_parser.directives.url_for')
+        self.url_for = self._url_for.start()
+        self.url_for.return_value = 'http://lol/foo.jpg'
+
+    def tearDown(self):
+        del self.url_for
+        del self.current_app
+        self._url_for.stop()
+        self._current_app.stop()
+
+    def test_run_with_default_opts(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-attachmentimage:: foo.jpg
+''', 3)
+        self.url_for.assert_called_once_with('attachments', filename='foo.jpg',
+                                             _external=True)
+        self.assertIn('http://lol/foo.jpg', content['images'])
+        self.assertIn('src="http://lol/foo.jpg"', content['fragment'])
+
+    def test_run(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-attachmentimage:: foo.jpg
+   :align: left
+''', 3)
+        self.url_for.assert_called_once_with('attachments', filename='foo.jpg',
+                                             _external=True)
+        self.assertIn('http://lol/foo.jpg', content['images'])
+        self.assertIn('src="http://lol/foo.jpg"', content['fragment'])
+        self.assertIn('align-left', content['fragment'])
+
+class AttachmentFigureTestCase(DirectiveTestCase):
+
+    directive = AttachmentFigure
+
+    def setUp(self):
+        DirectiveTestCase.setUp(self)
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self.current_app = self._current_app.start()
+        self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
+        self.current_app.blohg.changectx.files = ['content/att/foo.jpg']
+        self._url_for = mock.patch('blohg.rst_parser.directives.url_for')
+        self.url_for = self._url_for.start()
+        self.url_for.return_value = 'http://lol/foo.jpg'
+
+    def tearDown(self):
+        del self.url_for
+        del self.current_app
+        self._url_for.stop()
+        self._current_app.stop()
+
+    def test_run_with_default_opts(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-attachmentfigure:: foo.jpg
+
+   asdf lol.
+
+''', 3)
+        self.url_for.assert_called_once_with('attachments', filename='foo.jpg',
+                                             _external=True)
+        self.assertIn('http://lol/foo.jpg', content['images'])
+        self.assertIn('src="http://lol/foo.jpg"', content['fragment'])
+        self.assertIn('caption">asdf lol.', content['fragment'])
+
+    def test_run(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-attachmentfigure:: foo.jpg
+   :align: left
+
+   asdf lol.
+
+''', 3)
+        self.url_for.assert_called_once_with('attachments', filename='foo.jpg',
+                                             _external=True)
+        self.assertIn('http://lol/foo.jpg', content['images'])
+        self.assertIn('src="http://lol/foo.jpg"', content['fragment'])
+        self.assertIn('caption">asdf lol.', content['fragment'])
         self.assertIn('align-left', content['fragment'])
