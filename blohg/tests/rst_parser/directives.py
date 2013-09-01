@@ -202,6 +202,7 @@ class AttachmentImageTestCase(DirectiveTestCase):
         del self.current_app
         self._url_for.stop()
         self._current_app.stop()
+        DirectiveTestCase.tearDown(self)
 
     def test_run_with_default_opts(self):
         content = parser('''\
@@ -248,6 +249,7 @@ class AttachmentFigureTestCase(DirectiveTestCase):
         del self.current_app
         self._url_for.stop()
         self._current_app.stop()
+        DirectiveTestCase.tearDown(self)
 
     def test_run_with_default_opts(self):
         content = parser('''\
@@ -282,3 +284,111 @@ asd
         self.assertIn('src="http://lol/foo.jpg"', content['fragment'])
         self.assertIn('caption">asdf lol.', content['fragment'])
         self.assertIn('align-left', content['fragment'])
+
+
+class SubPagesTestCase(DirectiveTestCase):
+
+    directive = SubPages
+
+    def setUp(self):
+        DirectiveTestCase.setUp(self)
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self.current_app = self._current_app.start()
+        self.current_app.config = {'CONTENT_DIR': 'cont', 'POST_EXT': '.rs'}
+        # FIXME: find a way to test sorting
+        self.current_app.blohg.content.get_all.return_value = [
+            mock.Mock(slug='foo', title='Foo :)'),
+            mock.Mock(slug='bar', title='Bar!'),
+            mock.Mock(slug='foo/bar', title='Foo Bar :P'),
+            mock.Mock(slug='foo/bar/baz', title='Foo Bar Baz XD'),
+        ]
+        self._url_for = mock.patch('blohg.rst_parser.directives.url_for')
+        self.url_for = self._url_for.start()
+        self.url_for.side_effect = lambda endpoint, slug: '/%s/' % slug
+
+    def tearDown(self):
+        del self.url_for
+        del self.current_app
+        self._url_for.stop()
+        self._current_app.stop()
+        DirectiveTestCase.tearDown(self)
+
+    def test_run_without_argument(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-subpages::
+''', 3, ':repo:cont/index.rs')
+        self.assertIn('"/foo/"', content['fragment'])
+        self.assertIn('>Foo :)<', content['fragment'])
+        self.assertIn('"/bar/"', content['fragment'])
+        self.assertIn('>Bar!<', content['fragment'])
+        self.assertNotIn('"/foo/bar/"', content['fragment'])
+        self.assertNotIn('>Foo Bar :P<', content['fragment'])
+        self.assertNotIn('"/foo/bar/baz/"', content['fragment'])
+        self.assertNotIn('>Foo Bar Baz XD<', content['fragment'])
+
+    def test_run_without_argument_from_subpage(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-subpages::
+''', 3, ':repo:cont/foo.rs')
+        self.assertNotIn('"/foo/"', content['fragment'])
+        self.assertNotIn('>Foo :)<', content['fragment'])
+        self.assertNotIn('"/bar/"', content['fragment'])
+        self.assertNotIn('>Bar!<', content['fragment'])
+        self.assertIn('"/foo/bar/"', content['fragment'])
+        self.assertIn('>Foo Bar :P<', content['fragment'])
+        self.assertNotIn('"/foo/bar/baz/"', content['fragment'])
+        self.assertNotIn('>Foo Bar Baz XD<', content['fragment'])
+
+    def test_run_with_argument(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-subpages:: foo
+''', 3)
+        self.assertNotIn('"/foo/"', content['fragment'])
+        self.assertNotIn('>Foo :)<', content['fragment'])
+        self.assertNotIn('"/bar/"', content['fragment'])
+        self.assertNotIn('>Bar!<', content['fragment'])
+        self.assertIn('"/foo/bar/"', content['fragment'])
+        self.assertIn('>Foo Bar :P<', content['fragment'])
+        self.assertNotIn('"/foo/bar/baz/"', content['fragment'])
+        self.assertNotIn('>Foo Bar Baz XD<', content['fragment'])
+
+    def test_run_with_argument_from_subpage(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-subpages:: foo
+''', 3, ':repo:cont/foo/index.rs')
+        self.assertNotIn('"/foo/"', content['fragment'])
+        self.assertNotIn('>Foo :)<', content['fragment'])
+        self.assertNotIn('"/bar/"', content['fragment'])
+        self.assertNotIn('>Bar!<', content['fragment'])
+        self.assertIn('"/foo/bar/"', content['fragment'])
+        self.assertIn('>Foo Bar :P<', content['fragment'])
+        self.assertNotIn('"/foo/bar/baz/"', content['fragment'])
+        self.assertNotIn('>Foo Bar Baz XD<', content['fragment'])
+
+    def test_run_with_argument_for_subsubpage(self):
+        content = parser('''\
+asd
+---
+
+.. blohg-subpages:: foo/bar
+''', 3)
+        self.assertNotIn('"/foo/"', content['fragment'])
+        self.assertNotIn('>Foo :)<', content['fragment'])
+        self.assertNotIn('"/bar/"', content['fragment'])
+        self.assertNotIn('>Bar!<', content['fragment'])
+        self.assertNotIn('"/foo/bar/"', content['fragment'])
+        self.assertNotIn('>Foo Bar :P<', content['fragment'])
+        self.assertIn('"/foo/bar/baz/"', content['fragment'])
+        self.assertIn('>Foo Bar Baz XD<', content['fragment'])

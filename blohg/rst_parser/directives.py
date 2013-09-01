@@ -313,7 +313,8 @@ class SubPages(Directive):
             self.arguments.append(source)
         tmp_metadata = []
         final_metadata = []
-        splited_dir = self.arguments[0].split('/')
+        splited_dir = len(self.arguments[0]) > 0 \
+            and self.arguments[0].split('/') or []
         for metadata in current_app.blohg.content.get_all():
             splited_slug = metadata.slug.split('/')
             if metadata.slug.startswith(self.arguments[0]) and \
