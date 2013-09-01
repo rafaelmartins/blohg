@@ -392,3 +392,70 @@ asd
         self.assertNotIn('>Foo Bar :P<', content['fragment'])
         self.assertIn('"/foo/bar/baz/"', content['fragment'])
         self.assertIn('>Foo Bar Baz XD<', content['fragment'])
+
+
+class IncludeHgTestCase(DirectiveTestCase):
+
+    directive = IncludeHg
+
+    def setUp(self):
+        DirectiveTestCase.setUp(self)
+        self._current_app = mock.patch('blohg.io.current_app')
+        self.current_app = self._current_app.start()
+        self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
+        fctx1 = mock.Mock(path='content/inc.rst', content='''\
+Included paragraph
+------------------
+
+lol
+
+XD
+''')
+        self.current_app.blohg.changectx.get_filectx.return_value = fctx1
+
+    def tearDown(self):
+        del self.current_app
+        self._current_app.stop()
+        DirectiveTestCase.tearDown(self)
+
+    def test_simple_include(self):
+        content = parser('''\
+asd
+===
+
+hahah
+
+.. blohg-includehg:: content/foo.rst
+''', 3)
+        self.assertIn('<h3>Included paragraph</h3>', content['fragment'])
+        self.assertIn('<p>lol</p>', content['fragment'])
+        self.assertIn('<p>XD</p>', content['fragment'])
+
+    def test_include_with_start_and_end(self):
+        content = parser('''\
+asd
+===
+
+hahah
+
+.. blohg-includehg:: content/foo.rst
+   :start-line: 3
+   :end-line: 4
+''', 3)
+        self.assertNotIn('<h3>Included paragraph</h3>', content['fragment'])
+        self.assertIn('<p>lol</p>', content['fragment'])
+        self.assertNotIn('<p>XD</p>', content['fragment'])
+
+    def test_include_literal(self):
+        content = parser('''\
+asd
+===
+
+hahah
+
+.. blohg-includehg:: content/foo.rst
+   :literal:
+''', 3)
+        self.assertIn('\nIncluded paragraph\n', content['fragment'])
+        self.assertIn('\nlol\n', content['fragment'])
+        self.assertIn('\nXD\n', content['fragment'])
