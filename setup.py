@@ -70,7 +70,7 @@ setup(
     name='blohg',
     version=__version__,
     license='GPL-2',
-    description='A Mercurial-based blogging engine',
+    description='A Mercurial (or Git) based blogging engine',
     long_description=open(os.path.join(cwd, 'README.rst')).read(),
     author='Rafael Goncalves Martins',
     author_email='rafael@rafaelmartins.eng.br',
@@ -93,6 +93,10 @@ setup(
     extras_require={
         'git': ['pygit2==0.19.0'],
     },
+    tests_require=[
+        'mock',
+        'pygit2==0.19.0',
+    ],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
