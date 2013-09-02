@@ -23,8 +23,12 @@ class FileCtx(_FileCtx):
         self._repo = repo
         self._changectx = changectx
         self._path = path
+        try:
+            oid = self._changectx.oid
+        except AttributeError:
+            oid = self._changectx.target
         self._ctx = self.get_fileobj_from_basetree(
-            self._repo[self._changectx.oid], self._path)
+            self._repo[oid].tree, self._path)
         if not self._ctx or self._ctx.type != GIT_OBJ_BLOB or use_index:
             try:
                 self._ctx = self._repo[self._repo.index[self._path].oid]
@@ -35,8 +39,8 @@ class FileCtx(_FileCtx):
         tree = [basetree]
         for piece in path.split('/'):
             try:
-                tree.append(tree.pop()[piece].to_object())
-            except:
+                tree.append(self._repo[tree.pop()[piece].oid])
+            except KeyError:
                 return None
         return tree.pop()
 
@@ -46,7 +50,7 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             raise RuntimeError('Branch "master" not found!')
-        for commit in self._repo.walk(ref.oid, GIT_SORT_REVERSE):
+        for commit in self._repo.walk(ref.target, GIT_SORT_REVERSE):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit
@@ -57,7 +61,7 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             return
-        for commit in self._repo.walk(ref.oid, GIT_SORT_TIME):
+        for commit in self._repo.walk(ref.target, GIT_SORT_TIME):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit

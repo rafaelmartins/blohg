@@ -70,8 +70,8 @@ https://launchpad.net/~xav0989/+archive/libgit2
 
 You should be careful about the version of libgit2 installed on your system.
 The major and minor versions of pygit2 should match the major and minor versions
-of libgit2, e.g. if the required version of pygit2 is 0.18.1, you need
-libgit2-0.18.*.
+of libgit2, e.g. if the required version of pygit2 is 0.19.1, you need
+libgit2-0.19.*.
 
 
 Gentoo Linux

@@ -31,18 +31,18 @@ class ChangeCtxDefault(ChangeCtx):
 
     @locked_cached_property
     def files(self):
-        def r(_files, tree, prefix=None):
+        def r(_files, repo, tree, prefix=None):
             for entry in tree:
-                obj = entry.to_object()
+                obj = repo[entry.oid]
                 filename = prefix and (prefix + '/' + entry.name) or entry.name
                 if obj.type == GIT_OBJ_TREE:
-                    r(_files, obj, filename)
+                    r(_files, repo, obj, filename)
                 elif obj.type == GIT_OBJ_BLOB:
                     _files.append(filename)
                 else:
                     raise RuntimeError('Invalid object: %s' % filename)
         f = []
-        r(f, self._ctx.tree)
+        r(f, self._repo, self._ctx.tree)
         return sorted(f)
 
     @locked_cached_property
@@ -54,21 +54,21 @@ class ChangeCtxDefault(ChangeCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             raise RuntimeError('Branch "master" not found!')
-        return ref.oid
+        return ref.target
 
     def needs_reload(self):
         try:
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             return True
-        return self.revision_id != ref.oid
+        return self.revision_id != ref.target
 
     def filectx_needs_reload(self, filectx):
         try:
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             raise RuntimeError('Branch "master" not found!')
-        return filectx._changectx.oid != ref.oid
+        return filectx._changectx.oid != ref.target
 
     def published(self, date, now):
         return date <= now
@@ -94,7 +94,7 @@ class ChangeCtxWorkingDir(ChangeCtxDefault):
             raise RuntimeError('Bare repositories should be deployed with '
                                'REVISION_DEFAULT change context')
         try:
-            return self._repo.head.oid
+            return self._repo.head.target
         except Exception:
             raise RuntimeError('HEAD reference not found! Please do your '
                                'first commit.')

@@ -91,7 +91,7 @@ setup(
         'Pygments',  # TODO: make this dependency optional
     ],
     extras_require={
-        'git': ['pygit2==0.18.1'],
+        'git': ['pygit2==0.19.0'],
     },
     classifiers=[
         'Development Status :: 3 - Alpha',
