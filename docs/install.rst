@@ -64,10 +64,6 @@ your operating system), and type::
 
 .. _libgit2: http://libgit2.github.com/
 
-For ubuntu users, I recommend installing ``libgit2-dev`` package from this PPA:
-
-https://launchpad.net/~xav0989/+archive/libgit2
-
 You should be careful about the version of libgit2 installed on your system.
 The major and minor versions of pygit2 should match the major and minor versions
 of libgit2, e.g. if the required version of pygit2 is 0.19.1, you need
