@@ -2,6 +2,8 @@ include AUTHORS.rst
 include README.rst
 include LICENSE
 include requirements.txt
+include requirements_git.txt
+include requirements_test.txt
 recursive-include share *
 recursive-include blohg/templates *
 recursive-include blohg/repo_template *
