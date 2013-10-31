@@ -82,7 +82,7 @@ class BlohgExtensionTestCase(unittest.TestCase):
         with app.app_context():
             ext = BlohgExtension('blohg_foo')
             self.assertIsInstance(ext.g, app.app_ctx_globals_class)
-            self.assertIs(ext.g, _app_ctx_stack.top._blohg_foo_globals)
+            self.assertIs(ext.g, app._blohg_foo_globals)
 
     def test_setup_extension(self):
         app = Flask(__name__)

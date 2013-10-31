@@ -15,7 +15,7 @@ from flask import Flask as _Flask, render_template, request
 from flask.ctx import _app_ctx_stack
 from flask.ext.babel import Babel
 from flask.helpers import locked_cached_property
-from jinja2.loaders import ChoiceLoader, FileSystemLoader
+from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
 from blohg.ext import ExtensionImporter

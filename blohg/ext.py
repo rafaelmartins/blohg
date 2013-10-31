@@ -11,7 +11,7 @@
 
 from flask import Blueprint
 from flask.ctx import _app_ctx_stack
-from flask.globals import current_app, g
+from flask.globals import current_app
 from flask.helpers import locked_cached_property
 from imp import new_module
 from jinja2.loaders import FileSystemLoader
@@ -65,10 +65,10 @@ class BlohgExtension(object):
 
     @property
     def g(self):
-        key = '_%s_g' % self.ext_id
-        if not hasattr(g, key):
-            setattr(g, key, current_app.app_ctx_globals_class())
-        return getattr(g, key)
+        key = '_%s_globals' % self.ext_id
+        if not hasattr(current_app, key):
+            setattr(current_app, key, current_app.app_ctx_globals_class())
+        return getattr(current_app, key)
 
     def setup_extension(self, f):
         self._callbacks.append(f)

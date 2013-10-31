@@ -15,7 +15,7 @@ from docutils.io import FileInput
 from docutils.parsers.rst import directives, Directive
 from docutils.parsers.rst.directives.images import Image, Figure
 from docutils.parsers.rst.directives.misc import Include
-from flask import current_app, request, url_for
+from flask import current_app, url_for
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
