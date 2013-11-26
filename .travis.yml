@@ -21,7 +21,7 @@ script:
   - nosetests --with-xcoverage --cover-package=blohg --cover-tests
 
 after_success:
-  - coveralls
+  - coveralls --ignore-errors
 
 notifications:
   irc:
