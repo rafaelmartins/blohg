@@ -1,3 +1,4 @@
 mock
+nose
 nosexcover
 -r requirements_git.txt
