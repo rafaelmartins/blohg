@@ -1,6 +1,0 @@
-\.py[co]$
-^(env|dist|blohg\.egg-info)/
-^build/
-^docs/_build/[^(.keep)]
-\.wpu$
-^\.coverage$

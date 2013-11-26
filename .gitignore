@@ -1,0 +1,12 @@
+*.pyc
+*.pyo
+
+*.wpu
+
+/env
+/dist
+/blohg.egg-info
+/build
+
+/docs/_build
+!/docs/_build/.keep
