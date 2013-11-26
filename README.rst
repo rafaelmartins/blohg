@@ -3,11 +3,15 @@ blohg
 
 .. image:: https://travis-ci.org/rafaelmartins/blohg.png
    :target: https://travis-ci.org/rafaelmartins/blohg
-   :alt: Travis build status
 
 .. image:: https://requires.io/github/rafaelmartins/blohg/requirements.png?branch=master
    :target: https://requires.io/github/rafaelmartins/blohg/requirements/?branch=master
-   :alt: Requirements status
+
+.. image:: https://pypip.in/d/blohg/badge.png
+   :target: https://crate.io/packages/blohg
+
+.. image:: https://pypip.in/v/blohg/badge.png
+   :target: https://crate.io/packages/blohg
 
 
 blohg is a simple and easy to use blog engine, that uses the Mercurial
