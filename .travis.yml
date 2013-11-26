@@ -18,10 +18,7 @@ install:
   - pip install -r requirements_test.txt --use-mirrors
 
 script:
-  - nosetests --with-xcoverage --cover-package=blohg --cover-tests
-
-after_success:
-  - coveralls --ignore-errors
+  - nosetests
 
 notifications:
   irc:

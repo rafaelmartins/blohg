@@ -4,9 +4,6 @@ blohg
 .. image:: https://travis-ci.org/rafaelmartins/blohg.png
    :target: https://travis-ci.org/rafaelmartins/blohg
 
-.. image:: https://coveralls.io/repos/rafaelmartins/blohg/badge.png
-   :target: https://coveralls.io/r/rafaelmartins/blohg 
-
 .. image:: https://requires.io/github/rafaelmartins/blohg/requirements.png?branch=master
    :target: https://requires.io/github/rafaelmartins/blohg/requirements/?branch=master
 
