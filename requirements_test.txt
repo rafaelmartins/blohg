@@ -1,4 +1,4 @@
 mock
 nosexcover
-python-coveralls
+-e git://github.com/rafaelmartins/python-coveralls.git#egg=python-coveralls
 -r requirements_git.txt
