@@ -21,4 +21,6 @@ script: nosetests
 
 notifications:
   irc:
-    - irc.freenode.org#blohg
+    channels:
+      - irc.freenode.org#blohg
+    on_success: change
