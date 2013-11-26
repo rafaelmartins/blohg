@@ -2,6 +2,13 @@ blohg
 ~~~~~
 
 .. image:: https://travis-ci.org/rafaelmartins/blohg.png
+   :target: https://travis-ci.org/rafaelmartins/blohg
+   :alt: Travis build status
+
+.. image:: https://requires.io/github/rafaelmartins/blohg/requirements.png?branch=master
+   :target: https://requires.io/github/rafaelmartins/blohg/requirements/?branch=master
+   :alt: Requirements status
+
 
 blohg is a simple and easy to use blog engine, that uses the Mercurial
 SCM (or alternatively Git) as backend, to store the content of the posts
