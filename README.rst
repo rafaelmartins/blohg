@@ -1,6 +1,8 @@
 blohg
 ~~~~~
 
+.. image:: https://travis-ci.org/rafaelmartins/blohg.png
+
 blohg is a simple and easy to use blog engine, that uses the Mercurial
 SCM (or alternatively Git) as backend, to store the content of the posts
 and pages.
