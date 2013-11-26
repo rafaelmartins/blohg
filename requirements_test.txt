@@ -1,4 +1,4 @@
 mock
-nose
 nosexcover
+python-coveralls
 -r requirements_git.txt
