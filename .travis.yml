@@ -8,11 +8,11 @@ python:
   - "2.7"
 
 before_install:
-  - git clone --quiet --depth=1 git://github.com/libgit2/libgit2.git ~/libgit2
-  - pushd ~/libgit2/ && git checkout v$LIBGIT2_VERSION && popd
+  - git clone --quiet git://github.com/libgit2/libgit2.git ~/libgit2
+  - pushd ~/libgit2/ > /dev/null && git checkout v$LIBGIT2_VERSION && popd > /dev/null
   - mkdir -p ~/libgit2/build
-  - pushd ~/libgit2/build && cmake .. -DCMAKE_INSTALL_PREFIX=~/libgit2/_install -DBUILD_CLAR=OFF && popd
-  - pushd ~/libgit2/build && cmake --build . --target install && popd
+  - pushd ~/libgit2/build > /dev/null && cmake .. -DCMAKE_INSTALL_PREFIX=~/libgit2/_install -DBUILD_CLAR=OFF && popd > /dev/null
+  - pushd ~/libgit2/build > /dev/null && cmake --build . --target install && popd > /dev/null
   - ls -la ~/libgit2
 
 install:
