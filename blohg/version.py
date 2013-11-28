@@ -18,33 +18,24 @@ import re
 version = '0.12+'
 
 # the file isn't installed but this isn't a stable release, then we may be
-# running from a mercurial repository. let's verify.
+# running from a git repository. let's verify.
 if re.match(r'^[0-9.]+\+$', version):
 
-    # we don't need to care about use mercurial from command-line, because we
-    # are GPL already anyway :)
-    from mercurial import hg, ui as hgui
-    from mercurial.commands import identify
     import os
+    import subprocess
 
     # root dir is where the parent dir of the dir where this file is.
     root_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 
-    # if we are inside a mercurial repository...
-    if os.path.isdir(os.path.join(root_dir, '.hg')):
-
-        # create an ui object
-        ui = hgui.ui()
-
-        # create the repo object
-        repo = hg.repository(ui, root_dir)
-
-        # use the ui stack to get the return value from the 'hg identify'
-        # command, and run the command itself.
-        ui.pushbuffer()
-        identify(ui, repo, id=True)
-        rv = ui.popbuffer()
-
-        # append the changeset hash to the version.
-        if rv:
-            version += '/' + rv.strip()
+    # if we are inside a git repository...
+    if os.path.isdir(os.path.join(root_dir, '.git')):
+        try:
+            git_version = subprocess.check_output(['git', 'rev-parse',
+                                                   '--short', 'HEAD'])
+            # append the changeset hash to the version.
+            if git_version:
+                version += '/' + git_version.strip()
+        except Exception:
+            # yeah, it is a bad exception, I know, but I don't want to kill
+            # blohg just because I can't parse the git version for some reason
+            pass
