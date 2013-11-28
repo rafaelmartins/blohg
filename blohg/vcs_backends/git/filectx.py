@@ -65,12 +65,15 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             return
+        head = ref.get_object()
         for commit in self._repo.walk(ref.target,
                                       GIT_SORT_TOPOLOGICAL |
                                       GIT_SORT_TIME):
-            obj = self.get_fileobj_from_basetree(commit.tree, self._path)
-            if obj is not None:
-                return commit
+            diff = self._repo.diff(head, commit)
+            for patch in diff:
+                if patch.new_file_path == self._path:
+                    return head
+            head = commit
 
     @locked_cached_property
     def path(self):
