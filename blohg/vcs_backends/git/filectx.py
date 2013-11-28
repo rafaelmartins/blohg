@@ -11,7 +11,8 @@
 
 import time
 from flask.helpers import locked_cached_property
-from pygit2 import GIT_OBJ_BLOB, GIT_SORT_REVERSE, GIT_SORT_TIME
+from pygit2 import GIT_OBJ_BLOB, GIT_SORT_REVERSE, GIT_SORT_TIME, \
+    GIT_SORT_TOPOLOGICAL
 
 from blohg.vcs import FileCtx as _FileCtx
 
@@ -50,7 +51,10 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             raise RuntimeError('Branch "master" not found!')
-        for commit in self._repo.walk(ref.target, GIT_SORT_REVERSE):
+        for commit in self._repo.walk(ref.target,
+                                      GIT_SORT_TOPOLOGICAL |
+                                      GIT_SORT_TIME |
+                                      GIT_SORT_REVERSE):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit
@@ -61,7 +65,9 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             return
-        for commit in self._repo.walk(ref.target, GIT_SORT_TIME):
+        for commit in self._repo.walk(ref.target,
+                                      GIT_SORT_TOPOLOGICAL |
+                                      GIT_SORT_TIME):
             obj = self.get_fileobj_from_basetree(commit.tree, self._path)
             if obj is not None:
                 return commit
