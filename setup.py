@@ -91,11 +91,11 @@ setup(
         'Pygments',  # TODO: make this dependency optional
     ],
     extras_require={
-        'git': ['pygit2==0.19.0'],
+        'git': ['pygit2==0.20.0'],
     },
     tests_require=[
         'mock',
-        'pygit2==0.19.0',
+        'pygit2==0.20.0',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',

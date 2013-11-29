@@ -1,2 +1,2 @@
-pygit2==0.19.0
+pygit2==0.20.0
 -r requirements.txt
