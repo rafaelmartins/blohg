@@ -3,7 +3,7 @@ blohg, a Mercurial-based blogging engine
 
 :Author: Rafael Goncalves Martins
 :Website: http://blohg.org/
-:Source code: http://hg.rafaelmartins.eng.br/blohg/
+:Source code: https://github.com/rafaelmartins/blohg
 :Mailing list: blohg@librelist.com
 :Version: |release|
 

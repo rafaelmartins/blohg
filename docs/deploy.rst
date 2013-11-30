@@ -43,7 +43,7 @@ There's a sample ``blohg.wsgi`` file (for Apache_ mod_wsgi_) available here:
 .. _Apache: http://httpd.apache.org/
 .. _mod_wsgi: http://www.modwsgi.org/
 
-http://hg.rafaelmartins.eng.br/blohg/file/tip/share/blohg.wsgi
+https://github.com/rafaelmartins/blohg/blob/master/share/blohg.wsgi
 
 Using static pages
 ------------------
