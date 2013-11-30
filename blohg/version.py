@@ -31,7 +31,9 @@ if re.match(r'^[0-9.]+\+$', version):
     if os.path.isdir(os.path.join(root_dir, '.git')):
         try:
             git_version = subprocess.check_output(['git', 'rev-parse',
-                                                   '--short', 'HEAD'])
+                                                   '--short', 'HEAD'],
+                                                  stderr=subprocess.PIPE,
+                                                  cwd=root_dir)
             # append the changeset hash to the version.
             if git_version:
                 version += '/' + git_version.strip()
