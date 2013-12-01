@@ -14,7 +14,6 @@ import os
 import sys
 import unittest
 from flask import Flask
-from flask.ctx import _app_ctx_stack
 
 from blohg.ext import BlohgBlueprint, BlohgExtension, ExtensionImporter
 from blohg.static import BlohgStaticFile
@@ -138,7 +137,7 @@ raise RuntimeError('lol')
 
     def test_import_broken_extension(self):
         try:
-            import blohg_baz
+            __import__('blohg_baz')
         except RuntimeError:
             t, v, tb = sys.exc_info()
             self.assertEquals(tb.tb_next.tb_next.tb_frame.f_code.co_filename,
@@ -150,4 +149,4 @@ raise RuntimeError('lol')
 
     def test_invalid_import(self):
         with self.assertRaises(ImportError):
-            import blohg_lol
+            __import__('blohg_lol')
