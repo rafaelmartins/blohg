@@ -9,7 +9,6 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import codecs
 import os
 import time
 from flask.helpers import locked_cached_property
@@ -91,7 +90,7 @@ class FileCtx(_FileCtx):
         if self._use_index:
             real_file = os.path.join(self._repo.workdir, self._path)
             if os.path.isfile(real_file):
-                with codecs.open(real_file, 'r', encoding='utf-8') as fp:
+                with open(real_file, 'r') as fp:
                     return fp.read()
         return self._ctx.data
 
