@@ -48,6 +48,18 @@ class FileCtxTestCase(unittest.TestCase):
     def test_content(self):
         ctx = FileCtx(self.repo, self.changectx, self.file_name)
         self.assertEqual(ctx.content, 'test\n')
+        with codecs.open(self.file_path, 'a', encoding='utf-8') as fp:
+            fp.write('lol\n')  # change file without git add
+        ctx = FileCtx(self.repo, self.changectx, self.file_name)
+        self.assertEqual(ctx.content, 'test\n')
+
+    def test_content_from_index_read_without_git_add(self):
+        ctx = FileCtx(self.repo, self.changectx, self.file_name, True)
+        self.assertEqual(ctx.content, 'test\n')
+        with codecs.open(self.file_path, 'a', encoding='utf-8') as fp:
+            fp.write('lol\n')  # change file without git add
+        ctx = FileCtx(self.repo, self.changectx, self.file_name, True)
+        self.assertEqual(ctx.content, 'test\nlol\n')
 
     def test_author(self):
         ctx = FileCtx(self.repo, self.changectx, self.file_name)

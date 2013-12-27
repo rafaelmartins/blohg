@@ -9,6 +9,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import codecs
+import os
 import time
 from flask.helpers import locked_cached_property
 from pygit2 import GIT_OBJ_BLOB, GIT_SORT_REVERSE, GIT_SORT_TIME, \
@@ -24,6 +26,7 @@ class FileCtx(_FileCtx):
         self._repo = repo
         self._changectx = changectx
         self._path = path
+        self._use_index = use_index
         try:
             oid = self._changectx.oid
         except AttributeError:
@@ -83,6 +86,13 @@ class FileCtx(_FileCtx):
     @locked_cached_property
     def data(self):
         """Raw data of the file."""
+        # This hack avoids 'git add'ing files after every edit.
+        # File must be added to index once though.
+        if self._use_index:
+            real_file = os.path.join(self._repo.workdir, self._path)
+            if os.path.isfile(real_file):
+                with codecs.open(real_file, 'r', encoding='utf-8') as fp:
+                    return fp.read()
         return self._ctx.data
 
     @locked_cached_property

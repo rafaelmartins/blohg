@@ -49,6 +49,10 @@ class FileCtxTestCase(unittest.TestCase):
     def test_content(self):
         ctx = FileCtx(self.repo, self.changectx, self.file_name)
         self.assertEqual(ctx.content, 'test\n')
+        with codecs.open(self.file_path, 'a', encoding='utf-8') as fp:
+            fp.write('lol\n')  # change file without hg add
+        ctx = FileCtx(self.repo, self.changectx, self.file_name)
+        self.assertEqual(ctx.content, 'test\nlol\n')
 
     def test_author(self):
         ctx = FileCtx(self.repo, self.changectx, self.file_name)
