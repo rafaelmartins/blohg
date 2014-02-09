@@ -94,8 +94,6 @@ def home(page=None):
     end = int(current * ppp)
     url_gen = lambda x: url_for('views.home', page=x)
     posts = pages[init:end]
-    if len(posts) == 0:
-        abort(404)
     return render_template('_posts.html', posts=posts, full_content=False,
                            pagination={'num_pages': num_pages, 'current': page,
                                        'url_gen': url_gen})
