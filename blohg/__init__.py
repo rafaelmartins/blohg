@@ -126,6 +126,7 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     app.config.setdefault('POST_EXT', u'.rst')
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
+    app.config.setdefault('LOCALE', 'en')
     app.config.setdefault('RST_HEADER_LEVEL', 3)
     app.config.setdefault('EXTENSIONS', [])
     app.config.setdefault('EXTENSIONS_DIR', 'ext')
@@ -160,6 +161,10 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     @babel.timezoneselector
     def get_timezone():
         return app.config['TIMEZONE']
+
+    @babel.localeselector
+    def get_locale():
+        return app.config['LOCALE']
 
     @app.errorhandler(404)
     def page_not_found(error):
