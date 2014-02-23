@@ -11,7 +11,7 @@
 
 import time
 from flask.helpers import locked_cached_property
-from mercurial import hg, ui
+from mercurial import error, hg, ui
 from zlib import adler32
 
 from blohg.vcs_backends.hg.filectx import FileCtx
@@ -55,8 +55,8 @@ class ChangeCtxDefault(ChangeCtxBase):
     @property
     def revision_id(self):
         try:
-            return self._repo.branchtags()['default']
-        except Exception:
+            return self._repo.branchtip('default')
+        except error.RepoLookupError:
             return None
 
     def needs_reload(self):
@@ -64,8 +64,8 @@ class ChangeCtxDefault(ChangeCtxBase):
             return True
         repo = hg.repository(self._ui, self._repo_path)
         try:
-            revision_id = repo.branchtags()['default']
-        except Exception:
+            revision_id = repo.branchtip('default')
+        except error.RepoLookupError:
             return True
         revision = repo[revision_id]
         return revision.rev() > self.revno
