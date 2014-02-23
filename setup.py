@@ -86,7 +86,7 @@ setup(
         'Flask-Script>=0.5.3',
         'Frozen-Flask>=0.7',
         'Jinja2>=2.5.2',
-        'Mercurial>=1.6',
+        'Mercurial>=2.6.2',
         'PyYAML',
         'Pygments',  # TODO: make this dependency optional
     ],
