@@ -80,6 +80,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
+        'blinker',
         'docutils==0.10',
         'Flask>=0.10.1',
         'Flask-Babel>=0.7',
