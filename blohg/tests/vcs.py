@@ -44,3 +44,7 @@ class LoadRepoTestCase(unittest.TestCase):
         init_repository(self.repo_path, True)
         repo = load_repo(self.repo_path)
         self.assertTrue(isinstance(repo, GitRepository))
+
+    def test_no_backend(self):
+        with self.assertRaises(RuntimeError):
+            load_repo(self.repo_path)

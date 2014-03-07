@@ -137,3 +137,6 @@ def load_repo(repo_path):
     for backend in backends:
         if backend.supported(repo_path):
             return backend(repo_path)
+    raise RuntimeError('No VCS backend available for %s. If you are trying to '
+                       'run a Git repository, try enabling git support for '
+                       'blohg' % repo_path)
