@@ -1,4 +1,3 @@
-blinker
 docutils==0.10
 Flask>=0.10.1
 Flask-Babel>=0.7
