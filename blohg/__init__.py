@@ -103,7 +103,7 @@ class Blohg(object):
 
 
 def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
-               autoinit=True, embedded_extensions=False):
+               autoinit=True, embedded_extensions=False, debug=False):
     """Application factory.
 
     :param repo_path: the path to the mercurial repository.
@@ -112,6 +112,7 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
 
     # create the app object
     app = Flask(__name__, static_folder=None)
+    app.debug = debug
 
     # register some sane default config values
     app.config.setdefault('AUTHOR', u'Your Name Here')

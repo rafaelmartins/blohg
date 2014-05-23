@@ -26,6 +26,7 @@ filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 def create_app(*args, **kwargs):
     kwargs['autoinit'] = False
+    kwargs['debug'] = True
     return _create_app(*args, **kwargs)
 
 
