@@ -1,7 +1,7 @@
 language: python
 
 env:
-    - LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib LIBGIT2_VERSION=0.20.0
+    - LIBGIT2=~/libgit2/_install/ LD_LIBRARY_PATH=~/libgit2/_install/lib LIBGIT2_VERSION=0.20.3
 
 python:
   - "2.7"
