@@ -84,7 +84,7 @@ setup(
         'docutils==0.11',
         'Flask>=0.10.1',
         'Flask-Babel>=0.7',
-        'Flask-Script>=0.5.3',
+        'Flask-Script==0.6.7',
         'Frozen-Flask>=0.7',
         'Jinja2>=2.5.2',
         'Mercurial>=2.6.2',
