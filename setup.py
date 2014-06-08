@@ -81,7 +81,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'blinker>=1.1',
-        'click==2.0'
+        'click==2.0',
         'docutils==0.11',
         'Flask>=0.10.1',
         'Flask-Babel>=0.7',
