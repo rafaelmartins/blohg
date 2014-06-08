@@ -42,10 +42,16 @@ class Blohg(object):
     def __init__(self, app, embedded_extensions=False):
         self.app = app
         self.embedded_extensions = embedded_extensions
-        self.repo = load_repo(self.app.config['REPO_PATH'])
         self.changectx = None
         self.content = []
         app.blohg = self
+
+    @locked_cached_property
+    def repo(self):
+        if not os.path.isdir(self.app.config['REPO_PATH']):
+            raise RuntimeError('Repository not found: %s' % \
+                               self.app.config['REPO_PATH'])
+        return load_repo(self.app.config['REPO_PATH'])
 
     def init_repo(self, revision_id):
         if not os.path.isdir(self.app.config['REPO_PATH']):
