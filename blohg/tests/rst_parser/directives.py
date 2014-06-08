@@ -400,7 +400,7 @@ class IncludeHgTestCase(DirectiveTestCase):
 
     def setUp(self):
         DirectiveTestCase.setUp(self)
-        self._current_app = mock.patch('blohg.io.current_app')
+        self._current_app = mock.patch('blohg.file_like.current_app')
         self.current_app = self._current_app.start()
         self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
         fctx1 = mock.Mock(path='content/inc.rst', content='''\
