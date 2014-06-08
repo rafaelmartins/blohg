@@ -21,7 +21,7 @@ _root_dir = os.path.join(
 if os.path.isdir(os.path.join(_root_dir, 'blohg')):
     sys.path.insert(0, _root_dir)
 
-from blohg.script import create_script
+from blohg.script import cli
 
 if __name__ == '__main__':
-    create_script().run()
+    cli()

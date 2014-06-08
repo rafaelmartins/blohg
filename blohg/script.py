@@ -9,101 +9,48 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import click
 import os
 import sys
 import posixpath
-from flask.ext.script import Command, Group, Manager, Server as _Server, Option
 from flask_frozen import Freezer, MissingURLGeneratorWarning
 from warnings import filterwarnings
 from werkzeug.routing import Map
 
-from blohg import create_app as _create_app
+from blohg import create_app
 from blohg.vcs import backends, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 # filter MissingURLGeneratorWarning warnings.
 filterwarnings('ignore', category=MissingURLGeneratorWarning)
 
 
-def create_app(*args, **kwargs):
-    kwargs['autoinit'] = False
-    kwargs['debug'] = True
-    return _create_app(*args, **kwargs)
+def _create_app(repo_path, disable_embedded_extensions):
+    return create_app(repo_path=os.path.abspath(repo_path), autoinit=False,
+                      embedded_extensions=not disable_embedded_extensions,
+                      debug=True)
 
 
-class Server(_Server):
-
-    def get_options(self):
-        options = _Server.get_options(self)
-        options += (Option('-n', '--revision-default', action='store_const',
-                           dest='revision_id', const=REVISION_DEFAULT,
-                           default=REVISION_WORKING_DIR,
-                           help='use files from the default branch, instead '
-                           'of the working directory'),)
-        return options
-
-    def handle(self, app, *args, **kwargs):
-        os.environ['RUNNING_FROM_CLI'] = '1'
-        app.blohg.init_repo(kwargs.pop('revision_id'))
-
-        # find extension files
-        def _listfiles(directory, files):
-            if not os.path.exists(directory):
-                return
-            for f in os.listdir(directory):
-                fname = os.path.join(directory, f)
-                if os.path.isdir(fname):
-                    _listfiles(fname, files)
-                else:
-                    files.append(os.path.abspath(fname))
-
-        extra_files = []
-        _listfiles(os.path.join(app.config['REPO_PATH'],
-                                app.config['EXTENSIONS_DIR']), extra_files)
-
-        if 'extra_files' in self.server_options \
-           and self.server_options['extra_files'] is not None:
-            self.server_options['extra_files'] = \
-                list(self.server_options['extra_files']) + extra_files
-        else:
-            self.server_options['extra_files'] = extra_files
-
-        _Server.handle(self, app, *args, **kwargs)
+@click.group()
+def cli():
+    '''blohg's command line interface'''
 
 
-class InitRepo(Command):
-    """initialize a blohg repo, using the default template."""
+@cli.command()
+@click.option('--repo-path', default='.', metavar='REPO_PATH',
+              help='Repository path.')
+@click.option('--disable-embedded-extensions', is_flag=True,
+              help='Disable embedded extensions.')
+@click.option('--serve', '-s', is_flag=True,
+              help='Run development server.')
+@click.option('--noindex', is_flag=True,
+              help='Create standalone HTML files, instead of dirs with '
+              'index.html.')
+def freeze(repo_path, disable_embedded_extensions, serve, noindex):
+    '''Freeze the blog into a set of static files.'''
 
-    def get_options(self):
-        rv = ()
-        for backend in backends:
-            rv += (Option('--%s' % backend.identifier, action='store_true',
-                          dest=backend.identifier,
-                          help='create a %s repository' % backend.name),)
-        return (Group(*rv, exclusive=True),)
+    app = _create_app(repo_path, disable_embedded_extensions)
 
-    def handle(self, app, **kwargs):
-        repo = None
-        for backend in backends:
-            if kwargs.get(backend.identifier, False):
-                repo = backend
-                break
-        if repo is None:
-            repo = backends[0]
-        try:
-            repo.create_repo(app.config['REPO_PATH'])
-        except RuntimeError, err:
-            print >> sys.stderr, str(err)
-
-
-class Freeze(Command):
-    """ freeze the blog into a set of static files. """
-
-    option_list = (Option('--serve', '-s', dest='serve', default=False,
-                          action='store_true'),
-                   Option('--noindex', dest='no_index', default=False,
-                          action='store_true'))
-
-    def remap_rules(self, map, map_html):
+    def remap_rules(map, map_html):
         """remaping the rules with files extensions"""
         mapping = {'views.source': 'txt',
                    'views.atom': 'atom'}
@@ -143,58 +90,110 @@ class Freeze(Command):
             rules.append(rule)
         return Map(rules)
 
-    def handle(self, app, serve, no_index):
-        app.jinja_loader  # ugly workaround
-        app.blohg.init_repo(REVISION_DEFAULT)
+    app.blohg.init_repo(REVISION_DEFAULT)
+    app.url_map = remap_rules(app.url_map, noindex)
+    app.config.setdefault('FREEZER_DESTINATION', os.path.join(
+        app.config.get('REPO_PATH'), 'build'))
 
-        app.url_map = self.remap_rules(app.url_map, no_index)
+    freezer = Freezer(app)
 
-        # That's a risky one, it woud be better to give a parameter to the
-        # freezer
-        app.root_path = app.config.get('REPO_PATH')
+    def static_generator(static_dir):
+        for f in app.blohg.changectx.files:
+            if f.startswith(static_dir):
+                yield dict(filename=f[len(static_dir):] \
+                           .strip(posixpath.sep))
 
-        freezer = Freezer(app)
+    @freezer.register_generator
+    def static():
+        '''Walk the static dir and freeze everything'''
+        return static_generator('static')
 
-        def static_generator(static_dir):
-            for f in app.blohg.changectx.files:
-                if f.startswith(static_dir):
-                    yield dict(filename=f[len(static_dir):] \
-                               .strip(posixpath.sep))
+    @freezer.register_generator
+    def attachments():
+        '''Walk the attachment dir and freeze everything'''
+        return static_generator(app.config['ATTACHMENT_DIR'])
 
-        @freezer.register_generator
-        def static():
-            """Walk the static dir and freeze everything"""
-            return static_generator('static')
-
-        @freezer.register_generator
-        def attachments():
-            """Walk the attachment dir and freeze everything"""
-            return static_generator(app.config['ATTACHMENT_DIR'])
-
-        freezer.freeze()
-        if serve:
-            freezer.serve()
+    freezer.freeze()
+    if serve:
+        freezer.serve()
 
 
-def create_script():
-    """Script object factory
+@cli.command()
+@click.option('--repo-path', default='.', metavar='REPO_PATH',
+              help='Repository path.')
+@click.option('--hg', 'vcs', flag_value='hg', default=True,
+              help='Create a Mercurial repository.')
+@click.option('--git', 'vcs', flag_value='git',
+              help='Create a Git repository.')
+def initrepo(repo_path, vcs):
+    '''Initialize a blohg repo, using the default template.'''
 
-    :param repo_path: the path to the mercurial repository.
-    :return: the script object (Flask-Script' Manager instance).
-    """
+    repo = None
+    for backend in backends:
+        if backend.identifier == vcs:
+            repo = backend
+            break
+    # hg backend is guaranteed to exist, then it shouldn't fail
+    try:
+        repo.create_repo(os.path.abspath(repo_path))
+    except RuntimeError, err:
+        click.echo(str(err), file=sys.stderr)
 
-    script = Manager(create_app, with_default_commands=False)
-    script.add_option('--repo-path', dest='repo_path',
-                      default=os.getcwd(), required=False,
-                      help='Repository path')
-    script.add_option('-e', '--disable-embedded-extensions',
-                      action='store_false', dest='embedded_extensions',
-                      default=True, help='disable the loading of extensions '
-                      'from the mercurial repository')
-    server = Server(use_debugger=True, use_reloader=True)
-    server.description = 'runs the blohg local server.'
-    script.add_command('runserver', server)
-    script.add_command('initrepo', InitRepo())
-    script.add_command('freeze', Freeze())
 
-    return script
+@cli.command()
+@click.option('--repo-path', default='.', metavar='REPO_PATH',
+              help='Repository path.')
+@click.option('--disable-embedded-extensions', is_flag=True,
+              help='Disable embedded extensions.')
+@click.option('--revision-default', '-n', is_flag=True,
+              help='Use files from the default branch, instead of the '
+              'working directory.')
+@click.option('--host', '-t', default='127.0.0.1', metavar='HOST',
+              help='Server host.')
+@click.option('--port', '-p', type=click.INT, default=5000, metavar='PORT',
+              help='Server port.')
+@click.option('--threaded', is_flag=True,
+              help='Handle each request in a separate thread.')
+@click.option('--processes', type=click.INT, default=1, metavar='PROCESSES',
+              help='Number of processes to spawn.')
+@click.option('--passthrough-errors', is_flag=True,
+              help='Disable the error catching.')
+@click.option('--no-debug', '-d', is_flag=True,
+              help='Disable Werkzeug debugger.')
+@click.option('--no-reload', '-r', is_flag=True,
+              help='Disable automatic reloader.')
+def runserver(repo_path, disable_embedded_extensions, revision_default, host,
+              port, threaded, processes, passthrough_errors, no_debug,
+              no_reload):
+    '''Run the blohg development server.'''
+
+    app = _create_app(repo_path, disable_embedded_extensions)
+
+    revision_id = REVISION_WORKING_DIR
+    if revision_default:
+        revision_id = REVISION_DEFAULT
+    use_debugger = not no_debug
+    use_reloader = not no_reload
+
+    os.environ['RUNNING_FROM_CLI'] = '1'
+    app.blohg.init_repo(revision_id)
+
+    # find extension files
+    def _listfiles(directory, files):
+        if not os.path.exists(directory):
+            return
+        for f in os.listdir(directory):
+            fname = os.path.join(directory, f)
+            if os.path.isdir(fname):
+                _listfiles(fname, files)
+            else:
+                files.append(os.path.abspath(fname))
+
+    extra_files = []
+    _listfiles(os.path.join(app.config['REPO_PATH'],
+                            app.config['EXTENSIONS_DIR']), extra_files)
+
+    app.run(host=host, port=port, debug=use_debugger,
+            use_debugger=use_debugger, use_reloader=use_reloader,
+            threaded=threaded, processes=processes,
+            passthrough_errors=passthrough_errors, extra_files=extra_files)
