@@ -121,7 +121,7 @@ def freeze(repo_path, disable_embedded_extensions, serve, noindex):
 @cli.command()
 @click.option('--repo-path', default='.', metavar='REPO_PATH',
               help='Repository path.')
-@click.option('--hg', 'vcs', flag_value='hg', default=True,
+@click.option('--hg', 'vcs', flag_value='hg',
               help='Create a Mercurial repository.')
 @click.option('--git', 'vcs', flag_value='git',
               help='Create a Git repository.')
@@ -133,8 +133,13 @@ def initrepo(repo_path, vcs):
         if backend.identifier == vcs:
             repo = backend
             break
-    # hg backend is guaranteed to exist, then it shouldn't fail
     try:
+        if repo is None:
+            if vcs is None and len(backends) > 0:
+                repo = backends[0]
+            else:
+                raise RuntimeError('No VCS backend found for repository: %s'
+                                   % repo_path)
         repo.create_repo(os.path.abspath(repo_path))
     except RuntimeError, err:
         click.echo(str(err), file=sys.stderr)
