@@ -121,10 +121,6 @@ def freeze(repo_path, disable_embedded_extensions, serve, noindex):
 @cli.command()
 @click.option('--repo-path', default='.', metavar='REPO_PATH',
               help='Repository path.')
-@click.option('--hg', 'vcs', flag_value='hg',
-              help='Create a Mercurial repository.')
-@click.option('--git', 'vcs', flag_value='git',
-              help='Create a Git repository.')
 def initrepo(repo_path, vcs):
     '''Initialize a blohg repo, using the default template.'''
 
@@ -143,6 +139,13 @@ def initrepo(repo_path, vcs):
         repo.create_repo(os.path.abspath(repo_path))
     except RuntimeError, err:
         click.echo(str(err), file=sys.stderr)
+
+for backend in backends:
+    # decorating the function like a boss :P
+    initrepo = click.option('--%s' % backend.identifier, 'vcs',
+                            flag_value=backend.identifier,
+                            help='Create a %s repository'
+                            % backend.name)(initrepo)
 
 
 @cli.command()
