@@ -27,7 +27,7 @@ from blohg.rst_parser.nodes import iframe_flash_video
 import posixpath
 
 
-__all__ = ['Vimeo', 'Youtube', 'Math', 'Code', 'SourceCode', 'AttachmentImage',
+__all__ = ['Vimeo', 'Youtube', 'Math', 'MathJax', 'Code', 'SourceCode', 'AttachmentImage',
            'AttachmentFigure', 'SubPages', 'IncludeHg']
 
 GOOGLETEX_URL = 'https://chart.googleapis.com/chart?cht=tx&chl='
@@ -225,6 +225,47 @@ class Math(Image):
         return Image.run(self)
 
 
+class MathJax(Directive):
+    """reStructuredText directive that simply returns a math html fragment suitable for rendering by MathJax.
+
+    The latex math equations are simply wrapped by an HTML div tag with mathjax class for further CSS decoration.
+    Use conventional LaTeX to write math equations.
+    Note that $ signs or \begin{equation} etc. should be no longer omitted.
+    Auto-numbering is possible by configuring MathJax before loading MathJax, via::
+
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                TeX: { equationNumbers: { autoNumber: "AMS" } }
+            });
+        </script>
+
+    Usage example::
+
+        .. mathjax::
+
+            $$\frac{x^2}{1+x}\label{frac_eq}$$
+
+    for a displayed numbered equation with a reference. Use "\eqref{frac_eq}" in normal way to cite the equation number.
+    LaTeX math \begin{equation}, \begin{align}, etc. are all supported.
+    See MathJax official websites for more information.
+    """
+
+    required_arguments = 0
+    has_content = True
+
+    def run(self):
+        self.assert_has_content()
+        html = '''\
+
+<div class="mathjax">
+%s
+</div>
+
+'''
+        return [nodes.raw('', html % (
+            "\n".join(self.content).replace('<', '&lt;'), ),
+            format='html')]
+
 
 class AttachmentImage(Image):
 
@@ -405,6 +446,7 @@ index = {
     'vimeo': Vimeo,
     'youtube': Youtube,
     'math': Math,
+    'mathjax': MathJax,
     'code': Code,
     'sourcecode': SourceCode,
     'attachment-image': AttachmentImage,

@@ -9,6 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+from docutils import nodes
 from docutils.nodes import reference, paragraph
 from flask import current_app, url_for
 
@@ -64,7 +65,18 @@ def page_role(name, rawtext, text, lineno, inliner, options={}, content={}):
     return [reference(url, title, refuri=url)], []
 
 
+def icon_role(name, rawtext, text, lineno, inliner, options={}, content={}):
+    """reStructuredText role to generate an icon in HTML <i class=""></i>
+    use as :icon:`icon class attribute`.
+    """
+    html = '''\
+<i class="%s"></i>
+'''
+    return [nodes.raw('', html % (text), format='html')], []
+
+
 index = {
     'attachment': attachment_role,
     'page': page_role,
+    'icon': icon_role,
 }
