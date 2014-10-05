@@ -81,8 +81,8 @@ setup(
     zip_safe=False,
     install_requires=[
         'blinker>=1.1',
-        'click==2.0',
-        'docutils==0.11',
+        'click>=2.0',
+        'docutils>=0.11',
         'Flask>=0.10.1',
         'Flask-Babel>=0.7',
         'Frozen-Flask>=0.7',
@@ -92,11 +92,11 @@ setup(
         'Pygments',  # TODO: make this dependency optional
     ],
     extras_require={
-        'git': ['pygit2==0.20.3'],
+        'git': ['pygit2==0.21.3'],
     },
     tests_require=[
         'mock',
-        'pygit2==0.20.3',
+        'pygit2==0.21.3',
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
