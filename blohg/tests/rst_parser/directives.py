@@ -296,12 +296,17 @@ class SubPagesTestCase(DirectiveTestCase):
         self.current_app = self._current_app.start()
         self.current_app.config = {'CONTENT_DIR': 'cont', 'POST_EXT': '.rs'}
         # FIXME: find a way to test sorting
-        self.current_app.blohg.content.get_all.return_value = [
-            mock.Mock(slug='foo', title='Foo :)'),
-            mock.Mock(slug='bar', title='Bar!'),
-            mock.Mock(slug='foo/bar', title='Foo Bar :P'),
-            mock.Mock(slug='foo/bar/baz', title='Foo Bar Baz XD'),
-        ]
+        m1 = mock.Mock(slug='foo', title='Foo :)')
+        m2 = mock.Mock(slug='bar', title='Bar!')
+        m3 = mock.Mock(slug='foo/bar', title='Foo Bar :P')
+        m4 = mock.Mock(slug='foo/bar/baz', title='Foo Bar Baz XD')
+        m5 = mock.Mock(slug='foo/bar/bad', title='Foo Bar Bad XD')
+        m1.get.side_effect = lambda x, y: y
+        m2.get.side_effect = lambda x, y: y
+        m3.get.side_effect = lambda x, y: y
+        m4.get.side_effect = lambda x, y: y
+        m5.get.side_effect = lambda x, y: '###asd###'
+        self.current_app.blohg.content.get_all.return_value = [m1, m2, m3, m4, m5]
         self._url_for = mock.patch('blohg.rst_parser.directives.url_for')
         self.url_for = self._url_for.start()
         self.url_for.side_effect = lambda endpoint, slug: '/%s/' % slug
@@ -392,6 +397,9 @@ asd
         self.assertNotIn('>Foo Bar :P<', content['fragment'])
         self.assertIn('"/foo/bar/baz/"', content['fragment'])
         self.assertIn('>Foo Bar Baz XD<', content['fragment'])
+        self.assertNotIn('>Foo Bar Bad XD<', content['fragment'])
+        self.assertIn('"/foo/bar/bad/"', content['fragment'])
+        self.assertIn('###asd###', content['fragment'])
 
 
 class IncludeHgTestCase(DirectiveTestCase):

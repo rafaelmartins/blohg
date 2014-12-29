@@ -361,11 +361,17 @@ class SubPages(Directive):
             if metadata.slug.startswith(self.arguments[0]) and \
                (len(splited_dir) + 1 == len(splited_slug)):
                 tmp_metadata.append(metadata)
-        for metadata in sorted(tmp_metadata, key=lambda x: \
-                               getattr(x, self.options['sort-by']),
+
+        def key_func(metadata):
+            if self.options['sort-by'] == 'title':
+                return metadata.get('link_title', metadata.title)
+            return getattr(metadata, self.options['sort-by'])
+
+        for metadata in sorted(tmp_metadata, key=key_func,
                                reverse=(self.options['sort-order'] == 'desc')):
             link = url_for('views.content', slug=metadata.slug)
-            reference = nodes.reference(link, metadata.title, refuri=link)
+            link_title = metadata.get('link_title', metadata.title)
+            reference = nodes.reference(link, link_title, refuri=link)
             final_metadata.append(nodes.list_item('',
                                                   nodes.paragraph('', '',
                                                                   reference)))

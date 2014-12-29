@@ -19,7 +19,7 @@ from jinja2 import Markup
 from blohg.rst_parser import parser
 from blohg.utils import parse_date
 
-re_metadata = re.compile(r'\.\. +([a-z]+): *(.+)')
+re_metadata = re.compile(r'\.\. +([a-z][a-z_]*): *(.+)')
 re_read_more = re.compile(r'\.\. +read_more')
 re_author = re.compile(r'^(?P<name>[^<]*[^ ])( ?<(?P<email>[^<]*)>)?$')
 
