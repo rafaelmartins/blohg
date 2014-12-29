@@ -21,6 +21,7 @@ from tempfile import mkdtemp
 
 from blohg import create_app
 from blohg.vcs_backends.hg import HgRepository
+from blohg.vcs_backends.hg.filectx import u2hg
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -49,8 +50,8 @@ class AppTestCase(unittest.TestCase):
         app = create_app(repo_path=self.repo_path, autoinit=False)
         commands.add(self.ui, self.repo)
         commands.forget(self.ui, self.repo,
-                        os.path.join(self.repo_path,
-                                     app.config['CONTENT_DIR']))
+                        u2hg(os.path.join(self.repo_path,
+                                          app.config['CONTENT_DIR'])))
         commands.commit(self.ui, self.repo, message='foo', user='foo')
         app.blohg.init_repo(REVISION_DEFAULT)
         client = app.test_client()

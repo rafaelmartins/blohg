@@ -21,6 +21,11 @@ def hg2u(s):
     return encoding.fromlocal(s).decode("utf-8")
 
 
+def u2hg(s):
+    """Returns a mercurial string representing an unicode object."""
+    return encoding.tolocal(s.encode("utf-8"))
+
+
 class FileCtx(_FileCtx):
     """Base class that represents a file context."""
 
@@ -28,7 +33,7 @@ class FileCtx(_FileCtx):
         self._repo = repo
         self._changectx = changectx
         self._path = path
-        self._ctx = self._changectx[self._path]
+        self._ctx = self._changectx[u2hg(self._path)]
 
     @locked_cached_property
     def _first_changeset(self):
