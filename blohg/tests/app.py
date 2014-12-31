@@ -21,7 +21,7 @@ from tempfile import mkdtemp
 
 from blohg import create_app
 from blohg.vcs_backends.hg import HgRepository
-from blohg.vcs_backends.hg.filectx import u2hg
+from blohg.vcs_backends.hg.utils import u2hg
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 

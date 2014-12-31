@@ -11,19 +11,9 @@
 
 import time
 from flask.helpers import locked_cached_property
-from mercurial import encoding
+from blohg.vcs_backends.hg.utils import hg2u, u2hg
 
 from blohg.vcs import FileCtx as _FileCtx
-
-
-def hg2u(s):
-    """Returns a unicode object representing the mercurial string."""
-    return encoding.fromlocal(s).decode("utf-8")
-
-
-def u2hg(s):
-    """Returns a mercurial string representing an unicode object."""
-    return encoding.tolocal(s.encode("utf-8"))
 
 
 class FileCtx(_FileCtx):
