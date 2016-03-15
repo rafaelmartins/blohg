@@ -73,7 +73,11 @@ class FileCtx(_FileCtx):
                                       GIT_SORT_TIME):
             diff = self._repo.diff(head, commit)
             for patch in diff:
-                if patch.new_file_path == self._path:
+                try:
+                    new_file_path = patch.delta.new_file.path
+                except AttributeError:
+                    new_file_path = patch.new_file_path
+                if new_file_path == self._path:
                     return head
             head = commit
 
