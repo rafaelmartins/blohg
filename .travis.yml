@@ -10,8 +10,8 @@ matrix:
   - PYGIT2_VERSION=1.1.1
 
 install:
-  - pip install -r requirements.txt --use-mirrors
-  - pip install pygit2==$PYGIT2_VERSION --use-mirrors
+  - pip install -r requirements.txt
+  - pip install "pygit2==$PYGIT2_VERSION"
 
 script:
   - ./setup.py test
