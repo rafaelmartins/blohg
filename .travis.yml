@@ -1,27 +1,17 @@
 language: python
 
 python:
-  - "2.7"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 
-env:
-  global:
-    - LIBGIT2=~/libgit2/_install/
-    - LD_LIBRARY_PATH=~/libgit2/_install/lib
-  matrix:
-    - LIBGIT2_VERSION=0.21.5 PYGIT2_VERSION=0.21.3
-    - LIBGIT2_VERSION=0.24.0 PYGIT2_VERSION=0.24.0
-
-before_install:
-  - git clone git://github.com/libgit2/libgit2.git ~/libgit2
-  - pushd ~/libgit2/ > /dev/null && git checkout -qf v$LIBGIT2_VERSION && popd > /dev/null
-  - mkdir -p ~/libgit2/build
-  - pushd ~/libgit2/build > /dev/null && cmake .. -DCMAKE_INSTALL_PREFIX=~/libgit2/_install -DBUILD_CLAR=OFF && popd > /dev/null
-  - pushd ~/libgit2/build > /dev/null && cmake --build . --target install && popd > /dev/null
-  - ls -la ~/libgit2
+matrix:
+  - PYGIT2_VERSION=0.28.2
+  - PYGIT2_VERSION=1.1.1
 
 install:
   - pip install -r requirements.txt --use-mirrors
-  - pip install pygit2==$PYGIT2_VERSION
+  - pip install pygit2==$PYGIT2_VERSION --use-mirrors
 
 script:
   - ./setup.py test
