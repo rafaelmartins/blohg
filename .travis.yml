@@ -9,6 +9,11 @@ env:
   - PYGIT2_VERSION=0.28.2
   - PYGIT2_VERSION=1.1.1
 
+jobs:
+  exclude:
+    - python: "3.8"
+      env: PYGIT2_VERSION=0.28.2
+
 install:
   - pip install -r requirements.txt
   - pip install "pygit2==$PYGIT2_VERSION"
