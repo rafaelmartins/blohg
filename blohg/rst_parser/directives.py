@@ -19,7 +19,7 @@ from flask import current_app, url_for
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, TextLexer
-from urllib import pathname2url
+from urllib.request import pathname2url
 
 from blohg.file_like import BlohgFile
 from blohg.rst_parser.nodes import iframe_flash_video
@@ -197,7 +197,7 @@ class SourceCode(Directive):
         formatter = HtmlFormatter(noclasses=False)
         if 'linenos' in self.options:
             formatter.linenos = 2  # inline
-        parsed = highlight(u'\n'.join(self.content), lexer, formatter)
+        parsed = highlight('\n'.join(self.content), lexer, formatter)
         return [nodes.raw('', parsed, format='html')]
 
 
@@ -230,7 +230,7 @@ class MathJax(Directive):
 
     The latex math equations are simply wrapped by an HTML div tag with mathjax class for further CSS decoration.
     Use conventional LaTeX to write math equations.
-    Note that $ signs or \begin{equation} etc. should be no longer omitted.
+    Note that $ signs or \\begin{equation} etc. should be no longer omitted.
     Auto-numbering is possible by configuring MathJax before loading MathJax, via::
 
         <script type="text/x-mathjax-config">
@@ -243,10 +243,10 @@ class MathJax(Directive):
 
         .. mathjax::
 
-            $$\frac{x^2}{1+x}\label{frac_eq}$$
+            $$\\frac{x^2}{1+x}\\label{frac_eq}$$
 
-    for a displayed numbered equation with a reference. Use "\eqref{frac_eq}" in normal way to cite the equation number.
-    LaTeX math \begin{equation}, \begin{align}, etc. are all supported.
+    for a displayed numbered equation with a reference. Use "\\eqref{frac_eq}" in normal way to cite the equation number.
+    LaTeX math \\begin{equation}, \\begin{align}, etc. are all supported.
     See MathJax official websites for more information.
     """
 
@@ -398,10 +398,9 @@ class IncludeHg(Include):
             include_file = FileInput(
                 source=BlohgFile(path), encoding=encoding,
                 error_handler=(self.state.document.settings.\
-                               input_encoding_error_handler),
-                handle_io_errors=None)
-        except IOError, error:
-            raise self.severe(u'Problems with "%s" directive path:\n%s.' %
+                               input_encoding_error_handler))
+        except IOError as error:
+            raise self.severe('Problems with "%s" directive path:\n%s.' %
                       (self.name, ErrorString(error)))
         startline = self.options.get('start-line', None)
         endline = self.options.get('end-line', None)
@@ -411,8 +410,8 @@ class IncludeHg(Include):
                 rawtext = ''.join(lines[startline:endline])
             else:
                 rawtext = include_file.read()
-        except UnicodeError, error:
-            raise self.severe(u'Problem with "%s" directive:\n%s' %
+        except UnicodeError as error:
+            raise self.severe('Problem with "%s" directive:\n%s' %
                               (self.name, ErrorString(error)))
         # start-after/end-before: no restrictions on newlines in match-text,
         # and no restrictions on matching inside lines vs. line boundaries

@@ -41,8 +41,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'blohg'
-copyright = u'2010-2013, Rafael G. Martins'
+project = 'blohg'
+copyright = '2010-2013, Rafael G. Martins'
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(cwd, '..', 'blohg'))
@@ -183,8 +183,8 @@ htmlhelp_basename = 'blohgdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'blohg.tex', u'blohg Documentation',
-   u'Rafael G. Martins', 'manual'),
+  ('index', 'blohg.tex', 'blohg Documentation',
+   'Rafael G. Martins', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -216,8 +216,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'blohg', u'blohg Documentation',
-     [u'Rafael G. Martins'], 1)
+    ('index', 'blohg', 'blohg Documentation',
+     ['Rafael G. Martins'], 1)
 ]
 
 

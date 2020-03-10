@@ -29,10 +29,11 @@ class AppTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
+        self.ui.setconfig(b'ui', b'quiet', True)
         HgRepository.create_repo(self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
 
     def tearDown(self):
         try:
@@ -52,73 +53,73 @@ class AppTestCase(unittest.TestCase):
         commands.forget(self.ui, self.repo,
                         u2hg(os.path.join(self.repo_path,
                                           app.config['CONTENT_DIR'])))
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         app.blohg.init_repo(REVISION_DEFAULT)
         client = app.test_client()
         rv = client.get('/')
-        self.assertFalse('post/lorem-ipsum' in rv.data)
-        self.assertFalse('post/example-post' in rv.data)
+        self.assertFalse(b'post/lorem-ipsum' in rv.data)
+        self.assertFalse(b'post/example-post' in rv.data)
         commands.add(self.ui, self.repo)
         rv = client.get('/')
-        self.assertFalse('post/lorem-ipsum' in rv.data)
-        self.assertFalse('post/example-post' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertFalse(b'post/lorem-ipsum' in rv.data)
+        self.assertFalse(b'post/example-post' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/')
-        self.assertTrue('post/lorem-ipsum' in rv.data)
-        self.assertTrue('post/example-post' in rv.data)
+        self.assertTrue(b'post/lorem-ipsum' in rv.data)
+        self.assertTrue(b'post/example-post' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
                                       app.config['CONTENT_DIR'],
                                       'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS A TEST!\n')
         rv = client.get('/about/')
-        self.assertFalse('THIS IS A TEST!' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertFalse(b'THIS IS A TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS A TEST!' in rv.data)
+        self.assertTrue(b'THIS IS A TEST!' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
                                       app.config['CONTENT_DIR'],
                                       'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS another TEST!\n')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS A TEST!' in rv.data)
-        self.assertFalse('THIS IS another TEST!' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertTrue(b'THIS IS A TEST!' in rv.data)
+        self.assertFalse(b'THIS IS another TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS A TEST!' in rv.data)
-        self.assertTrue('THIS IS another TEST!' in rv.data)
+        self.assertTrue(b'THIS IS A TEST!' in rv.data)
+        self.assertTrue(b'THIS IS another TEST!' in rv.data)
 
     def test_reload_changectx_working_dir(self):
         app = create_app(repo_path=self.repo_path,
                          revision_id=REVISION_WORKING_DIR)
         client = app.test_client()
         rv = client.get('/')
-        self.assertTrue('post/lorem-ipsum' in rv.data)
-        self.assertTrue('post/example-post' in rv.data)
+        self.assertTrue(b'post/lorem-ipsum' in rv.data)
+        self.assertTrue(b'post/example-post' in rv.data)
         commands.add(self.ui, self.repo)
         rv = client.get('/')
-        self.assertTrue('post/lorem-ipsum' in rv.data)
-        self.assertTrue('post/example-post' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertTrue(b'post/lorem-ipsum' in rv.data)
+        self.assertTrue(b'post/example-post' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/')
-        self.assertTrue('post/lorem-ipsum' in rv.data)
-        self.assertTrue('post/example-post' in rv.data)
+        self.assertTrue(b'post/lorem-ipsum' in rv.data)
+        self.assertTrue(b'post/example-post' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
                                       app.config['CONTENT_DIR'], 'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS A TEST!\n')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS A TEST!' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertTrue(b'THIS IS A TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS A TEST!' in rv.data)
+        self.assertTrue(b'THIS IS A TEST!' in rv.data)
         with codecs.open(os.path.join(self.repo_path,
                                       app.config['CONTENT_DIR'], 'about.rst'),
                          'a', encoding='utf-8') as fp:
             fp.write('\n\nTHIS IS another TEST!\n')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS another TEST!' in rv.data)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        self.assertTrue(b'THIS IS another TEST!' in rv.data)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
         rv = client.get('/about/')
-        self.assertTrue('THIS IS another TEST!' in rv.data)
+        self.assertTrue(b'THIS IS another TEST!' in rv.data)

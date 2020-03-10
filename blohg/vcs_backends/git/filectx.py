@@ -67,7 +67,7 @@ class FileCtx(_FileCtx):
             ref = self._repo.lookup_reference('refs/heads/master')
         except Exception:
             return
-        head = ref.get_object()
+        head = ref.peel()
         for commit in self._repo.walk(ref.target,
                                       GIT_SORT_TOPOLOGICAL |
                                       GIT_SORT_TIME):
@@ -84,7 +84,7 @@ class FileCtx(_FileCtx):
     @locked_cached_property
     def path(self):
         """UTF-8 encoded file path, relative to the repository root."""
-        return self._path.decode('utf-8')
+        return self._path
 
     @locked_cached_property
     def data(self):
@@ -94,7 +94,7 @@ class FileCtx(_FileCtx):
         if self._use_index:
             real_file = os.path.join(self._repo.workdir, self._path)
             if os.path.isfile(real_file):
-                with open(real_file, 'r') as fp:
+                with open(real_file, 'rb') as fp:
                     return fp.read()
         return self._ctx.data
 
@@ -133,4 +133,4 @@ class FileCtx(_FileCtx):
         else:
             name = self._repo.config['user.name']
             email = self._repo.config['user.email']
-        return ('%s <%s>' % (name, email)).decode('utf-8')
+        return '%s <%s>' % (name, email)

@@ -18,23 +18,25 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 from blohg.vcs_backends.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.utils import u2hg
 
 
 class FileCtxTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
-        commands.init(self.ui, self.repo_path)
+        self.ui.setconfig(b'ui', b'quiet', True)
+        commands.init(self.ui, self.repo_pathb)
         self.file_name = 'foo.rst'
         self.file_path = os.path.join(self.repo_path, self.file_name)
         with codecs.open(self.file_path, 'w', encoding='utf-8') as fp:
             fp.write('test\n')
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
         self.changectx = self.repo[None]
-        commands.commit(self.ui, self.repo, message='foo',
-                        user='foo <foo@bar.com>', addremove=True)
+        commands.commit(self.ui, self.repo, message=b'foo',
+                        user=b'foo <foo@bar.com>', addremove=True)
 
     def tearDown(self):
         try:
@@ -67,7 +69,7 @@ class FileCtxTestCase(unittest.TestCase):
         time.sleep(1)
         with codecs.open(self.file_path, 'a', encoding='utf-8') as fp:
             fp.write('foo\n')
-        commands.commit(self.ui, self.repo, user='foo', message='foo2')
+        commands.commit(self.ui, self.repo, user=b'foo', message=b'foo2')
         ctx = FileCtx(self.repo, self.changectx, self.file_name)
         self.assertEqual(ctx.date, old_date)
         self.assertTrue(ctx.mdate > old_date)

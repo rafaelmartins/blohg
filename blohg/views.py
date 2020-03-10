@@ -13,8 +13,8 @@ import math
 
 from flask import Blueprint, abort, current_app, make_response, \
      render_template, url_for, redirect
+from feedgenerator.django.utils import feedgenerator
 from jinja2 import TemplateNotFound
-from werkzeug.contrib.atom import AtomFeed, FeedEntry
 from werkzeug.exceptions import NotFound
 
 views = Blueprint('views', __name__)
@@ -35,29 +35,32 @@ def atom(tag=None):
         for _tag in tags:
             if _tag not in current_app.blohg.content.tags:
                 abort(404)
-        title += u' » %s' % ' + '.join(tags)
+        title += ' » %s' % ' + '.join(tags)
         posts = current_app.blohg.content.get_by_tag(tags)
     else:
         posts = current_app.blohg.content.get_all(True)
-    feed = AtomFeed(title=title, subtitle=current_app.config['TAGLINE'],
-                    url=url_for('views.home', _external=True),
-                    id=url_for('views.atom', tag=tag),
-                    feed_url=url_for('views.atom', tag=tag, _external=True),
-                    author=current_app.config['AUTHOR'],
-                    generator=('blohg', None, None))
+    feed = feedgenerator.Atom1Feed(title=title,
+                                   link=url_for('views.home', _external=True),
+                                   description=current_app.config['TAGLINE'],
+                                   feed_guid=url_for('views.atom', tag=tag),
+                                   feed_url=url_for('views.atom', tag=tag,
+                                                    _external=True),
+                                   author_name=current_app.config['AUTHOR'])
     posts_per_atom_feed = \
         current_app.config.get('POSTS_PER_ATOM_FEED',
                                current_app.config.get('POSTS_PER_PAGE'))
     for post in posts[:int(posts_per_atom_feed)]:
-        feed.add(FeedEntry(title=post.title, content=post.full_raw_html,
-                           summary=post.abstract_raw_html,
-                           id=url_for('views.content', slug=post.slug),
-                           url=url_for('views.content', slug=post.slug,
-                                       _external=True),
-                           author=dict(name=post.author_name,
-                                       email=post.author_email),
-                           published=post.datetime, updated=post.datetime))
-    return feed
+        feed.add_item(title=post.title, content=post.full_raw_html,
+                      description=post.abstract_raw_html,
+                      unique_id=url_for('views.content', slug=post.slug),
+                      link=url_for('views.content', slug=post.slug,
+                                   _external=True),
+                      author_name=post.author_name,
+                      author_email=post.author_email,
+                      pubdate=post.datetime, updateddate=post.datetime)
+    response = make_response(feed.writeString('utf-8'))
+    response.headers['Content-Type'] = 'text/xml'
+    return response
 
 
 @views.route('/<path:slug>/')
@@ -72,7 +75,7 @@ def content(slug):
         abort(404)
     title = page.title
     if slug.startswith('post'):
-        title = u'Post: %s' % page.title
+        title = 'Post: %s' % page.title
     return render_template('_posts.html', title=title, posts=[page],
                            full_content=True, meta=page)
 
@@ -111,7 +114,7 @@ def posts():
 def post_list():
     """Page with a simple list of posts (link + creation date)."""
     try:
-        return render_template('post_list.html', title=u'Posts',
+        return render_template('post_list.html', title='Posts',
                                posts=current_app.blohg.content.get_all(True))
     except TemplateNotFound:
         if 'FREEZER_BASE_URL' in current_app.config:  # freezing the blog
@@ -141,7 +144,7 @@ def tag(tag, page=None):
     posts = pages[init:end]
     if len(posts) == 0:
         abort(404)
-    return render_template('_posts.html', title=u'Tag: %s' % ' + '.join(tags),
+    return render_template('_posts.html', title='Tag: %s' % ' + '.join(tags),
                            tag=tags, posts=posts, full_content=False,
                            pagination={'num_pages': num_pages, 'current': page,
                                        'url_gen': url_gen})

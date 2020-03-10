@@ -19,6 +19,7 @@ from tempfile import mkdtemp
 from blohg.vcs_backends.hg import HgRepository
 from blohg.vcs_backends.hg.changectx import ChangeCtxDefault, \
      ChangeCtxWorkingDir
+from blohg.vcs_backends.hg.utils import u2hg
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -26,10 +27,11 @@ class HgRepositoryTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
-        commands.init(self.ui, self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.ui.setconfig(b'ui', b'quiet', True)
+        commands.init(self.ui, self.repo_pathb)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
 
     def tearDown(self):
         try:
@@ -60,7 +62,7 @@ class HgRepositoryTestCase(unittest.TestCase):
         with codecs.open(os.path.join(self.repo_path, 'foo.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('foo')
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
         self.assertTrue(isinstance(hg_repo.get_changectx(REVISION_DEFAULT),
                                    ChangeCtxDefault),

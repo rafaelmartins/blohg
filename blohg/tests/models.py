@@ -20,6 +20,7 @@ from tempfile import mkdtemp
 
 from blohg.vcs_backends.hg.changectx import ChangeCtxDefault
 from blohg.vcs_backends.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.utils import u2hg
 from blohg.models import Blog, Page, Post
 
 
@@ -61,10 +62,11 @@ class PageTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
-        commands.init(self.ui, self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.ui.setconfig(b'ui', b'quiet', True)
+        commands.init(self.ui, self.repo_pathb)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
 
     def tearDown(self):
         try:
@@ -79,8 +81,8 @@ class PageTestCase(unittest.TestCase):
             os.makedirs(file_dir)
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(content)
-        commands.commit(self.ui, self.repo, file_path, message='foo',
-                        user='foo <foo@bar.com>', addremove=True)
+        commands.commit(self.ui, self.repo, u2hg(file_path), message=b'foo',
+                        user=b'foo <foo@bar.com>', addremove=True)
         ctx = FileCtx(self.repo, self.repo[None], 'content/stub.rst')
         return self.model(ctx, 'content', '.rst', 2)
 
@@ -201,11 +203,12 @@ class BlogTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'username', 'foo <foo@bar.com>')
-        self.ui.setconfig('ui', 'quiet', True)
-        commands.init(self.ui, self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.ui.setconfig(b'ui', b'username', b'foo <foo@bar.com>')
+        self.ui.setconfig(b'ui', b'quiet', True)
+        commands.init(self.ui, self.repo_pathb)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
         file_dir = os.path.join(self.repo_path, 'content')
         if not os.path.isdir(file_dir):
             os.makedirs(file_dir)
@@ -213,12 +216,12 @@ class BlogTestCase(unittest.TestCase):
             file_path = os.path.join(file_dir, 'page-%i.rst' % i)
             with codecs.open(file_path, 'w', encoding='utf-8') as fp:
                 fp.write(SAMPLE_PAGE)
-            commands.add(self.ui, self.repo, file_path)
+            commands.add(self.ui, self.repo, u2hg(file_path))
         file_path = os.path.join(file_dir, 'about.rst')
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(SAMPLE_PAGE + """
 .. aliases: 301:/my-old-post-location/,/another-old-location/""")
-        commands.add(self.ui, self.repo, file_path)
+        commands.add(self.ui, self.repo, u2hg(file_path))
         file_dir = os.path.join(self.repo_path, 'content', 'post')
         if not os.path.isdir(file_dir):
             os.makedirs(file_dir)
@@ -226,14 +229,14 @@ class BlogTestCase(unittest.TestCase):
             file_path = os.path.join(file_dir, 'post-%i.rst' % i)
             with codecs.open(file_path, 'w', encoding='utf-8') as fp:
                 fp.write(SAMPLE_POST)
-            commands.add(self.ui, self.repo, file_path)
+            commands.add(self.ui, self.repo, u2hg(file_path))
         file_path = os.path.join(file_dir, 'foo.rst')
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             # using the page template, because we want to set tags manually
             fp.write(SAMPLE_PAGE + """
 .. tags: foo, bar, lol""")
-        commands.add(self.ui, self.repo, file_path)
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        commands.add(self.ui, self.repo, u2hg(file_path))
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
 
     def get_model(self):
         ctx = ChangeCtxDefault(self.repo_path)
@@ -251,8 +254,8 @@ class BlogTestCase(unittest.TestCase):
 
     def test_aliases(self):
         self.assertEqual(self.get_model().aliases,
-                         {'/my-old-post-location/': (301, u'about'),
-                          '/another-old-location/': (302, u'about')})
+                         {'/my-old-post-location/': (301, 'about'),
+                          '/another-old-location/': (302, 'about')})
 
     def test_get(self):
         self.assertEqual(self.get_model().get('about').slug, 'about')
@@ -286,7 +289,7 @@ class BlogTestCase(unittest.TestCase):
             with codecs.open(file_path, 'w', encoding='utf-8') as fp:
                 fp.write(SAMPLE_POST + """
 .. date: 2010-%02i-01 12:00:00""" % i)
-        commands.commit(self.ui, self.repo, user='foo', message='foo',
+        commands.commit(self.ui, self.repo, user=b'foo', message=b'foo',
                         addremove=True)
         model = self.get_model()
         now = datetime.utcnow()
@@ -315,8 +318,8 @@ class BlogTestCase(unittest.TestCase):
         with codecs.open(file_path, 'w', encoding='utf-8') as fp:
             fp.write(SAMPLE_POST + """
 .. date: """ + str(int(time.time()) + 2))
-        commands.commit(self.ui, self.repo, file_path, user='foo',
-                        message='foo', addremove=True)
+        commands.commit(self.ui, self.repo, u2hg(file_path), user=b'foo',
+                        message=b'foo', addremove=True)
         model = self.get_model()
         self.assertEqual(model.get('post/scheduled'), None)
         time.sleep(2)

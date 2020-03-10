@@ -24,6 +24,7 @@ from mercurial import commands, error, ui as _ui
 from pkg_resources import resource_filename, resource_listdir
 from blohg.vcs_backends.hg.changectx import ChangeCtxDefault, \
      ChangeCtxWorkingDir
+from blohg.vcs_backends.hg.utils import u2hg
 from blohg.vcs import Repository, REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -99,10 +100,10 @@ class HgRepository(Repository):
             fp.write('^build/' + os.linesep)
 
         ui = _ui.ui()
-        ui.setconfig('ui', 'quiet', True)
+        ui.setconfig(b'ui', b'quiet', True)
         try:
-            commands.init(ui, repo_path)
-        except error, err:
+            commands.init(ui, u2hg(repo_path))
+        except error as err:
             raise RuntimeError('an error was occurred: %s' % err)
 
     @staticmethod

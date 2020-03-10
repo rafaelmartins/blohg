@@ -28,7 +28,8 @@ class FileCtx(_FileCtx):
     @locked_cached_property
     def _first_changeset(self):
         filelog = self._ctx.filelog()
-        return self._repo[filelog.linkrev(0)]
+        if len(list(filelog)) > 0:
+            return self._repo[filelog.linkrev(0)]
 
     @locked_cached_property
     def path(self):
@@ -50,10 +51,9 @@ class FileCtx(_FileCtx):
         """Unix timestamp of the creation date of the file (date of the first
         commit).
         """
-        date = int(self._first_changeset.date()[0])
-        if not date:
-            date = int(time.time())
-        return date
+        if self._first_changeset:
+            return int(self._first_changeset.date()[0])
+        return int(time.time())
 
     @locked_cached_property
     def mdate(self):
@@ -70,10 +70,9 @@ class FileCtx(_FileCtx):
     def author(self):
         """The creator of the file (commiter of the first revision of the
         file)."""
-        author = hg2u(self._first_changeset.user())
-        if author == u'':
-            try:
-                author = hg2u(self._ctx.user())
-            except:
-                pass
-        return author
+        if self._first_changeset:
+            return hg2u(self._first_changeset.user())
+        try:
+            return hg2u(self._ctx.user())
+        except:
+            pass

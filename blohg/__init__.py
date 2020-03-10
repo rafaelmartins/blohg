@@ -13,8 +13,8 @@ import os
 import yaml
 from flask import Flask as _Flask, render_template, request
 from flask.ctx import _app_ctx_stack
-from flask.ext.babel import Babel
 from flask.helpers import locked_cached_property
+from flask_babel import Babel
 from jinja2.loaders import ChoiceLoader
 
 # import blohg stuff
@@ -62,7 +62,8 @@ class Blohg(object):
         self.load_extensions()
 
     def _load_config(self):
-        config = yaml.load(self.changectx.get_filectx('config.yaml').content)
+        config = yaml.load(self.changectx.get_filectx('config.yaml').content,
+                           Loader=yaml.SafeLoader)
 
         # monkey-patch configs when running from built-in server
         if 'RUNNING_FROM_CLI' in os.environ:
@@ -121,16 +122,16 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     app.debug = debug
 
     # register some sane default config values
-    app.config.setdefault('AUTHOR', u'Your Name Here')
+    app.config.setdefault('AUTHOR', 'Your Name Here')
     app.config.setdefault('POSTS_PER_PAGE', 10)
-    app.config.setdefault('TAGLINE', u'Your cool tagline')
-    app.config.setdefault('TITLE', u'Your title')
-    app.config.setdefault('TITLE_HTML', u'Your HTML title')
-    app.config.setdefault('CONTENT_DIR', u'content')
-    app.config.setdefault('ATTACHMENT_DIR', u'content/attachments')
+    app.config.setdefault('TAGLINE', 'Your cool tagline')
+    app.config.setdefault('TITLE', 'Your title')
+    app.config.setdefault('TITLE_HTML', 'Your HTML title')
+    app.config.setdefault('CONTENT_DIR', 'content')
+    app.config.setdefault('ATTACHMENT_DIR', 'content/attachments')
     app.config.setdefault('ROBOTS_TXT', True)
     app.config.setdefault('SHOW_RST_SOURCE', True)
-    app.config.setdefault('POST_EXT', u'.rst')
+    app.config.setdefault('POST_EXT', '.rst')
     app.config.setdefault('OPENGRAPH', True)
     app.config.setdefault('TIMEZONE', 'UTC')
     app.config.setdefault('LOCALE', 'en')

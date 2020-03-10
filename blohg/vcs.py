@@ -15,9 +15,7 @@ from abc import ABCMeta, abstractmethod, abstractproperty
 REVISION_WORKING_DIR, REVISION_DEFAULT = 1, 2
 
 
-class Repository:
-
-    __metaclass__ = ABCMeta
+class Repository(metaclass=ABCMeta):
 
     def __init__(self, path):
         self.path = path
@@ -47,9 +45,7 @@ class Repository:
         pass
 
 
-class ChangeCtx:
-
-    __metaclass__ = ABCMeta
+class ChangeCtx(metaclass=ABCMeta):
 
     @abstractmethod
     def __init__(self):
@@ -84,9 +80,7 @@ class ChangeCtx:
         pass
 
 
-class FileCtx:
-
-    __metaclass__ = ABCMeta
+class FileCtx(metaclass=ABCMeta):
 
     @abstractmethod
     def __init__(self, repo, changectx, path, **kwargs):

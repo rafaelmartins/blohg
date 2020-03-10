@@ -92,7 +92,7 @@ class GitRepository(Repository):
 
         try:
             init_repository(repo_path, False)
-        except Exception, err:
+        except Exception as err:
             raise RuntimeError('an error was occurred: %s' % err)
 
     @staticmethod

@@ -75,7 +75,8 @@ class ChangeCtxDefault(ChangeCtx):
 
     def etag(self, filectx):
         return 'blohg-%i-%i-%s' % (filectx.mdate or filectx.date,
-                                   len(filectx.data), adler32(filectx.path)
+                                   len(filectx.data),
+                                   adler32(filectx.path.encode('utf-8'))
                                    & 0xffffffff)
 
     def get_filectx(self, path):
@@ -118,7 +119,8 @@ class ChangeCtxWorkingDir(ChangeCtxDefault):
 
     def etag(self, filectx):
         return 'blohg-%i-%i-%s' % (time.time(), len(filectx.data),
-                                   adler32(filectx.path) & 0xffffffff)
+                                   adler32(filectx.path.encode('utf-8'))
+                                   & 0xffffffff)
 
     def get_filectx(self, path):
         return FileCtx(self._repo, self._ctx, path, use_index=True)

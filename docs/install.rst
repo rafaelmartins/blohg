@@ -8,7 +8,7 @@ your operating system. blohg is currently tested on Linux_ and Windows_,
 but should works in any operating system where Flask_ and Mercurial_ (and/or
 Git_) run properly.
 
-blohg works on Python 2.7.
+blohg works on Python >= 3.6.
 
 blohg is available at the *Python Package Index* (PyPI_):
 

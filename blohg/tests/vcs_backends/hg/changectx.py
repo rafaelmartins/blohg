@@ -20,16 +20,18 @@ from time import sleep, time
 
 from blohg.vcs_backends.hg.changectx import ChangeCtxDefault, \
      ChangeCtxWorkingDir
+from blohg.vcs_backends.hg.utils import hg2u, u2hg
 
 
 class ChangeCtxBaseTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
-        self.ui.setconfig('ui', 'username', 'foo')
-        commands.init(self.ui, self.repo_path)
+        self.ui.setconfig(b'ui', b'quiet', True)
+        self.ui.setconfig(b'ui', b'username', b'foo')
+        commands.init(self.ui, self.repo_pathb)
 
         # create files
         self.repo_files = ['a%i.rst' % i for i in range(5)]
@@ -38,8 +40,8 @@ class ChangeCtxBaseTestCase(unittest.TestCase):
                              encoding='utf-8') as fp:
                 fp.write('dumb file %s\n' % i)
 
-        self.repo = hg.repository(self.ui, self.repo_path)
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        self.repo = hg.repository(self.ui, self.repo_pathb)
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
     def tearDown(self):
@@ -77,7 +79,7 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         self.assertFalse(new_file in ctx.files, 'stable state is '
                          'listing uncommited file.')
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         # after commit files
@@ -98,7 +100,7 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # should still be false
         self.assertFalse(ctx.needs_reload())
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         # should need a reload now, after the commit
@@ -117,7 +119,7 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         ctx = self.get_ctx()
@@ -132,7 +134,7 @@ class ChangeCtxDefaultTestCase(ChangeCtxBaseTestCase):
         # should still be false
         self.assertFalse(ctx.filectx_needs_reload(filectx))
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo')
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo')
 
         # should need a reload now, after the commit
         self.assertTrue(ctx.filectx_needs_reload(filectx))
@@ -173,7 +175,7 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         self.assertTrue(new_file in ctx.files, 'variable state is not '
                         'listing uncommited file.')
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         # after commit files
@@ -187,14 +189,14 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
         self.assertTrue(ctx.needs_reload())
 
         # add a file to repo
-        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(hg2u(self.repo.path), 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
         # should always be true
         self.assertTrue(ctx.needs_reload())
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         # should need a reload now, after the commit
@@ -209,7 +211,7 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
     def test_filectx_needs_reload(self):
 
         # add a file to repo
-        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(hg2u(self.repo.path), 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
@@ -218,14 +220,14 @@ class ChangeCtxWorkingDirTestCase(ChangeCtxBaseTestCase):
 
         self.assertTrue(ctx.filectx_needs_reload(filectx))
 
-        with codecs.open(os.path.join(self.repo.path, 'a.rst'), 'w',
+        with codecs.open(os.path.join(hg2u(self.repo.path), 'a.rst'), 'w',
                          encoding='utf-8') as fp:
             fp.write('testing\n')
 
         # should always be true
         self.assertTrue(ctx.filectx_needs_reload(filectx))
 
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
 
         # should need a reload now, after the commit

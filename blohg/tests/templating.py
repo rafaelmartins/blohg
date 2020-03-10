@@ -19,6 +19,7 @@ from tempfile import mkdtemp
 
 from blohg import create_app
 from blohg.vcs_backends.hg import HgRepository
+from blohg.vcs_backends.hg.utils import u2hg
 from blohg.vcs import REVISION_DEFAULT, REVISION_WORKING_DIR
 
 
@@ -26,10 +27,11 @@ class BlohgLoaderTestCase(unittest.TestCase):
 
     def setUp(self):
         self.repo_path = mkdtemp()
+        self.repo_pathb = u2hg(self.repo_path)
         self.ui = ui.ui()
-        self.ui.setconfig('ui', 'quiet', True)
+        self.ui.setconfig(b'ui', b'quiet', True)
         HgRepository.create_repo(self.repo_path)
-        self.repo = hg.repository(self.ui, self.repo_path)
+        self.repo = hg.repository(self.ui, self.repo_pathb)
 
     def tearDown(self):
         try:
@@ -42,7 +44,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
         new_file = os.path.join(self.repo_path, 'foo')
         with codecs.open(new_file, 'w', encoding='utf-8') as fp:
             fp.write('foo')
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
         app.blohg.init_repo(REVISION_DEFAULT)
         with app.test_request_context():
@@ -57,7 +59,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
             app.preprocess_request()
             self.assertRaises(TemplateNotFound, app.jinja_loader.get_source,
                               app.jinja_env, 'test.html')
-        commands.commit(self.ui, self.repo, message='foo', user='foo',
+        commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                         addremove=True)
         with app.test_request_context():
             app.preprocess_request()
@@ -72,7 +74,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                 fp.write('bar')
             app.preprocess_request()
             self.assertTrue(up2date())
-            commands.commit(self.ui, self.repo, message='foo', user='foo',
+            commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                             addremove=True)
             app.preprocess_request()
             self.assertFalse(up2date())
@@ -105,7 +107,7 @@ class BlohgLoaderTestCase(unittest.TestCase):
                                            'test.html'))
             app.preprocess_request()
             self.assertFalse(up2date())
-            commands.commit(self.ui, self.repo, message='foo', user='foo',
+            commands.commit(self.ui, self.repo, message=b'foo', user=b'foo',
                             addremove=True)
             contents, filename, up2date = app.jinja_loader.get_source(
                 app.jinja_env, 'test.html')
@@ -124,4 +126,4 @@ class BlohgLoaderTestCase(unittest.TestCase):
         with app.test_request_context():
             app.preprocess_request()
             self.assertEqual(sorted(real_files),
-                              sorted(app.jinja_loader.list_templates()))
+                             sorted(app.jinja_loader.list_templates()))

@@ -25,7 +25,7 @@ def parse_date(date):
     """
     if isinstance(date, int):
         return date
-    if isinstance(date, basestring):
+    if isinstance(date, str):
         if date.isdigit():
             return int(date)
         timetuple = strptime(date, '%Y-%m-%d %H:%M:%S')

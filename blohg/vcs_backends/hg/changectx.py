@@ -15,6 +15,7 @@ from mercurial import error, hg, ui
 from zlib import adler32
 
 from blohg.vcs_backends.hg.filectx import FileCtx
+from blohg.vcs_backends.hg.utils import hg2u
 from blohg.vcs import ChangeCtx
 
 
@@ -22,7 +23,7 @@ class ChangeCtxBase(ChangeCtx):
     """Base class that represents a change context."""
 
     def __init__(self, repo_path):
-        self._repo_path = repo_path
+        self._repo_path = repo_path.encode('utf-8')
         self._ui = ui.ui()
         self._repo = hg.repository(self._ui, self._repo_path)
         self._ctx = self._repo[self.revision_id]
@@ -35,7 +36,10 @@ class ChangeCtxBase(ChangeCtx):
             files = files.union(set(self._extra_files))
         except:
             pass
-        return sorted(files)
+        rv = []
+        for i in sorted(files):
+            rv.append(hg2u(i))
+        return rv
 
     def get_filectx(self, path):
         return FileCtx(self._repo, self._ctx, path)
@@ -55,7 +59,7 @@ class ChangeCtxDefault(ChangeCtxBase):
     @property
     def revision_id(self):
         try:
-            return self._repo.branchtip('default')
+            return self._repo.branchtip(b'default')
         except error.RepoLookupError:
             return None
 
@@ -64,7 +68,7 @@ class ChangeCtxDefault(ChangeCtxBase):
             return True
         repo = hg.repository(self._ui, self._repo_path)
         try:
-            revision_id = repo.branchtip('default')
+            revision_id = repo.branchtip(b'default')
         except error.RepoLookupError:
             return True
         revision = repo[revision_id]
@@ -83,7 +87,8 @@ class ChangeCtxDefault(ChangeCtxBase):
 
     def etag(self, filectx):
         return 'blohg-%i-%i-%s' % (filectx.mdate or filectx.date,
-                                   len(filectx.data), adler32(filectx.path)
+                                   len(filectx.data),
+                                   adler32(filectx.path.encode('utf-8'))
                                    & 0xffffffff)
 
 
@@ -97,7 +102,10 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
 
     @property
     def _extra_files(self):
-        return self._repo.status(unknown=True)[4]
+        status = self._repo.status(unknown=True)
+        if status is None:
+            return []
+        return status.unknown
 
     def needs_reload(self):
         """This change context is mainly used by the command-line tool, and
@@ -114,4 +122,5 @@ class ChangeCtxWorkingDir(ChangeCtxBase):
 
     def etag(self, filectx):
         return 'blohg-%i-%i-%s' % (time.time(), len(filectx.data),
-                                   adler32(filectx.path)& 0xffffffff)
+                                   adler32(filectx.path.encode('utf-8'))
+                                   & 0xffffffff)

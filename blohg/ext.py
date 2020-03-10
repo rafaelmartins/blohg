@@ -13,7 +13,6 @@ from flask import Blueprint
 from flask.ctx import _app_ctx_stack
 from flask.globals import current_app
 from flask.helpers import locked_cached_property
-from imp import new_module
 from jinja2.loaders import FileSystemLoader
 
 from blohg.static import BlohgStaticFile
@@ -22,6 +21,7 @@ from blohg.templating import BlohgLoader
 import os
 import posixpath
 import sys
+import types
 
 
 class BlohgBlueprint(Blueprint):
@@ -128,7 +128,7 @@ class ExtensionImporter(object):
             return self
 
     def load_module(self, fullname):
-        mod = sys.modules.setdefault(fullname, new_module(fullname))
+        mod = sys.modules.setdefault(fullname, types.ModuleType(fullname))
         mod.__file__ = self.get_filename(fullname)
         mod.__loader__ = self
         if self.is_package(fullname):

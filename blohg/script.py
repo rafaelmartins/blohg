@@ -137,7 +137,7 @@ def initrepo(repo_path, vcs):
                 raise RuntimeError('No VCS backend found for repository: %s'
                                    % repo_path)
         repo.create_repo(os.path.abspath(repo_path))
-    except RuntimeError, err:
+    except RuntimeError as err:
         click.echo(str(err), file=sys.stderr)
 
 for backend in backends:

@@ -9,8 +9,8 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
-import mock
 import unittest
+from unittest import mock
 from docutils.parsers.rst.directives import _directives, register_directive
 
 from blohg.rst_parser import parser
@@ -189,7 +189,8 @@ class AttachmentImageTestCase(DirectiveTestCase):
 
     def setUp(self):
         DirectiveTestCase.setUp(self)
-        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app',
+                                       mock.MagicMock())
         self.current_app = self._current_app.start()
         self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
         self.current_app.blohg.changectx.files = ['content/att/foo.jpg']
@@ -236,7 +237,8 @@ class AttachmentFigureTestCase(DirectiveTestCase):
 
     def setUp(self):
         DirectiveTestCase.setUp(self)
-        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app',
+                                       mock.MagicMock())
         self.current_app = self._current_app.start()
         self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
         self.current_app.blohg.changectx.files = ['content/att/foo.jpg']
@@ -292,7 +294,8 @@ class SubPagesTestCase(DirectiveTestCase):
 
     def setUp(self):
         DirectiveTestCase.setUp(self)
-        self._current_app = mock.patch('blohg.rst_parser.directives.current_app')
+        self._current_app = mock.patch('blohg.rst_parser.directives.current_app',
+                                       mock.MagicMock())
         self.current_app = self._current_app.start()
         self.current_app.config = {'CONTENT_DIR': 'cont', 'POST_EXT': '.rs'}
         # FIXME: find a way to test sorting
@@ -408,7 +411,8 @@ class IncludeHgTestCase(DirectiveTestCase):
 
     def setUp(self):
         DirectiveTestCase.setUp(self)
-        self._current_app = mock.patch('blohg.file_like.current_app')
+        self._current_app = mock.patch('blohg.file_like.current_app',
+                                       mock.MagicMock())
         self.current_app = self._current_app.start()
         self.current_app.config = {'ATTACHMENT_DIR': 'content/att'}
         fctx1 = mock.Mock(path='content/inc.rst', content='''\

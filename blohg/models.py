@@ -9,6 +9,7 @@
     :license: GPL-2, see LICENSE for more details.
 """
 
+import functools
 import re
 
 from datetime import datetime
@@ -151,7 +152,7 @@ class Page(object):
         rv = []
         for alias in self._vars['aliases'].split(','):
             code = 302
-            alias = alias.strip().encode('utf-8')
+            alias = alias.strip()
             if alias[:4] in ('301:', '302:'):
                 code = int(alias[:3])
                 alias = alias[4:]
@@ -247,7 +248,7 @@ class Blog(object):
         self.archives = sorted(self.archives, reverse=True)
 
         # sort self, reverse by date
-        self._all.sort(lambda a, b: b.date - a.date)
+        self._all.sort(key=functools.cmp_to_key(lambda a, b: b.date - a.date))
 
     @property
     def published(self):
