@@ -142,6 +142,9 @@ These are the built-in configuration options for the ``config.yaml`` file:
 +----------------------+---------------------------------------------------+-------------------------+
 | RST_HEADER_LEVEL     | reStructuredText header level                     | ``3``                   |
 +----------------------+---------------------------------------------------+-------------------------+
+| THEME                | Defines ``Dark`` or ``Light`` for the main style  | ``Light``               |
+|                      | template.                                         |                         |
++----------------------+---------------------------------------------------+-------------------------+
 
 The default values are used if the given configuration key is ommited (or
 commented out) from the ``config.yaml`` file.

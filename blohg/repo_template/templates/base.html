@@ -7,8 +7,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="generator" content="blohg {{ version }}" />
+        {%- if config.THEME == 'Dark' -%}
+        <link type="text/css" media="screen" rel="stylesheet" href="{{
+            url_for('static', filename='screen-dark.css') }}" />
+        {%- else -%}
         <link type="text/css" media="screen" rel="stylesheet" href="{{
             url_for('static', filename='screen.css') }}" />
+        {%- endif %}
         <link rel="alternate" type="application/atom+xml" href="{{
             url_for('views.atom') }}" title="{{ config.TITLE }}" />
         <title>{{ config.TITLE }}{% block title %}{% endblock %}</title>

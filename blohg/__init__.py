@@ -138,6 +138,7 @@ def create_app(repo_path=None, revision_id=REVISION_DEFAULT,
     app.config.setdefault('RST_HEADER_LEVEL', 3)
     app.config.setdefault('EXTENSIONS', [])
     app.config.setdefault('EXTENSIONS_DIR', 'ext')
+    app.config.setdefault('THEME', 'Light')
 
     app.config['REPO_PATH'] = repo_path
 
